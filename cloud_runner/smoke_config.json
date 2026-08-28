@@ -1,0 +1,8 @@
+{
+  "schema_version": "bp3d_cloud_smoke_config_v1",
+  "blender_version": "4.2.23",
+  "synthetic_only": true,
+  "matrix_enabled": false,
+  "artifact_retention_days": 7,
+  "notes": "Initial interactive trigger. No user assets are permitted in this public smoke runner."
+}
