@@ -17,7 +17,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Syntax check
-        run: python -m py_compile project_relay/agent.py
+        run: python -m py_compile project_relay/agent.py project_relay/relay_utils.py
+      - name: Utility regression tests
+        run: python -m unittest discover -s project_relay/tests -p 'test_*.py' -v
       - name: Prepare config
         shell: pwsh
         run: Copy-Item project_relay/config/runners.example.json project_relay/config/runners.json -Force
