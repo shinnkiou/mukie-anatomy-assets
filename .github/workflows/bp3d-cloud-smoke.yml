@@ -1,0 +1,88 @@
+name: BP3D Cloud Blender Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "cloud_runner/**"
+      - ".github/workflows/bp3d-cloud-smoke.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bp3d-cloud-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  blender-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      BLENDER_VERSION: "4.2.23"
+      BLENDER_ARCHIVE: "blender-4.2.23-linux-x64.tar.xz"
+      BLENDER_DIR: "blender-4.2.23-linux-x64"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare artifact directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          uname -a | tee artifacts/runner.txt
+          printf 'run_id=%s\nsha=%s\nref=%s\n' "${GITHUB_RUN_ID}" "${GITHUB_SHA}" "${GITHUB_REF}" >> artifacts/runner.txt
+
+      - name: Download and verify Blender 4.2.23
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://download.blender.org/release/Blender4.2"
+          curl --fail --location --retry 3 --retry-delay 3 --output "${BLENDER_ARCHIVE}" "${BASE}/${BLENDER_ARCHIVE}"
+          curl --fail --location --retry 3 --retry-delay 3 --output "blender-${BLENDER_VERSION}.sha256" "${BASE}/blender-${BLENDER_VERSION}.sha256"
+          sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing | tee artifacts/download-verification.txt
+          tar -xf "${BLENDER_ARCHIVE}"
+          test -x "${BLENDER_DIR}/blender"
+          "${BLENDER_DIR}/blender" --version | tee artifacts/blender-version.txt
+
+      - name: Run synthetic headless Blender smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          "${BLENDER_DIR}/blender" \
+            --factory-startup \
+            --background \
+            --python cloud_runner/synthetic_smoke.py \
+            -- \
+            --output artifacts \
+            2>&1 | tee artifacts/blender-smoke.log
+
+      - name: Validate machine-readable result
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = Path("artifacts/bp3d_cloud_smoke_result.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          assert data["schema_version"] == "bp3d_cloud_smoke_v1", data
+          assert data["status"] == "PASS", data
+          assert data["blender_background"] is True, data
+          assert data["synthetic_only"] is True, data
+          assert data["user_assets_loaded"] is False, data
+          assert data["checks"]["source_cube_topology"] is True, data
+          assert data["checks"]["modifier_evaluation_changed_topology"] is True, data
+          print(json.dumps(data, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload smoke-test artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bp3d-cloud-smoke-${{ github.run_id }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 7
