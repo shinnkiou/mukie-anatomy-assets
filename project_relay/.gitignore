@@ -1,5 +1,6 @@
 runtime/
 config/runners.json
+config/*.local.json
 .env
 .env.*
 *.key
