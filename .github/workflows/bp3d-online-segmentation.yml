@@ -1,0 +1,115 @@
+name: BP3D Online Segmentation Experiment
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "cloud_runner/wholebody_online_experiment.py"
+      - ".github/workflows/bp3d-online-segmentation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bp3d-online-segmentation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wholebody-online:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      BLENDER_VERSION: "4.2.23"
+      BLENDER_ARCHIVE: "blender-4.2.23-linux-x64.tar.xz"
+      BLENDER_DIR: "blender-4.2.23-linux-x64"
+      BASE_OBJ_URL: "https://raw.githubusercontent.com/makehumancommunity/makehuman/master/makehuman/data/3dobjs/base.obj"
+      BASE_OBJ_SHA256: "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p input artifacts/reports
+          printf 'run_id=%s\nsha=%s\nref=%s\n' "${GITHUB_RUN_ID}" "${GITHUB_SHA}" "${GITHUB_REF}" > artifacts/reports/runner.txt
+
+      - name: Download and verify Blender 4.2.23
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://download.blender.org/release/Blender4.2"
+          curl --fail --location --retry 3 --retry-delay 3 -o "${BLENDER_ARCHIVE}" "${BASE}/${BLENDER_ARCHIVE}"
+          curl --fail --location --retry 3 --retry-delay 3 -o "blender-${BLENDER_VERSION}.sha256" "${BASE}/blender-${BLENDER_VERSION}.sha256"
+          sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing | tee artifacts/reports/blender-download-verification.txt
+          tar -xf "${BLENDER_ARCHIVE}"
+          "${BLENDER_DIR}/blender" --version | tee artifacts/reports/blender-version.txt
+
+      - name: Download official MakeHuman CC0 base mesh
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --retry-delay 2 -o input/base.obj "${BASE_OBJ_URL}"
+          ACTUAL="$(sha256sum input/base.obj | awk '{print $1}')"
+          printf 'url=%s\nexpected=%s\nactual=%s\n' "${BASE_OBJ_URL}" "${BASE_OBJ_SHA256}" "${ACTUAL}" | tee artifacts/reports/base-obj-verification.txt
+          test "${ACTUAL}" = "${BASE_OBJ_SHA256}"
+          grep -m1 'basemesh hm08' input/base.obj
+
+      - name: Run three segmentation candidates in Blender
+        shell: bash
+        run: |
+          set -o pipefail
+          "${BLENDER_DIR}/blender" \
+            --factory-startup \
+            --background \
+            --python cloud_runner/wholebody_online_experiment.py \
+            -- \
+            --input input/base.obj \
+            --output artifacts \
+            2>&1 | tee artifacts/reports/blender-online-segmentation.log
+
+      - name: Validate result
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          from pathlib import Path
+          p=Path('artifacts/summary.json')
+          if not p.exists():
+              print('summary.json missing', file=sys.stderr); sys.exit(2)
+          d=json.loads(p.read_text())
+          print(json.dumps(d,indent=2,sort_keys=True))
+          assert d['schema_version']=='bp3d_online_wholebody_experiment_v1'
+          assert d['public_cc0_only'] is True
+          assert d['user_assets_loaded'] is False
+          assert d['source_master_modified'] is False
+          assert d['successful_mode_count']==3
+          assert d['status']=='PASS'
+          for mode in ('D2','E2','F2'):
+              assert d['modes'][mode]['status']=='SUCCESS'
+              assert Path(f'artifacts/textures/{mode}_boundary_lines.png').exists()
+              assert Path(f'artifacts/models/{mode}_SPLIT.blend').exists()
+              assert Path(f'artifacts/screenshots/{mode}_REGION_FRONT.png').exists()
+              assert Path(f'artifacts/screenshots/{mode}_REGION_BACK.png').exists()
+              assert Path(f'artifacts/screenshots/{mode}_TEXTURE_APPLY_FRONT.png').exists()
+          print('VALIDATION PASS')
+          PY
+
+      - name: Inventory artifact
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          find artifacts -type f -printf '%P\t%s bytes\n' | sort | tee artifacts/reports/file_inventory.txt
+          sha256sum artifacts/textures/*.png artifacts/screenshots/*.png artifacts/models/*.blend artifacts/models/*.glb 2>/dev/null | tee artifacts/reports/generated_sha256.txt || true
+
+      - name: Upload experiment artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bp3d-online-segmentation-${{ github.run_id }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14
