@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - "cloud_runner/wholebody_online_experiment.py"
+      - "cloud_runner/wholebody_online_experiment_r3.py"
       - ".github/workflows/bp3d-online-segmentation.yml"
 
 permissions:
@@ -27,24 +28,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Prepare
-        shell: bash
         run: |
           set -euo pipefail
           mkdir -p input artifacts/reports
           printf 'run_id=%s\nsha=%s\nref=%s\n' "${GITHUB_RUN_ID}" "${GITHUB_SHA}" "${GITHUB_REF}" > artifacts/reports/runner.txt
-
       - name: Install headless graphics runtime
-        shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends libegl1 libgl1 libx11-6 libxext6 libxi6 libxrender1 libxxf86vm1
           ldconfig -p | grep -E 'libEGL.so.1|libGL.so.1' | tee artifacts/reports/headless-graphics-runtime.txt
-
       - name: Download and verify Blender 4.2.23
-        shell: bash
         run: |
           set -euo pipefail
           BASE="https://download.blender.org/release/Blender4.2"
@@ -53,71 +48,49 @@ jobs:
           sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing | tee artifacts/reports/blender-download-verification.txt
           tar -xf "${BLENDER_ARCHIVE}"
           "${BLENDER_DIR}/blender" --version | tee artifacts/reports/blender-version.txt
-
       - name: Download official MakeHuman CC0 base mesh
-        shell: bash
         run: |
           set -euo pipefail
           curl --fail --location --retry 3 --retry-delay 2 -o input/base.obj "${BASE_OBJ_URL}"
           ACTUAL="$(sha256sum input/base.obj | awk '{print $1}')"
           printf 'url=%s\nexpected=%s\nactual=%s\n' "${BASE_OBJ_URL}" "${BASE_OBJ_SHA256}" "${ACTUAL}" | tee artifacts/reports/base-obj-verification.txt
           test "${ACTUAL}" = "${BASE_OBJ_SHA256}"
-          grep -m1 'basemesh hm08' input/base.obj
-
-      - name: Run three segmentation candidates in Blender
-        shell: bash
+      - name: Run refined D3 E3 F3 candidates in Blender
         run: |
           set -o pipefail
-          "${BLENDER_DIR}/blender" \
-            --factory-startup \
-            --background \
-            --python cloud_runner/wholebody_online_experiment.py \
-            -- \
-            --input input/base.obj \
-            --output artifacts \
+          "${BLENDER_DIR}/blender" --factory-startup --background \
+            --python cloud_runner/wholebody_online_experiment_r3.py -- \
+            --input input/base.obj --output artifacts \
             2>&1 | tee artifacts/reports/blender-online-segmentation.log
-
       - name: Validate result
         if: always()
-        shell: bash
         run: |
           python3 - <<'PY'
-          import json, sys
+          import json,sys
           from pathlib import Path
           p=Path('artifacts/summary.json')
-          if not p.exists():
-              print('summary.json missing', file=sys.stderr); sys.exit(2)
-          d=json.loads(p.read_text())
-          print(json.dumps(d,indent=2,sort_keys=True))
-          assert d['schema_version']=='bp3d_online_wholebody_experiment_v1'
-          assert d['public_cc0_only'] is True
-          assert d['user_assets_loaded'] is False
-          assert d['source_master_modified'] is False
-          assert d['successful_mode_count']==3
-          assert d['status']=='PASS'
-          for mode in ('D2','E2','F2'):
-              assert d['modes'][mode]['status']=='SUCCESS'
-              assert Path(f'artifacts/textures/{mode}_boundary_lines.png').exists()
-              assert Path(f'artifacts/models/{mode}_SPLIT.blend').exists()
-              assert Path(f'artifacts/screenshots/{mode}_REGION_FRONT.png').exists()
-              assert Path(f'artifacts/screenshots/{mode}_REGION_BACK.png').exists()
-              assert Path(f'artifacts/screenshots/{mode}_TEXTURE_APPLY_FRONT.png').exists()
+          if not p.exists(): print('summary missing',file=sys.stderr);sys.exit(2)
+          d=json.loads(p.read_text());print(json.dumps(d,indent=2,sort_keys=True))
+          assert d['schema_version']=='bp3d_online_wholebody_experiment_r3'
+          assert d['public_cc0_only'] is True and d['user_assets_loaded'] is False and d['source_master_modified'] is False
+          assert d['successful_mode_count']==3 and d['status']=='PASS'
+          for mode in ('D3','E3','F3'):
+            assert d['modes'][mode]['status']=='SUCCESS'
+            for p in [f'artifacts/textures/{mode}_boundary_lines.png',f'artifacts/models/{mode}_SPLIT.blend',f'artifacts/screenshots/{mode}_REGION_FRONT.png',f'artifacts/screenshots/{mode}_REGION_BACK.png',f'artifacts/screenshots/{mode}_TEXTURE_APPLY_FRONT.png']:
+              assert Path(p).exists(),p
           print('VALIDATION PASS')
           PY
-
       - name: Inventory artifact
         if: always()
-        shell: bash
         run: |
           set +e
           find artifacts -type f -printf '%P\t%s bytes\n' | sort | tee artifacts/reports/file_inventory.txt
           sha256sum artifacts/textures/*.png artifacts/screenshots/*.png artifacts/models/*.blend artifacts/models/*.glb 2>/dev/null | tee artifacts/reports/generated_sha256.txt || true
-
       - name: Upload experiment artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bp3d-online-segmentation-${{ github.run_id }}
+          name: bp3d-online-segmentation-r3-${{ github.run_id }}
           path: artifacts/
           if-no-files-found: warn
           retention-days: 14
