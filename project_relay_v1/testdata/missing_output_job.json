@@ -1,0 +1,14 @@
+{
+  "schema_version": "relay-virtual-job-v1",
+  "command_id": "virtual-selfrepair-ci",
+  "project_key": "project_relay",
+  "runner": "VIRTUAL_FLOW_V1",
+  "auto_repair_limit": 2,
+  "repair_hint": "CREATE_MISSING_REQUIRED_OUTPUT",
+  "required_output": "result/payload.txt",
+  "actions": [
+    {"type": "VALIDATE_EXISTS", "path": "result/payload.txt"},
+    {"type": "VALIDATE_NONZERO", "path": "result/payload.txt"},
+    {"type": "PACKAGE_ZIP", "path": "RESULTS.zip", "include": ["result/payload.txt"]}
+  ]
+}
