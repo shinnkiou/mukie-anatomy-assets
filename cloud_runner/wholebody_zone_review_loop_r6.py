@@ -6,8 +6,12 @@ Verified defect:
 - R6 attempt 1: forcing source INT/FACE values makes label INT/FACE values wrong.
 - R6 attempt 2: immediately after original apply_labels creates the second INT/FACE
   layer, BP3D_LABEL_ID itself is wrong for all 13,378 faces.
+- R7 attempt 3: holding an RNA Attribute reference across mesh.attributes.new()
+  makes the old reference read the wrong layer. Attribute references must be reacquired
+  by name after every CustomData layer creation.
 
-Therefore this wrapper never creates a second INT/FACE label attribute.
+Therefore this wrapper never creates a second INT/FACE label attribute and never
+keeps Attribute RNA references across attributes.new().
 Authoritative storage becomes:
 - source polygon address: BP3D_SOURCE_FACE_ID (single INT/FACE layer) + embedded Text + JSON
 - semantic label: face-label JSON + materials/material_index
@@ -44,7 +48,7 @@ def _mapping_doc():
         "clean_face_count": len(SOURCE_FACE_IDS or []),
         "source_face_ids": list(SOURCE_FACE_IDS or []),
         "label_storage": "FACE_LABEL_JSON_AND_MATERIAL_INDEX_NO_SECOND_INT_FACE_LAYER",
-        "reason": "Two INT/FACE custom attributes alias in the observed Blender 4.2.23 pipeline; source address and semantic label must not share that storage pattern.",
+        "reason": "Two INT/FACE custom attributes and stale RNA Attribute references are unsafe in the observed Blender 4.2.23 pipeline; source address and semantic label must not share that storage pattern.",
     }
 
 
@@ -97,10 +101,15 @@ def fixed_apply_labels(obj, labels, conf, revision):
     pairs = core.label_adjacency(mesh, labels)
     colors, conflicts = core.graph_colors(labels, pairs)
 
-    # Keep confidence as FLOAT/FACE. Deliberately do NOT create a second INT/FACE layer.
+    # Create/get all CustomData layers first. NEVER keep an RNA Attribute reference
+    # across attributes.new(); reacquire by name after creation before read/write.
+    if mesh.attributes.get("BP3D_CONFIDENCE") is None:
+        mesh.attributes.new("BP3D_CONFIDENCE", "FLOAT", "FACE")
     ca = mesh.attributes.get("BP3D_CONFIDENCE")
-    if ca is None:
-        ca = mesh.attributes.new("BP3D_CONFIDENCE", "FLOAT", "FACE")
+    src_attr = mesh.attributes.get("BP3D_SOURCE_FACE_ID")
+    if ca is None or src_attr is None:
+        raise RuntimeError("required face attributes missing after confidence layer creation")
+
     for i, c in enumerate(conf):
         ca.data[i].value = float(c)
 
@@ -112,6 +121,11 @@ def fixed_apply_labels(obj, labels, conf, revision):
     for p, lab in zip(mesh.polygons, labels):
         p.material_index = midx[lab]
 
+    # Reacquire again before validation in case later Blender operations invalidate RNA wrappers.
+    src_attr = mesh.attributes.get("BP3D_SOURCE_FACE_ID")
+    ca = mesh.attributes.get("BP3D_CONFIDENCE")
+    if src_attr is None or ca is None:
+        raise RuntimeError("required face attributes missing at validation")
     bad_after = sum(int(src_attr.data[i].value) != SOURCE_FACE_IDS[i] for i in range(len(labels)))
     conf_bad = sum(abs(float(ca.data[i].value) - float(conf[i])) > 1e-5 for i in range(len(labels)))
     if bad_after or conf_bad:
@@ -127,6 +141,7 @@ def fixed_apply_labels(obj, labels, conf, revision):
         "confidence_correct": len(labels) - conf_bad,
         "label_storage": "JSON_AND_MATERIAL_INDEX",
         "second_int_face_label_layer_created": False,
+        "rna_attribute_reacquire_policy": True,
     })
     return {
         "adjacency_pairs": len(pairs),
@@ -167,6 +182,7 @@ def fixed_write_json(path, doc):
         doc["source_face_mapping"] = "largest_connected_component_original_source_polygon_index"
         doc["mesh_source_face_int_attribute_policy"] = "AUTHORITATIVE_SINGLE_INT_FACE_LAYER"
         doc["mesh_label_int_attribute_policy"] = "FORBIDDEN_USE_JSON_AND_MATERIAL_INDEX"
+        doc["rna_attribute_reacquire_policy"] = True
         doc["attribute_alias_diagnostics"] = list(ATTR_DIAGNOSTICS)
     _orig_write_json(path, doc)
 
