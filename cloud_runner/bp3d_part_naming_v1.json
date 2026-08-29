@@ -1,0 +1,30 @@
+{
+  "schema_version": "bp3d_part_naming_v1",
+  "object_name_format": "BP3D_<ZONE>_<PART>_<SIDE>_<SURFACE>_L<DETAIL>_R<REV>",
+  "side_codes": {"C":"center","L":"left","R":"right"},
+  "surface_codes": {"ALL":"all","ANT":"anterior","POST":"posterior","LAT":"lateral","MED":"medial","DOR":"dorsal","PAL":"palmar","PLN":"plantar"},
+  "detail_levels": {"1":"macro/drawing region","2":"textbook simplified anatomy","3":"fine evidence-supported anatomy"},
+  "zones": [
+    {"code":"HED","key":"HEAD_NECK","required":["HEAD","NECK_SCM_L","NECK_SCM_R"]},
+    {"code":"SHD","key":"SHOULDER_AXILLA","required":["DELTOID_L","DELTOID_R","PECTORAL_L","PECTORAL_R","U1_SHOULDER_AXILLA"]},
+    {"code":"TRS","key":"TORSO_FRONT","required":["PECTORAL_L","PECTORAL_R","RECTUS_ABDOMINIS","OBLIQUE_L","OBLIQUE_R"]},
+    {"code":"BCK","key":"BACK","required":["TRAPEZIUS_UPPER","LATISSIMUS_L","LATISSIMUS_R","THORACOLUMBAR_FASCIA_CONTEXT"]},
+    {"code":"ARM","key":"ARM","required":["BICEPS_L","BICEPS_R","TRICEPS_L","TRICEPS_R","ELBOW_L","ELBOW_R","FOREARM_ANTERIOR_L","FOREARM_ANTERIOR_R","FOREARM_POSTERIOR_L","FOREARM_POSTERIOR_R","WRIST_L","WRIST_R"]},
+    {"code":"HND","key":"HAND","required":["HAND_PALM_L","HAND_PALM_R","HAND_DORSUM_L","HAND_DORSUM_R","THUMB_L","THUMB_R","FINGER_PROXIMAL_L","FINGER_PROXIMAL_R","FINGER_MIDDLE_L","FINGER_MIDDLE_R","FINGER_DISTAL_L","FINGER_DISTAL_R"]},
+    {"code":"HIP","key":"HIP_GLUTEAL","required":["GLUTEAL_L","GLUTEAL_R","HIP_LATERAL_L","HIP_LATERAL_R","PELVIS_FRONT_CONTEXT"]},
+    {"code":"THG","key":"THIGH","required":["THIGH_ANTERIOR_L","THIGH_ANTERIOR_R","THIGH_MEDIAL_L","THIGH_MEDIAL_R","THIGH_POSTERIOR_L","THIGH_POSTERIOR_R"]},
+    {"code":"KNE","key":"KNEE","required":["KNEE_L","KNEE_R","U4_KNEE_TRANSITION"]},
+    {"code":"LEG","key":"LOWER_LEG","required":["SHIN_L","SHIN_R","CALF_L","CALF_R","ANKLE_L","ANKLE_R"]},
+    {"code":"FOT","key":"FOOT","required":["FOOT_DORSUM_L","FOOT_DORSUM_R","FOOT_PLANTAR_L","FOOT_PLANTAR_R","HEEL_L","HEEL_R","HALLUX_L","HALLUX_R","TOES_2_5_L","TOES_2_5_R"]}
+  ],
+  "part_ids": {
+    "1":"HEAD","2":"NECK_SCM_L","3":"NECK_SCM_R","4":"TRAPEZIUS_UPPER","5":"DELTOID_L","6":"DELTOID_R","7":"PECTORAL_L","8":"PECTORAL_R","9":"RECTUS_ABDOMINIS","10":"OBLIQUE_L","11":"OBLIQUE_R","12":"LATISSIMUS_L","13":"LATISSIMUS_R","14":"GLUTEAL_L","15":"GLUTEAL_R","16":"BICEPS_L","17":"BICEPS_R","18":"TRICEPS_L","19":"TRICEPS_R","20":"FOREARM_ANTERIOR_L","21":"FOREARM_ANTERIOR_R","22":"FOREARM_POSTERIOR_L","23":"FOREARM_POSTERIOR_R","26":"HIP_LATERAL_L","27":"HIP_LATERAL_R","28":"THIGH_ANTERIOR_L","29":"THIGH_ANTERIOR_R","30":"THIGH_MEDIAL_L","31":"THIGH_MEDIAL_R","32":"THIGH_POSTERIOR_L","33":"THIGH_POSTERIOR_R","34":"KNEE_L","35":"KNEE_R","36":"SHIN_L","37":"SHIN_R","38":"CALF_L","39":"CALF_R","42":"THORACOLUMBAR_FASCIA_CONTEXT","43":"PELVIS_FRONT_CONTEXT",
+    "44":"ELBOW_L","45":"ELBOW_R","46":"WRIST_L","47":"WRIST_R","48":"ANKLE_L","49":"ANKLE_R","50":"FOOT_DORSUM_L","51":"FOOT_DORSUM_R","52":"FOOT_PLANTAR_L","53":"FOOT_PLANTAR_R","54":"HEEL_L","55":"HEEL_R","56":"HALLUX_L","57":"HALLUX_R","58":"TOES_2_5_L","59":"TOES_2_5_R","60":"HAND_PALM_L","61":"HAND_PALM_R","62":"HAND_DORSUM_L","63":"HAND_DORSUM_R","64":"FINGER_PROXIMAL_L","65":"FINGER_PROXIMAL_R","66":"FINGER_MIDDLE_L","67":"FINGER_MIDDLE_R","68":"FINGER_DISTAL_L","69":"FINGER_DISTAL_R","70":"THUMB_L","71":"THUMB_R",
+    "101":"U1_SHOULDER_AXILLA","102":"U2_SCAPULAR_LAT","103":"U3_INGUINAL_HIP","104":"U4_KNEE_TRANSITION","105":"U5_WRIST_HAND_TRANSITION"
+  },
+  "notes": [
+    "Names describe the existing body surface; they do not claim separate internal muscle geometry.",
+    "Fine hand and foot labels are targets for evidence-supported subdivision and may remain unresolved when topology is insufficient.",
+    "Canonical ABC/ABCD connection points are separate from this taxonomy and remain fixed."
+  ]
+}
