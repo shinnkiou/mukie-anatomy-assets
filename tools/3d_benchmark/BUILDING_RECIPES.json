@@ -1,0 +1,29 @@
+{
+  "convenience_store": {
+    "name": "Tokyo Convenience Store v3",
+    "clear": true,
+    "operations": [
+      {"op":"convenience_preset","name":"KONBINI 24"},
+      {"op":"frame_all"}
+    ],
+    "qa":{"max_rounds":5,"passed_round":3}
+  },
+  "gas_station": {
+    "name": "Tokyo Gas Station v3",
+    "clear": true,
+    "operations": [
+      {"op":"gas_station_preset","name":"CITY FUEL"},
+      {"op":"frame_all"}
+    ],
+    "qa":{"max_rounds":5,"passed_round":3}
+  },
+  "ramen_shop": {
+    "name": "Tokyo Ramen Shop v3",
+    "clear": true,
+    "operations": [
+      {"op":"ramen_preset","name":"麺処 月路"},
+      {"op":"frame_all"}
+    ],
+    "qa":{"max_rounds":5,"passed_round":3}
+  }
+}
