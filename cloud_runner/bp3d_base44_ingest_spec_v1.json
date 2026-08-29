@@ -1,0 +1,43 @@
+{
+  "schema_version": "bp3d_base44_ingest_spec_v1",
+  "source": {
+    "workflow": "BP3D Zone Review Loop",
+    "github_run_id": "33241120235",
+    "artifact_id": "9711542214",
+    "input_mesh_policy": "immutable MakeHuman CC0 base; verify SHA before/after"
+  },
+  "safety": {
+    "never_publish": ["user MASTER blend", "textbook images", "Victoria 4 images", "original Special Suit texture", "user ABC/ABCD data"],
+    "never_modify": ["MASTER", "ABC/ABCD", "private reference originals"],
+    "technical_pass_is_not_anatomy_approval": true
+  },
+  "zone_record": {
+    "entity": "BP3DZoneReviewRun",
+    "key": "<github_run_id>_<mode>_<zone>",
+    "fields": ["cycle", "mode", "revision", "zone", "score", "mean_confidence", "face_count", "anatomy_status", "symmetry_error", "fragment_count", "sliver_count", "unresolved_faces", "unresolved_pct", "motion_bad_pct", "model_url", "image_url", "report_url", "sha256", "evidence_status", "finding", "proposed_fix"],
+    "status_values": ["PASS", "WARN", "FAIL", "UNRESOLVED"]
+  },
+  "motion_record": {
+    "entity": "BP3DMotionBreakFinding",
+    "fields": ["mode", "zone", "motion", "bad_edge_pct", "severe_edges", "max_stretch_or_collapse", "cause_hypothesis", "cause_confidence", "remedy", "remedy_type", "status"],
+    "cause_classes": ["WEIGHT", "RESPLIT", "GEOMETRY", "TEXTURE", "UNRESOLVED_BAND", "PROXY", "OTHER"]
+  },
+  "zone_metric_policy": {
+    "evidence_status": "DERIVED",
+    "formula": "confidence*100 - unresolved_pct*1.5 - fragment_count*0.8 - sliver_count*2",
+    "warning": "This support score is a triage metric only. Textbook remains semantic authority."
+  },
+  "final_modes": {
+    "SAFE": {"global_score": 90.555, "unresolved_pct": 5.4118702347, "fragment_excess": 30, "sliver": 0},
+    "BALANCED": {"global_score": 104.076, "unresolved_pct": 0.0, "fragment_excess": 9, "sliver": 0},
+    "FINE": {"global_score": 91.629, "unresolved_pct": 2.197637913, "fragment_excess": 35, "sliver": 2}
+  },
+  "local_next": [
+    "BALANCED -> EDITABLE_WORK copy",
+    "real Armature SHOULDER_RAISE / ELBOW_FLEX",
+    "classify WEIGHT vs RESPLIT",
+    "retain SAFE transition masks as alternatives",
+    "selectively transplant FINE hand/foot detail",
+    "create Special Suit HUMAN_REVIEW and MACHINE_ID derivative copies"
+  ]
+}
