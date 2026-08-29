@@ -1,0 +1,118 @@
+name: BP3D Zone Review Loop
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "cloud_runner/wholebody_zone_review_loop.py"
+      - "cloud_runner/bp3d_part_naming_v1.json"
+      - "cloud_runner/anatomy_evidence_registry_v1.json"
+      - "docs/BP3D_SEGMENTATION_STRAIGHT_ROUTE_20260829.md"
+      - ".github/workflows/bp3d-zone-review-loop.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bp3d-zone-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zone-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      BLENDER_VERSION: "4.2.23"
+      BLENDER_ARCHIVE: "blender-4.2.23-linux-x64.tar.xz"
+      BLENDER_DIR: "blender-4.2.23-linux-x64"
+      BASE_OBJ_URL: "https://raw.githubusercontent.com/makehumancommunity/makehuman/master/makehuman/data/3dobjs/base.obj"
+      BASE_OBJ_SHA256: "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare
+        run: |
+          set -euo pipefail
+          mkdir -p input artifacts/reports
+          printf 'run_id=%s\nsha=%s\nref=%s\n' "${GITHUB_RUN_ID}" "${GITHUB_SHA}" "${GITHUB_REF}" > artifacts/reports/runner.txt
+
+      - name: Install headless graphics runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1 libx11-6 libxext6 libxi6 libxrender1 libxfixes3 libxxf86vm1 libsm6 libice6 > artifacts/reports/headless-graphics-runtime.txt
+
+      - name: Download and verify Blender 4.2.23
+        run: |
+          set -euo pipefail
+          BASE="https://download.blender.org/release/Blender4.2"
+          curl --fail --location --retry 3 --retry-delay 3 -o "${BLENDER_ARCHIVE}" "${BASE}/${BLENDER_ARCHIVE}"
+          curl --fail --location --retry 3 --retry-delay 3 -o "blender-${BLENDER_VERSION}.sha256" "${BASE}/blender-${BLENDER_VERSION}.sha256"
+          sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing | tee artifacts/reports/blender-download-verification.txt
+          tar -xf "${BLENDER_ARCHIVE}"
+          "${BLENDER_DIR}/blender" --version | tee artifacts/reports/blender-version.txt
+
+      - name: Download immutable MakeHuman CC0 base mesh
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --retry-delay 2 -o input/base.obj "${BASE_OBJ_URL}"
+          ACTUAL="$(sha256sum input/base.obj | awk '{print $1}')"
+          printf 'url=%s\nexpected=%s\nactual=%s\n' "${BASE_OBJ_URL}" "${BASE_OBJ_SHA256}" "${ACTUAL}" | tee artifacts/reports/base-obj-verification.txt
+          test "${ACTUAL}" = "${BASE_OBJ_SHA256}"
+          grep -m1 'basemesh hm08' input/base.obj
+
+      - name: Run five correction cycles and three final hypotheses
+        run: |
+          set -o pipefail
+          "${BLENDER_DIR}/blender" \
+            --factory-startup \
+            --background \
+            --python cloud_runner/wholebody_zone_review_loop.py \
+            -- \
+            --input input/base.obj \
+            --output artifacts \
+            2>&1 | tee artifacts/reports/blender-zone-review.log
+
+      - name: Validate bounded loop result
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path('artifacts/summary.json')
+          if not p.exists():
+              print('summary.json missing',file=sys.stderr);sys.exit(2)
+          d=json.loads(p.read_text())
+          print(json.dumps({k:d.get(k) for k in ('schema_version','status','source_unchanged','best_cycle','best_cycle_score')},indent=2))
+          assert d['schema_version']=='bp3d_zone_review_loop_v1'
+          assert d['status']=='PASS'
+          assert d['source_unchanged'] is True
+          assert d['source_master_modified'] is False
+          assert d['abc_abcd_modified'] is False
+          assert 1 <= len(d['cycles']) <= 5
+          assert set(d['final'])=={'SAFE','BALANCED','FINE'}
+          for mode in ('SAFE','BALANCED','FINE'):
+              assert Path(f'artifacts/models/BP3D_{mode}_FINAL_R5.blend').exists()
+              assert Path(f'artifacts/models/BP3D_{mode}_FINAL_R5.glb').exists()
+              assert Path(f'artifacts/screenshots/{mode}_FRONT.png').exists()
+              assert Path(f'artifacts/screenshots/{mode}_SHOULDER_RAISE.png').exists()
+          print('ZONE REVIEW VALIDATION PASS')
+          PY
+
+      - name: Inventory artifacts
+        if: always()
+        run: |
+          set +e
+          find artifacts -type f -printf '%P\t%s bytes\n' | sort | tee artifacts/reports/file_inventory.txt
+          sha256sum artifacts/models/* artifacts/screenshots/* artifacts/summary.json 2>/dev/null | tee artifacts/reports/generated_sha256.txt || true
+
+      - name: Upload zone review artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bp3d-zone-review-${{ github.run_id }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
