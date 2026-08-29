@@ -42,5 +42,6 @@ jobs:
         with:
           name: project-relay-virtual-v1-evidence
           path: project_relay_v1/.ci_artifacts/
-          if-no-files-found: warn
+          if-no-files-found: error
+          include-hidden-files: true
           retention-days: 7
