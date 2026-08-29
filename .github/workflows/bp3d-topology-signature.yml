@@ -1,0 +1,52 @@
+name: BP3D Public Topology Signature
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "cloud_runner/build_public_base_topology_signature.py"
+      - ".github/workflows/bp3d-topology-signature.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  signature:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      BASE_OBJ_URL: "https://raw.githubusercontent.com/makehumancommunity/makehuman/master/makehuman/data/3dobjs/base.obj"
+      BASE_OBJ_SHA256: "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download immutable MakeHuman CC0 base mesh
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          curl --fail --location --retry 3 --retry-delay 2 -o base.obj "${BASE_OBJ_URL}"
+          echo "${BASE_OBJ_SHA256}  base.obj" | sha256sum --check -
+      - name: Build topology signature
+        run: |
+          set -euo pipefail
+          python3 cloud_runner/build_public_base_topology_signature.py base.obj artifacts/public_base_topology_signature.json
+          test -s artifacts/public_base_topology_signature.json
+      - name: Validate signature shape
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open('artifacts/public_base_topology_signature.json',encoding='utf-8'))
+          assert d['schema_version']=='bp3d_topology_signature_v1'
+          assert d['vertex_count']==19158
+          assert d['face_count']==18486
+          assert d['clean_body_expected_face_count']==13378
+          assert d['excluded_non_body_expected_face_count']==5108
+          for k in ('face_index_vertex_membership_sequence_sha256','clean_prefix_face_index_vertex_membership_sequence_sha256','face_vertex_membership_multiset_sha256','clean_prefix_face_vertex_membership_multiset_sha256'):
+              assert len(d[k])==64
+          print('BP3D PUBLIC TOPOLOGY SIGNATURE PASS')
+          PY
+      - name: Upload signature
+        uses: actions/upload-artifact@v4
+        with:
+          name: bp3d-public-topology-signature-${{ github.run_id }}
+          path: artifacts/public_base_topology_signature.json
+          retention-days: 30
