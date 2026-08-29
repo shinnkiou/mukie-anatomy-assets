@@ -35,6 +35,14 @@ jobs:
           mkdir -p input artifacts/reports
           printf 'run_id=%s\nsha=%s\nref=%s\n' "${GITHUB_RUN_ID}" "${GITHUB_SHA}" "${GITHUB_REF}" > artifacts/reports/runner.txt
 
+      - name: Install headless graphics runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1 libx11-6 libxext6 libxi6 libxrender1 libxxf86vm1
+          ldconfig -p | grep -E 'libEGL.so.1|libGL.so.1' | tee artifacts/reports/headless-graphics-runtime.txt
+
       - name: Download and verify Blender 4.2.23
         shell: bash
         run: |
