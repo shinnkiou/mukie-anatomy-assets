@@ -116,17 +116,19 @@ jobs:
               src=[int(x['source_face_index']) for x in rows]
               lab=[int(x['label_id']) for x in rows]
               assert face.get('face_identity_schema')=='bp3d_clean_to_source_face_v2'
-              assert face.get('face_identity_fix_revision')=='R6_FACEID_SIDECAR_REPAIR_20260830'
-              assert face.get('face_identity_authority')=='THIS_JSON'
-              assert face.get('blend_embedded_mapping_text')=='BP3D_SOURCE_FACE_MAP_R6.json'
-              assert face.get('mesh_source_face_int_attribute_policy')=='DIAGNOSTIC_ONLY_NOT_AUTHORITATIVE'
+              assert face.get('face_identity_fix_revision')=='R7_FACEID_SINGLE_INT_REMAP_20260830'
+              assert face.get('face_identity_authority')=='SOURCE_INT_PLUS_THIS_JSON'
+              assert face.get('semantic_label_authority')=='THIS_JSON_AND_MATERIAL_INDEX'
+              assert face.get('blend_embedded_mapping_text')=='BP3D_SOURCE_FACE_MAP_R7.json'
+              assert face.get('mesh_source_face_int_attribute_policy')=='AUTHORITATIVE_SINGLE_INT_FACE_LAYER'
+              assert face.get('mesh_label_int_attribute_policy')=='FORBIDDEN_USE_JSON_AND_MATERIAL_INDEX'
               assert len(face.get('source_face_map_sha256',''))==64
               assert len(rows)==13378
               assert len(set(src))==13378
               assert min(src)>=0 and max(src)<18486
               assert not all(a==b for a,b in zip(src,lab))
               assert [int(x['clean_face_index']) for x in rows] == list(range(13378))
-          print('ZONE REVIEW + FACE-ID SIDECAR REPAIR + BASE44 INGEST VALIDATION PASS')
+          print('ZONE REVIEW + R7 FACE-ID SINGLE-INT REMAP + BASE44 INGEST VALIDATION PASS')
           PY
 
       - name: Inventory artifacts
