@@ -26,7 +26,17 @@ jobs:
           if (Test-Path project_relay/config/discord.local.json) { throw 'discord.local.json must not be committed' }
           if (Test-Path project_relay/private) { throw 'private/ must not be committed' }
           $tracked = git ls-files project_relay
-          if ($tracked -match 'discord_token|\.env$|credentials|token\.json') { throw 'secret-like runtime file is tracked' }
+          $bad = $tracked | Where-Object {
+            $_ -match '(^|/)private/' -or
+            $_ -match 'config/discord\.local\.json$' -or
+            $_ -match '(^|/)\.env(\..*)?$' -or
+            $_ -match '(^|/)credentials[^/]*\.json$' -or
+            $_ -match '(^|/)token[^/]*\.json$'
+          }
+          if ($bad) {
+            $bad | ForEach-Object { Write-Host "Unsafe tracked path: $_" }
+            throw 'secret runtime file is tracked'
+          }
       - name: Prepare config
         shell: pwsh
         run: Copy-Item project_relay/config/runners.example.json project_relay/config/runners.json -Force
