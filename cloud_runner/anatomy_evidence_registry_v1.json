@@ -1,0 +1,60 @@
+{
+  "schema_version": "bp3d_anatomy_evidence_registry_v1",
+  "policy": "Textbook photos are private and authoritative for drawing-oriented subdivision. Web sources are secondary anatomical cross-checks. Public repo stores metadata/rules only, never the private images.",
+  "zones": {
+    "FOOT": {
+      "textbook_files": ["IMG_0010.png","IMG_0011.png","IMG_0008.png","IMG_0009.png","IMG_0007.png","IMG_0006.png"],
+      "textbook_rules": [
+        "Difficult-angle foot may be decomposed into ankle, foot body, hallux, toes 2-5, and sole/heel landmarks.",
+        "Sole reference uses hallux, four-toe group, medial ball, lateral ball and heel as stable landmarks.",
+        "Heel/Achilles, toe direction and ankle geometry must remain coherent from front, side and rear views."
+      ],
+      "web_sources": [
+        {"title":"Kenhub - Sole of foot","url":"https://www.kenhub.com/en/library/anatomy/sole-of-foot","lesson":"The plantar surface is distinct from the dorsum; ball of foot lies beneath metatarsal heads and heel beneath calcaneus."}
+      ]
+    },
+    "ARM": {
+      "textbook_files": ["IMG_9973.png","IMG_9984.png","IMG_9985.png"],
+      "textbook_rules": [
+        "Use local shoulder-to-elbow-to-wrist progression instead of whole-body height to divide the arm.",
+        "Drawing simplification may group the anterior and posterior forearm while retaining biceps/triceps and elbow/wrist transitions.",
+        "Axillary lines are relationships among deltoid, pectoralis, biceps/triceps and latissimus rather than horizontal rings."
+      ],
+      "web_sources": [
+        {"title":"Kenhub - Superficial anterior forearm muscles","url":"https://www.kenhub.com/en/library/anatomy/the-superficial-flexors-of-the-forearm","lesson":"Anterior forearm contains superficial flexor/pronator muscles sharing proximal relationships around the medial epicondyle."},
+        {"title":"Kenhub - Superficial posterior forearm muscles","url":"https://www.kenhub.com/en/library/anatomy/the-superficial-extensors-of-the-forearm","lesson":"Posterior forearm contains the superficial extensor group; brachioradialis is superficial on the radial side."},
+        {"title":"Kenhub - Brachioradialis","url":"https://www.kenhub.com/en/library/anatomy/brachioradialis-muscle","lesson":"Brachioradialis forms a visible lateral boundary between anterior and posterior forearm compartments."}
+      ]
+    },
+    "HAND": {
+      "textbook_files": ["IMG_9969.png","IMG_9970.png","IMG_9972.png"],
+      "textbook_rules": [
+        "Finger drawing structure is proximal, middle and distal segments; thumb is treated separately.",
+        "Hand/finger segmentation must not be inferred only from global body height."
+      ],
+      "web_sources": [
+        {"title":"Wikimedia Commons - Phalanges of the hand, dorsal view","url":"https://commons.wikimedia.org/wiki/File:Phalanges_of_the_hand_02_dorsal_view.png","lesson":"Open reference for phalange location and dorsal orientation; source data from BodyParts3D."},
+        {"title":"Wikimedia Commons - Phalanges of the hand, palmar view","url":"https://commons.wikimedia.org/wiki/File:Phalanges_of_the_hand_01_palmar_view.png","lesson":"Open reference for phalange location and palmar orientation."}
+      ]
+    },
+    "SHOULDER_AXILLA": {
+      "textbook_files": ["IMG_9983.png","IMG_9984.png","IMG_9985.png","IMG_9974.png","IMG_9927.png","IMG_9923.png","IMG_9926.png"],
+      "textbook_rules": [
+        "Deltoid overlaps/bridges shoulder and upper arm; its silhouette and boundary change with arm elevation.",
+        "Axillary hollow is a triangular relationship among pectoralis major, latissimus, deltoid and upper-arm structures.",
+        "Raised-arm views must be checked from front, rear and side; a static horizontal boundary is insufficient."
+      ],
+      "web_sources": [
+        {"title":"Kenhub - Fascias and spaces of the shoulder girdle","url":"https://www.kenhub.com/en/library/anatomy/fascias-and-spaces-of-the-shoulder-girdle-region","lesson":"Axillary fascia spans relationships between pectoral and latissimus regions and contributes to the axillary hollow."}
+      ]
+    },
+    "BACK": {
+      "textbook_files": ["IMG_9927.png","IMG_9923.png"],
+      "textbook_rules": [
+        "Back review must distinguish central trapezius/scapular context from lateral latissimus and thoracolumbar context.",
+        "Shoulder movement changes the visible relation between deltoid, rotator cuff/scapular region and latissimus."
+      ],
+      "web_sources": []
+    }
+  }
+}
