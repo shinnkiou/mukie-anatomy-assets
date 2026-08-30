@@ -50,6 +50,17 @@ def test_subculture_history():
     assert result["selected_doc_count"] <= result["max_docs"], result
 
 
+def test_gundam_zaku_history_with_negative_source_constraint():
+    instruction = "ガンダムにおいて、ザクが完成するまでにどのような紆余曲折を経たのかをまとめる資料を作成。ただしジ・オリジンの設定は参照しない"
+    task = classify_task(instruction)
+    assert task["task_kind"] == "HISTORICAL_RESEARCH", task
+    assert "gundam_uc" in task["domains"], task
+    assert "mecha_development" in task["domains"], task
+    assert "fictional_lore" in task["domains"], task
+    assert "ジ・オリジン" in task["excluded_sources"], task
+    assert task["constraint_mode"] == "EXPLICIT_SOURCE_EXCLUSION", task
+
+
 def test_blender_does_not_load_research_rule():
     instruction = "Blenderでバーの3Dモデルを作る"
     result = select_context(instruction, CATALOG, mission_key="bar3d_sandbox")
@@ -75,6 +86,7 @@ def test_budget_keeps_global():
 
 def main():
     test_subculture_history()
+    test_gundam_zaku_history_with_negative_source_constraint()
     test_blender_does_not_load_research_rule()
     test_budget_keeps_global()
     print("PROJECT RELAY SELECTIVE MEMORY TESTS PASS")
