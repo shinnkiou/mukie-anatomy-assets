@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-08-30",
+  "policy": {
+    "planet_minecraft": "Provider is not site-wide CC0. Only individual project pages with explicit public-domain declarations are accepted.",
+    "dynamic_entities": "Exclude mobs/creatures and other dynamic entities.",
+    "minecraft_textures": "Do not redistribute Mojang textures/models; replace with CC0 or project-owned materials."
+  },
+  "sources": [
+    {"key":"pmc_izzy_downtown_newark","name":"Downtown Newark, OH Pack","url":"https://www.planetminecraft.com/project/downtown-newark-oh-pa/","license":"PUBLIC_DOMAIN_DECLARED","format":"schematic","use":"multi-building urban benchmark"},
+    {"key":"pmc_izzy_salem_fun_center","name":"Salem Fun Center","url":"https://www.planetminecraft.com/project/salem-fun-center-salem-oh/","license":"PUBLIC_DOMAIN_DECLARED","format":"schematic","use":"small commercial building"},
+    {"key":"pmc_izzy_carnegie","name":"The 1000th Carnegie Library","url":"https://www.planetminecraft.com/project/the-1000th-carnegie-library-coshocton-oh/","license":"PUBLIC_DOMAIN_DECLARED","format":"schematic","use":"historic facade"},
+    {"key":"pmc_ray_western_cabins","name":"Dual Old Western Cabin Mansion Properties","url":"https://www.planetminecraft.com/project/dual-old-western-cabin-mansion-properties/","license":"PUBLIC_DOMAIN_DECLARED","format":"schematic","use":"residential/barn/site"},
+    {"key":"pmc_ray_gold_house","name":"Gold Ore House + Yard Pack","url":"https://www.planetminecraft.com/project/gold-ore-house-yard-tennis-court-pool-motorcycle/","license":"PUBLIC_DOMAIN_DECLARED","format":"schematic","use":"house/site benchmark"},
+    {"key":"pmc_castle_good_hope","name":"Castle of Good Hope, Cape Town","url":"https://www.planetminecraft.com/project/castle-of-good-hope-cape-town/","license":"PUBLIC_DOMAIN_DECLARED","format":"schematic/world","use":"large footprint stress test"},
+    {"key":"oga_voxel_buildings","name":"Voxel Buildings","url":"https://opengameart.org/content/voxel-buildings","license":"CC0","format":"vox,obj,blend,fbx","use":"voxel building geometry templates"},
+    {"key":"kenney_modular_buildings","name":"Kenney Modular Buildings","url":"https://kenney-assets.itch.io/modular-buildings","license":"CC0","format":"obj,fbx,gltf","use":"windows/roofs/building modules"},
+    {"key":"kytric_voxel_path_terrain","name":"Voxel Path And Terrain","url":"https://kytric.itch.io/voxel-path-and-terrain","license":"CC0","format":"vox,obj,gltf","use":"roads/paths/terrain/city props"},
+    {"key":"binebirk_build_house","name":"Build A House","url":"https://binebirk.itch.io/build-a-house","license":"CC0","format":"fbx,obj,gltf","use":"snapping-friendly house modules"},
+    {"key":"loys_goodies","name":"Loy's Goodies","url":"https://github.com/SL0ANE/Loy-s-Goodies","license":"CC0-1.0","format":"Blockbench/Java block-item models","use":"Minecraft-mapmaking static model templates"},
+    {"key":"sbs_sandbox_textures","name":"Sandbox Style Terrain + Texture Pack","url":"https://screamingbrainstudios.itch.io/sbst-pack","license":"CC0","format":"block textures/tiles","use":"CC0 replacement materials"}
+  ]
+}
