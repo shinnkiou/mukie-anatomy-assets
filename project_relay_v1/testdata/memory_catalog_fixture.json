@@ -32,6 +32,22 @@
     "estimated_chars": 2200
   },
   {
+    "memory_key": "task-explicit-source-exclusion-rules-v1",
+    "title": "MEMORY_TASK_EXPLICIT_SOURCE_EXCLUSION_RULES_v1",
+    "scope": "TASK_RULE",
+    "project_key": "project_relay",
+    "mission_key": "",
+    "task_kinds": "HISTORICAL_RESEARCH,RESEARCH_SUMMARY",
+    "domains": "source_exclusion",
+    "priority": 5,
+    "required": true,
+    "load_policy": "WHEN_DOMAIN",
+    "drive_file_id": "source-exclusion-doc",
+    "drive_file_url": "https://drive.invalid/source-exclusion",
+    "status": "ACTIVE",
+    "estimated_chars": 1500
+  },
+  {
     "memory_key": "mission-subculture-character-t-history-brief-v1",
     "title": "MISSION_BRIEF_subculture_character_t_history_v1",
     "scope": "MISSION_BRIEF",
@@ -46,6 +62,22 @@
     "drive_file_url": "https://drive.invalid/mission",
     "status": "ACTIVE",
     "estimated_chars": 1900
+  },
+  {
+    "memory_key": "mission-gundam-zaku-development-pre-origin-brief-v1",
+    "title": "MISSION_BRIEF_gundam_zaku_development_pre_origin_v1",
+    "scope": "MISSION_BRIEF",
+    "project_key": "project_relay",
+    "mission_key": "gundam_zaku_development_pre_origin_20260830",
+    "task_kinds": "HISTORICAL_RESEARCH",
+    "domains": "gundam_uc,mecha_development,fictional_lore,research,history,source_exclusion",
+    "priority": 1,
+    "required": true,
+    "load_policy": "WHEN_MISSION",
+    "drive_file_id": "gundam-zaku-mission-doc",
+    "drive_file_url": "https://drive.invalid/gundam-zaku-mission",
+    "status": "ACTIVE",
+    "estimated_chars": 2200
   },
   {
     "memory_key": "task-blender-runner-rules-v1",
