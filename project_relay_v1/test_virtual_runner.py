@@ -27,12 +27,20 @@ def main():
     assert data["attempts"][0]["status"] == "FAILED", data
     assert data["attempts"][0]["error_class"] == "OUTPUT", data
     assert data["attempts"][1]["status"] == "SUCCESS", data
+    assert len(data["failures"]) == 1, data
+    assert data["failures"][0]["status"] == "RESOLVED", data
+    assert data["failures"][0].get("resolved_at"), data
     assert len(data["repair_plans"]) == 1, data
     assert data["repair_plans"][0]["created_by"] == "RULE_ENGINE", data
+    assert data["repair_plans"][0]["status"] == "APPLIED", data
+    assert data["repair_plans"][0].get("applied_at"), data
+    assert not any(f["status"] == "RETRYING" for f in data["failures"]), data
+    assert not any(p["status"] == "APPROVED_AUTO" for p in data["repair_plans"]), data
     assert (ART / "virtual-selfrepair-ci" / "attempt_02" / "RESULTS.zip").exists()
     assert (ART / "virtual-selfrepair-ci" / "final" / "SUCCESS").exists()
     assert (ART / "virtual-selfrepair-ci" / "final" / "artifact_manifest.json").exists()
     print("PROJECT RELAY VIRTUAL SELF-REPAIR PASS")
+    print("PROJECT RELAY LIFECYCLE CONSISTENCY PASS")
 
 
 if __name__ == "__main__":
