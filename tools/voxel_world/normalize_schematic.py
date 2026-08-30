@@ -57,7 +57,9 @@ def role_for(state: str) -> tuple[str, str]:
         return "WALL_BRICK", "brick"
     if any(x in base for x in ("iron", "copper", "chain", "anvil")):
         return "WALL", "metal"
-    if any(x in base for x in ("stone", "cobblestone", "deepslate", "andesite", "diorite", "granite", "quartz", "sandstone", "concrete")):
+    if "concrete" in base:
+        return "WALL", "concrete"
+    if any(x in base for x in ("stone", "cobblestone", "deepslate", "andesite", "diorite", "granite", "quartz", "sandstone")):
         return "WALL", "stone"
     if "sign" in base or "banner" in base:
         return "SIGN", "wood"
@@ -217,7 +219,6 @@ def parse_litematic(root, source_name: str, source_url: str = "", license_name: 
         tile_entities_count = len(reg.get("TileEntities") or [])
         region_meta.append({"name": str(region_name), "position": {"x": px, "y": py, "z": pz}, "signed_size": {"x": sx, "y": sy, "z": sz}, "size": {"x": ax, "y": ay, "z": az}, "palette_size": len(palette), "ignored_entities": entities_count, "tile_entities": tile_entities_count})
 
-        # A negative signed size means coordinates extend in the negative direction from Position.
         x0 = px if sx >= 0 else px + sx + 1
         y0 = py if sy >= 0 else py + sy + 1
         z0 = pz if sz >= 0 else pz + sz + 1
@@ -240,7 +241,6 @@ def parse_litematic(root, source_name: str, source_url: str = "", license_name: 
             role_counts[role] = role_counts.get(role, 0) + 1
 
     if not raw_blocks:
-        # Preserve declared region envelope for all-air tests.
         size_out = {"x": 0, "y": 0, "z": 0}
         blocks: list[dict[str, Any]] = []
         origin = {"x": 0, "y": 0, "z": 0}
@@ -295,7 +295,6 @@ def detect_and_parse(root, source_name: str, ext: str, source_url: str, license_
     if ext == ".litematic" or "Regions" in root:
         result = parse_litematic(root, source_name, source_url, license_name)
     elif "Materials" in root and "Blocks" in root and "Palette" not in root and "BlockPalette" not in root:
-        # Legacy MCEdit has a byte-array Blocks + Materials string and no Sponge palette.
         result = parse_legacy(root, source_name, source_url, license_name)
     else:
         is_sponge = (
