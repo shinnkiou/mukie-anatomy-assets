@@ -47,6 +47,8 @@ def role_for(state: str) -> tuple[str, str]:
         return "TRIM", "stone" if any(x in base for x in STONE_WORDS) else "wood"
     if "fence_gate" in base:
         return "DOOR", "wood"
+    if "iron_bars" in base:
+        return "RAILING", "metal"
     if "fence" in base or base.endswith("_wall"):
         return "RAILING", "stone" if base.endswith("_wall") and not any(x in base for x in WOOD_WORDS) else "wood"
     if any(x in base for x in ("log", "wood", "planks", "bamboo_block", "stem", "hyphae")):
@@ -92,6 +94,7 @@ def unwrap_root(doc):
 
 
 def state_from_palette_entry(entry: Any) -> str:
+    """Convert Litematica BlockStatePalette Compound to canonical state string."""
     name = str(entry.get("Name", "minecraft:air"))
     props = entry.get("Properties")
     if not props:
@@ -101,6 +104,11 @@ def state_from_palette_entry(entry: Any) -> str:
 
 
 def unpack_litematic_states(raw_longs: Iterable[Any], volume: int, palette_size: int) -> list[int]:
+    """Decode Litematica's packed long-array palette indices.
+
+    Litematica uses at least 2 bits per entry and packs little-bit-endian inside each 64-bit word.
+    Values may straddle word boundaries. nbtlib exposes signed longs, so normalize to unsigned.
+    """
     bits = max(2, int(math.ceil(math.log2(max(2, palette_size)))))
     mask = (1 << bits) - 1
     words = [int(v) & 0xFFFFFFFFFFFFFFFF for v in raw_longs]
@@ -209,6 +217,7 @@ def parse_litematic(root, source_name: str, source_url: str = "", license_name: 
         tile_entities_count = len(reg.get("TileEntities") or [])
         region_meta.append({"name": str(region_name), "position": {"x": px, "y": py, "z": pz}, "signed_size": {"x": sx, "y": sy, "z": sz}, "size": {"x": ax, "y": ay, "z": az}, "palette_size": len(palette), "ignored_entities": entities_count, "tile_entities": tile_entities_count})
 
+        # A negative signed size means coordinates extend in the negative direction from Position.
         x0 = px if sx >= 0 else px + sx + 1
         y0 = py if sy >= 0 else py + sy + 1
         z0 = pz if sz >= 0 else pz + sz + 1
@@ -231,6 +240,7 @@ def parse_litematic(root, source_name: str, source_url: str = "", license_name: 
             role_counts[role] = role_counts.get(role, 0) + 1
 
     if not raw_blocks:
+        # Preserve declared region envelope for all-air tests.
         size_out = {"x": 0, "y": 0, "z": 0}
         blocks: list[dict[str, Any]] = []
         origin = {"x": 0, "y": 0, "z": 0}
@@ -245,19 +255,57 @@ def parse_litematic(root, source_name: str, source_url: str = "", license_name: 
     return {"schema": "voxel-world-normalized-v1", "title": title, "size": size_out, "blocks": blocks, "metadata": meta}
 
 
+def contextualize_roles(result: dict[str, Any]) -> dict[str, Any]:
+    """Add conservative architectural context without destroying source trace.
+
+    Minecraft block IDs describe materials/shapes, not architectural intent. A slab can be a
+    floor trim or a roof. This pass only applies high-confidence envelope rules on structures
+    at least 3 blocks tall, so flat parser fixtures (e.g. 1-high circles) remain unchanged.
+    """
+    size = result.get("size", {})
+    sx, sy, sz = int(size.get("x", 0)), int(size.get("y", 0)), int(size.get("z", 0))
+    if sy < 3:
+        return result
+    changed = 0
+    contextual_counts: dict[str, int] = {}
+    structural = {"WALL", "WALL_BRICK", "WALL_WOOD", "TRIM"}
+    for b in result.get("blocks", []):
+        original = b.get("role", "WALL")
+        role = original
+        y = int(b.get("y", 0)); x = int(b.get("x", 0)); z = int(b.get("z", 0))
+        src = str(b.get("source_block", "")).lower()
+        if y == 0 and original in structural:
+            role = "FOUNDATION"
+        elif y == sy - 1 and original in structural and any(k in src for k in ("slab", "stairs", "tile", "shingle", "brick", "stone", "plank")):
+            role = "ROOF_EDGE" if x in (0, sx-1) or z in (0, sz-1) else "ROOF"
+        if role != original:
+            b["source_role"] = original
+            b["role"] = role
+            b["role_inference"] = "envelope_context_v1"
+            changed += 1
+        contextual_counts[b.get("role", role)] = contextual_counts.get(b.get("role", role), 0) + 1
+    result.setdefault("metadata", {})["contextual_roles"] = True
+    result["metadata"]["contextual_role_changes"] = changed
+    result["metadata"]["role_counts"] = contextual_counts
+    return result
+
+
 def detect_and_parse(root, source_name: str, ext: str, source_url: str, license_name: str) -> dict[str, Any]:
     ext = ext.lower()
     if ext == ".litematic" or "Regions" in root:
-        return parse_litematic(root, source_name, source_url, license_name)
-    if "Materials" in root and "Blocks" in root and "Palette" not in root and "BlockPalette" not in root:
-        return parse_legacy(root, source_name, source_url, license_name)
-    is_sponge = (
-        "Palette" in root or "BlockPalette" in root or "BlockData" in root or
-        ("Blocks" in root and hasattr(root.get("Blocks"), "get") and ("Data" in root.get("Blocks", {}) or "Palette" in root.get("Blocks", {})))
-    )
-    if is_sponge:
-        return parse_sponge(root, source_name, source_url, license_name)
-    raise ValueError("Unsupported schematic/NBT structure")
+        result = parse_litematic(root, source_name, source_url, license_name)
+    elif "Materials" in root and "Blocks" in root and "Palette" not in root and "BlockPalette" not in root:
+        # Legacy MCEdit has a byte-array Blocks + Materials string and no Sponge palette.
+        result = parse_legacy(root, source_name, source_url, license_name)
+    else:
+        is_sponge = (
+            "Palette" in root or "BlockPalette" in root or "BlockData" in root or
+            ("Blocks" in root and hasattr(root.get("Blocks"), "get") and ("Data" in root.get("Blocks", {}) or "Palette" in root.get("Blocks", {})))
+        )
+        if not is_sponge:
+            raise ValueError("Unsupported schematic/NBT structure")
+        result = parse_sponge(root, source_name, source_url, license_name)
+    return contextualize_roles(result)
 
 
 def main() -> None:
@@ -267,6 +315,7 @@ def main() -> None:
     ap.add_argument("--source-url", default="")
     ap.add_argument("--license", default="")
     args = ap.parse_args()
+
     src, out = Path(args.input), Path(args.out)
     doc = nbtlib.load(src, gzipped=True)
     root = unwrap_root(doc)
