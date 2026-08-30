@@ -41,6 +41,8 @@ def test_subculture_history():
     )
     assert_excludes(
         keys,
+        "task-explicit-source-exclusion-rules-v1",
+        "mission-gundam-zaku-development-pre-origin-brief-v1",
         "task-blender-runner-rules-v1",
         "mission-never-tear-3d-brief-v1",
         "task-discord-transport-v1",
@@ -57,8 +59,34 @@ def test_gundam_zaku_history_with_negative_source_constraint():
     assert "gundam_uc" in task["domains"], task
     assert "mecha_development" in task["domains"], task
     assert "fictional_lore" in task["domains"], task
+    assert "source_exclusion" in task["domains"], task
     assert "ジ・オリジン" in task["excluded_sources"], task
     assert task["constraint_mode"] == "EXPLICIT_SOURCE_EXCLUSION", task
+
+    result = select_context(
+        instruction,
+        CATALOG,
+        mission_key="gundam_zaku_development_pre_origin_20260830",
+        max_docs=8,
+        char_budget=24000,
+    )
+    keys = result["selected_memory_keys"]
+    assert_contains(
+        keys,
+        "global-project-relay-principles-v1",
+        "task-research-summary-rules-v1",
+        "task-explicit-source-exclusion-rules-v1",
+        "mission-gundam-zaku-development-pre-origin-brief-v1",
+    )
+    assert_excludes(
+        keys,
+        "mission-subculture-character-t-history-brief-v1",
+        "task-blender-runner-rules-v1",
+        "mission-never-tear-3d-brief-v1",
+        "task-discord-transport-v1",
+    )
+    assert result["selected_doc_count"] == 4, result
+    assert result["estimated_chars"] <= result["char_budget"], result
 
 
 def test_blender_does_not_load_research_rule():
@@ -67,7 +95,7 @@ def test_blender_does_not_load_research_rule():
     keys = result["selected_memory_keys"]
     assert result["task_kind"] == "BLENDER_3D", result
     assert_contains(keys, "global-project-relay-principles-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1")
-    assert_excludes(keys, "task-research-summary-rules-v1", "mission-subculture-character-t-history-brief-v1")
+    assert_excludes(keys, "task-research-summary-rules-v1", "task-explicit-source-exclusion-rules-v1", "mission-subculture-character-t-history-brief-v1", "mission-gundam-zaku-development-pre-origin-brief-v1")
 
 
 def test_budget_keeps_global():
