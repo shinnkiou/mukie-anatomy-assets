@@ -34,7 +34,7 @@ def test_subculture_history():
     )
     keys = result["selected_memory_keys"]
     assert_contains(keys, "global-project-relay-principles-v1", "task-research-summary-rules-v1", "mission-subculture-character-t-history-brief-v1")
-    assert_excludes(keys, "task-explicit-source-exclusion-rules-v1", "mission-gundam-zaku-development-pre-origin-brief-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1", "task-discord-transport-v1")
+    assert_excludes(keys, "task-continuity-synthesis-rules-v1", "task-explicit-source-exclusion-rules-v1", "mission-gundam-zaku-development-pre-origin-brief-v1", "mission-evangelion-adam-pov-tv-to-shin-brief-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1", "task-discord-transport-v1")
     assert result["selected_doc_count"] == 3, result
     assert result["estimated_chars"] <= result["char_budget"], result
     assert result["selected_doc_count"] <= result["max_docs"], result
@@ -60,8 +60,30 @@ def test_gundam_zaku_history_with_negative_source_constraint():
     )
     keys = result["selected_memory_keys"]
     assert_contains(keys, "global-project-relay-principles-v1", "task-research-summary-rules-v1", "task-explicit-source-exclusion-rules-v1", "mission-gundam-zaku-development-pre-origin-brief-v1")
-    assert_excludes(keys, "mission-subculture-character-t-history-brief-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1", "task-discord-transport-v1")
+    assert_excludes(keys, "task-continuity-synthesis-rules-v1", "mission-subculture-character-t-history-brief-v1", "mission-evangelion-adam-pov-tv-to-shin-brief-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1", "task-discord-transport-v1")
     assert result["selected_doc_count"] == 4, result
+    assert result["estimated_chars"] <= result["char_budget"], result
+
+
+def test_evangelion_continuity_synthesis():
+    instruction = "エヴァンゲリオンをアダムの視点から解説、TV版からシンエヴァのラストまで。複数の設定が混戦した場合は確率を考察し全体の流れとして一貫したものになるようにし、TV版とシンエヴァの死海文書周りの設定の違いを考察する"
+    task = classify_task(instruction)
+    assert task["task_kind"] == "CONTINUITY_SYNTHESIS", task
+    for domain in ["evangelion", "instrumentality", "dead_sea_scrolls", "continuity_synthesis", "character_pov", "fictional_lore"]:
+        assert domain in task["domains"], (domain, task)
+    assert task["constraint_mode"] == "NONE", task
+
+    result = select_context(
+        instruction,
+        CATALOG,
+        mission_key="evangelion_adam_pov_tv_to_shin_20260830",
+        max_docs=8,
+        char_budget=24000,
+    )
+    keys = result["selected_memory_keys"]
+    assert_contains(keys, "global-project-relay-principles-v1", "task-continuity-synthesis-rules-v1", "mission-evangelion-adam-pov-tv-to-shin-brief-v1")
+    assert_excludes(keys, "task-explicit-source-exclusion-rules-v1", "mission-gundam-zaku-development-pre-origin-brief-v1", "mission-subculture-character-t-history-brief-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1", "task-discord-transport-v1")
+    assert result["selected_doc_count"] == 3, result
     assert result["estimated_chars"] <= result["char_budget"], result
 
 
@@ -104,7 +126,7 @@ def test_blender_does_not_load_research_rule():
     keys = result["selected_memory_keys"]
     assert result["task_kind"] == "BLENDER_3D", result
     assert_contains(keys, "global-project-relay-principles-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1")
-    assert_excludes(keys, "task-research-summary-rules-v1", "task-explicit-source-exclusion-rules-v1", "mission-subculture-character-t-history-brief-v1", "mission-gundam-zaku-development-pre-origin-brief-v1")
+    assert_excludes(keys, "task-research-summary-rules-v1", "task-continuity-synthesis-rules-v1", "task-explicit-source-exclusion-rules-v1", "mission-subculture-character-t-history-brief-v1", "mission-gundam-zaku-development-pre-origin-brief-v1", "mission-evangelion-adam-pov-tv-to-shin-brief-v1")
 
 
 def test_budget_keeps_global():
@@ -118,6 +140,7 @@ def test_budget_keeps_global():
 def main():
     test_subculture_history()
     test_gundam_zaku_history_with_negative_source_constraint()
+    test_evangelion_continuity_synthesis()
     test_source_exclusion_phrasing_variants()
     test_unknown_and_multiple_source_exclusions_are_not_silently_dropped()
     test_blender_does_not_load_research_rule()
