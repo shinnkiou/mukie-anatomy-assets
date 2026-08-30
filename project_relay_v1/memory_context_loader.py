@@ -28,17 +28,122 @@ def _split_csv(value: Any) -> Set[str]:
     return {x.strip() for x in str(value).split(",") if x.strip()}
 
 
-def _extract_source_exclusions(text: str) -> List[str]:
-    cfg = RULES.get("source_exclusion", {})
-    markers = [str(x).lower() for x in cfg.get("markers", [])]
-    aliases = cfg.get("source_aliases", {})
-    if not any(marker in text for marker in markers):
-        return []
-    excluded: List[str] = []
+def _canonicalize_source(term: str) -> str:
+    cleaned = term.strip().strip("『』「」【】[]()（）\"'` ")
+    if not cleaned:
+        return ""
+    aliases = RULES.get("source_exclusion", {}).get("source_aliases", {})
     for canonical, names in aliases.items():
-        if any(str(alias).lower() in text for alias in names):
-            excluded.append(str(canonical))
-    return sorted(set(excluded))
+        candidates = [canonical, *names]
+        for alias in candidates:
+            alias_norm = _norm(str(alias))
+            if cleaned == alias_norm or alias_norm in cleaned:
+                return str(canonical)
+    return cleaned
+
+
+def _source_exclusion_parse(text: str) -> Dict[str, Any]:
+    cfg = RULES.get("source_exclusion", {})
+    markers = sorted({_norm(str(x)) for x in cfg.get("markers", []) if str(x).strip()}, key=len, reverse=True)
+    marker_hits: List[Tuple[int, str]] = []
+    for marker in markers:
+        start = 0
+        while True:
+            idx = text.find(marker, start)
+            if idx < 0:
+                break
+            marker_hits.append((idx, marker))
+            start = idx + max(1, len(marker))
+    marker_hits.sort(key=lambda x: (x[0], -len(x[1])))
+    if not marker_hits:
+        return {"sources": [], "parse_status": "NONE", "clauses": [], "markers": []}
+
+    generic = cfg.get("generic_clause_extraction", {})
+    enabled = bool(generic.get("enabled", False))
+    separators = str(generic.get("clause_separators", "。.!?！？\n;；"))
+    qualifiers = [str(x) for x in generic.get("leading_qualifiers", ["ただし", "但し", "ただ", "なお"])]
+    source_separators = sorted(
+        [str(x) for x in generic.get("source_separators", ["および", "及び", "ならびに", "並びに", "と", "、", ",", "／", "/"]) if str(x)],
+        key=len,
+        reverse=True,
+    )
+    trailing_patterns = sorted(
+        [str(x) for x in generic.get("trailing_context_patterns", []) if str(x)],
+        key=len,
+        reverse=True,
+    )
+    min_chars = int(generic.get("min_source_chars", 2))
+
+    clauses: List[str] = []
+    raw_terms: List[str] = []
+    seen_hit_positions: Set[Tuple[int, int]] = set()
+    for idx, marker in marker_hits:
+        # Avoid duplicate parsing for overlapping markers such as 参照しない and 参照しないで.
+        hit_span = (idx, idx + len(marker))
+        if any(a == hit_span[0] and b >= hit_span[1] for a, b in seen_hit_positions):
+            continue
+        seen_hit_positions.add(hit_span)
+        if not enabled:
+            continue
+
+        prefix = text[:idx]
+        if separators:
+            clause_parts = re.split(f"[{re.escape(separators)}]+", prefix)
+            clause = clause_parts[-1].strip() if clause_parts else prefix.strip()
+        else:
+            clause = prefix.strip()
+
+        # Remove discourse markers that are not part of the source name.
+        changed = True
+        while changed and clause:
+            changed = False
+            for qualifier in qualifiers:
+                q = _norm(qualifier)
+                if clause.startswith(q):
+                    clause = clause[len(q):].lstrip(" 、,:：")
+                    changed = True
+                    break
+
+        # Remove context words immediately before the exclusion marker.
+        changed = True
+        while changed and clause:
+            changed = False
+            for suffix in trailing_patterns:
+                s = _norm(suffix)
+                if clause.endswith(s):
+                    clause = clause[: -len(s)].rstrip(" 、,:：")
+                    changed = True
+                    break
+
+        clause = clause.strip().strip("『』「」【】[]()（）\"'` ")
+        if not clause:
+            continue
+        clauses.append(clause)
+
+        if source_separators:
+            splitter = "(?:" + "|".join(re.escape(x) for x in source_separators) + ")"
+            pieces = re.split(splitter, clause)
+        else:
+            pieces = [clause]
+        for piece in pieces:
+            term = piece.strip().strip("『』「」【】[]()（）\"'` ")
+            if len(term) >= min_chars:
+                raw_terms.append(term)
+
+    sources: List[str] = []
+    for term in raw_terms:
+        canonical = _canonicalize_source(term)
+        if canonical and canonical not in sources:
+            sources.append(canonical)
+
+    # If generic extraction could not resolve a name, do not silently downgrade the constraint.
+    status = "RESOLVED" if sources else "UNRESOLVED"
+    return {
+        "sources": sorted(sources),
+        "parse_status": status,
+        "clauses": clauses,
+        "markers": sorted({marker for _, marker in marker_hits}),
+    }
 
 
 def classify_task(instruction: str) -> Dict[str, Any]:
@@ -66,9 +171,15 @@ def classify_task(instruction: str) -> Dict[str, Any]:
         if any(k.lower() in text for k in keywords):
             domains.append(domain)
 
-    excluded_sources = _extract_source_exclusions(text)
-    constraint_mode = "EXPLICIT_SOURCE_EXCLUSION" if excluded_sources else "NONE"
-    if excluded_sources:
+    exclusion = _source_exclusion_parse(text)
+    excluded_sources = exclusion["sources"]
+    if exclusion["parse_status"] == "RESOLVED":
+        constraint_mode = "EXPLICIT_SOURCE_EXCLUSION"
+    elif exclusion["parse_status"] == "UNRESOLVED":
+        constraint_mode = "EXPLICIT_SOURCE_EXCLUSION_UNRESOLVED"
+    else:
+        constraint_mode = "NONE"
+    if exclusion["parse_status"] != "NONE":
         domains.append("source_exclusion")
 
     if task_kind in {"HISTORICAL_RESEARCH", "RESEARCH_SUMMARY"}:
@@ -87,6 +198,9 @@ def classify_task(instruction: str) -> Dict[str, Any]:
         "matched_keywords": task_hits,
         "constraint_mode": constraint_mode,
         "excluded_sources": excluded_sources,
+        "exclusion_parse_status": exclusion["parse_status"],
+        "exclusion_clauses": exclusion["clauses"],
+        "exclusion_markers": exclusion["markers"],
     }
 
 
