@@ -1,6 +1,6 @@
 {
   "schema_version": "relay-research-agent-v1",
-  "enabled": true,
+  "enabled": false,
   "mission_key": "toyohashi_drum_lesson_rental_20260830",
   "deadline": "2026-09-05",
   "location": "豊橋市, 愛知県",
