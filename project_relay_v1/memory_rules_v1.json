@@ -1,6 +1,12 @@
 {
-  "version": "memory-rules-v1.2.0",
+  "version": "memory-rules-v1.3.0",
   "task_rules": [
+    {
+      "task_kind": "CONTINUITY_SYNTHESIS",
+      "keywords": ["世界観のつながり", "つながりを説明", "一貫したもの", "仮断定", "確率を考察", "複数の設定", "設定が混戦", "視点から解説", "ラストまで", "continuity", "synthesis"],
+      "domains": ["research", "continuity_synthesis"],
+      "weight": 16
+    },
     {
       "task_kind": "HISTORICAL_RESEARCH",
       "keywords": ["歴史", "変遷", "起源", "発展", "完成まで", "完成するまで", "紆余曲折", "開発史", "開発経緯", "成立まで", "系譜", "history", "historical"],
@@ -33,9 +39,24 @@
     "anime_game_culture": ["アニメ", "ゲーム", "同人", "コミケ", "マンガ", "漫画"],
     "gundam_uc": ["ガンダム", "宇宙世紀", "ジオン", "ザク", "モビルスーツ", "ms-05", "ms-06"],
     "mecha_development": ["ザク", "モビルスーツ", "開発", "試作", "完成", "ms-05", "ms-06"],
-    "fictional_lore": ["設定", "作中", "劇中", "宇宙世紀", "ガンダム", "ジオン", "ザク"],
+    "evangelion": ["エヴァンゲリオン", "エヴァ", "新世紀エヴァンゲリオン", "シンエヴァ", "ヱヴァンゲリヲン", "evangelion", "カヲル", "渚カヲル", "アダム", "リリス"],
+    "instrumentality": ["人類補完計画", "補完", "instrumentality", "atフィールド", "a.t.フィールド"],
+    "impact_cycle": ["サードインパクト", "フォースインパクト", "アディショナルインパクト", "インパクト", "third impact", "fourth impact", "additional impact"],
+    "dead_sea_scrolls": ["死海文書", "死海文書外典", "裏死海文書", "dead sea scrolls"],
+    "continuity_synthesis": ["tv版からシン", "tv版", "旧劇", "eoe", "新劇", "シンエヴァ", "世界観のつながり", "つながり", "反復", "ループ", "分岐"],
+    "character_pov": ["視点から", "渚カヲル", "カヲルの口調", "カヲルが", "アダムの視点"],
+    "fictional_lore": ["設定", "作中", "劇中", "宇宙世紀", "ガンダム", "ジオン", "ザク", "エヴァンゲリオン", "使徒", "アダム", "リリス"],
     "blender": ["blender", "bpy", "blend"],
     "project_relay": ["project relay", "relay", "base44", "discord"]
+  },
+  "semantic_flags": {
+    "allow_discarded_settings": ["没設定", "初期設定", "企画書", "原案設定"],
+    "probabilistic_synthesis": ["確率", "仮断定", "複数の設定", "設定が混戦", "矛盾しない", "一貫した"],
+    "character_pov": ["視点から", "渚カヲル", "カヲルの口調", "アダムの視点"],
+    "pdf_delivery": ["pdf", "画像つきpdf", "画像付きpdf"],
+    "continuity_bridge": ["tv版からシン", "世界観のつながり", "つながり", "反復", "ループ"],
+    "must_research": ["調べた上", "徹底的に調べ", "めんどくさがらない", "誤魔化さない"],
+    "knowledge_scope_audit": ["どこまでちゃんと知って", "何を知って", "知識", "把握した上"]
   },
   "source_exclusion": {
     "markers": ["参照しないで", "参照しない", "採用しない", "含めない", "使わない", "対象外", "除外", "抜き", "以外"],
