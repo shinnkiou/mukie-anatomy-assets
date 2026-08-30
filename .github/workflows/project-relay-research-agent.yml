@@ -1,0 +1,70 @@
+name: PROJECT RELAY Research Agent
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'relay_research_agent/config.json'
+      - 'relay_research_agent/run.py'
+      - '.github/workflows/project-relay-research-agent.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: project-relay-research-agent
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install research runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4 ddgs
+
+      - name: Run Relay Research Agent
+        run: python relay_research_agent/run.py
+
+      - name: Validate evidence
+        run: |
+          python -m json.tool relay_research_agent/results/latest.json >/dev/null
+          test -s relay_research_agent/results/latest.json
+          test -d relay_research_agent/results/history
+
+      - name: Upload run evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relay-research-${{ github.run_id }}
+          path: relay_research_agent/results/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Persist research state
+        run: |
+          git config user.name 'PROJECT RELAY Research Agent'
+          git config user.email 'project-relay@users.noreply.github.com'
+          git add relay_research_agent/results/
+          if git diff --cached --quiet; then
+            echo 'No research state changes.'
+            exit 0
+          fi
+          git commit -m 'relay research: hourly state update [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
