@@ -1,0 +1,22 @@
+{
+  "date": "2026-08-30",
+  "adapter": "normalize_schematic.py litematic-v1",
+  "validator": "validate_normalized.py",
+  "source": {
+    "name": "Minecraft Circle Litematics",
+    "url": "https://github.com/Greaby/minecraft-circles-schematics",
+    "license": "CC0-1.0",
+    "purpose": "Real binary Litematica parser regression fixture; not production building geometry"
+  },
+  "tests": [
+    {"file":"circle-1x1.litematic","source_sha256":"5fc02ca5eae2c3d85d954d8fb2f634b16f35256b10cbd30a96f6cc729c409b6a","normalized_sha256":"db7d06a04759c44da66623410f81d93268817ba33d461e3efd5d0f2f32390e9a","size":{"x":1,"y":1,"z":1},"blocks":1,"exposed_faces":6,"qa":"PASS"},
+    {"file":"circle-10x10.litematic","source_sha256":"49116014b308a43a74de5eb901b5af8db5d63a79a573cd55978f6850ea56f1bf","normalized_sha256":"1d8f3ada725274e3cfc3e9879e2395158b66bdf4b2de4501e142f07e6ebebcb2","size":{"x":10,"y":1,"z":10},"blocks":24,"exposed_faces":120,"qa":"PASS"},
+    {"file":"circle-20x20.litematic","source_sha256":"10a1af134083791fb9437c7087b8d6d66934381f3b139a4bcedbd50e28abb048","normalized_sha256":"4760818d9eca959051045424baa081d540a4ee882ace9460ff202c7dd74a0d74","size":{"x":20,"y":1,"z":20},"blocks":52,"exposed_faces":256,"qa":"PASS"}
+  ],
+  "notes": [
+    "Litematica v5 Regions/BlockStatePalette/BlockStates were decoded from real gzip-NBT files.",
+    "Dynamic entities are ignored by design.",
+    "Planet Minecraft public-domain building pages were re-verified, but their binary download endpoint was not directly retrievable in this run; the pipeline switched to a CC0 GitHub binary fixture rather than stopping.",
+    "Final building delivery still requires at least three visual QA passes after realistic exterior conversion."
+  ]
+}
