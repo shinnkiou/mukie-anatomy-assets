@@ -32,6 +32,22 @@
     "estimated_chars": 2200
   },
   {
+    "memory_key": "task-continuity-synthesis-rules-v1",
+    "title": "MEMORY_TASK_CONTINUITY_SYNTHESIS_RULES_v1",
+    "scope": "TASK_RULE",
+    "project_key": "project_relay",
+    "mission_key": "",
+    "task_kinds": "CONTINUITY_SYNTHESIS",
+    "domains": "research,continuity_synthesis,fictional_lore,character_pov,instrumentality,impact_cycle,dead_sea_scrolls,evangelion",
+    "priority": 4,
+    "required": true,
+    "load_policy": "WHEN_TASK_KIND",
+    "drive_file_id": "continuity-doc",
+    "drive_file_url": "https://drive.invalid/continuity",
+    "status": "ACTIVE",
+    "estimated_chars": 2600
+  },
+  {
     "memory_key": "task-explicit-source-exclusion-rules-v1",
     "title": "MEMORY_TASK_EXPLICIT_SOURCE_EXCLUSION_RULES_v1",
     "scope": "TASK_RULE",
@@ -78,6 +94,22 @@
     "drive_file_url": "https://drive.invalid/gundam-zaku-mission",
     "status": "ACTIVE",
     "estimated_chars": 2200
+  },
+  {
+    "memory_key": "mission-evangelion-adam-pov-tv-to-shin-brief-v1",
+    "title": "MISSION_BRIEF_evangelion_adam_pov_tv_to_shin_v1",
+    "scope": "MISSION_BRIEF",
+    "project_key": "project_relay",
+    "mission_key": "evangelion_adam_pov_tv_to_shin_20260830",
+    "task_kinds": "CONTINUITY_SYNTHESIS",
+    "domains": "evangelion,instrumentality,impact_cycle,dead_sea_scrolls,continuity_synthesis,character_pov,fictional_lore,research",
+    "priority": 1,
+    "required": true,
+    "load_policy": "WHEN_MISSION",
+    "drive_file_id": "eva-mission-doc",
+    "drive_file_url": "https://drive.invalid/eva-mission",
+    "status": "ACTIVE",
+    "estimated_chars": 3600
   },
   {
     "memory_key": "task-blender-runner-rules-v1",
