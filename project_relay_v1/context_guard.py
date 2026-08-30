@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable
+import json
+from typing import Any, Dict, Iterable, Mapping
 
-from memory_context_loader import classify_task, select_context
+from memory_context_loader import RULES, classify_task, select_context
 
-VERSION = "context-guard-v1"
-DETERMINISTIC_CONFIDENCE_MIN = 0.60
+VERSION = "context-guard-v1.1"
+DETERMINISTIC_CONFIDENCE_MIN = float(RULES.get("defaults", {}).get("deterministic_confidence_min", 0.60))
 
 
 def routing_decision(instruction: str) -> Dict[str, Any]:
@@ -44,9 +45,94 @@ def requires_context_rebuild(previous: Dict[str, Any] | None, current: Dict[str,
     old_domains = set(old["domains"])
     new_domains = set(new["domains"])
     if old_domains != new_domains:
-        # Domain drift can mean the user narrowed or changed the task. Rebuild rather than silently carry old docs.
         return {"rebuild": True, "reason": "domains-changed", "old": old, "new": new}
     return {"rebuild": False, "reason": "context-compatible", "old": old, "new": new}
+
+
+def _parse_source_docs(value: Any) -> list[dict[str, Any]]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [x for x in value if isinstance(x, dict)]
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError:
+            return []
+        if isinstance(parsed, list):
+            return [x for x in parsed if isinstance(x, dict)]
+    return []
+
+
+def validate_context_packet(
+    packet: Dict[str, Any] | None,
+    context_load: Dict[str, Any],
+    *,
+    current_revisions: Mapping[str, str] | None = None,
+) -> Dict[str, Any]:
+    """Validate a Base44 RelayContextPacket before an agent may execute.
+
+    current_revisions maps Drive file id -> latest revision id when direct Drive freshness
+    information is available. When it is not available, the packet can still be accepted
+    as a cached snapshot if its own status and task identity are valid.
+    """
+    if not packet:
+        return {"valid": False, "execution_gate": "WAITING_SYNC", "reason": "packet-missing"}
+    if packet.get("status") != "FRESH":
+        return {"valid": False, "execution_gate": "WAITING_SYNC", "reason": f"packet-{str(packet.get('status', 'unknown')).lower()}"}
+    if packet.get("context_load_key") != context_load.get("context_load_key"):
+        return {"valid": False, "execution_gate": "WAITING_SYNC", "reason": "context-load-mismatch"}
+
+    for field in ("project_key", "mission_key", "task_kind"):
+        if str(packet.get(field, "")) != str(context_load.get(field, "")):
+            return {"valid": False, "execution_gate": "WAITING_SYNC", "reason": f"{field}-mismatch"}
+
+    selected = [x for x in str(context_load.get("selected_memory_keys", "")).split(",") if x]
+    sources = _parse_source_docs(packet.get("source_docs_json"))
+    source_keys = {str(x.get("memory_key", "")) for x in sources}
+    missing_sources = [key for key in selected if key not in source_keys]
+    if missing_sources:
+        return {
+            "valid": False,
+            "execution_gate": "WAITING_SYNC",
+            "reason": "selected-source-missing",
+            "missing_sources": missing_sources,
+        }
+
+    expected_count = int(context_load.get("selected_doc_count") or len(selected))
+    packet_count = int(packet.get("doc_count") or len(sources))
+    if packet_count != expected_count:
+        return {
+            "valid": False,
+            "execution_gate": "WAITING_SYNC",
+            "reason": "doc-count-mismatch",
+            "expected": expected_count,
+            "actual": packet_count,
+        }
+
+    stale_files: list[str] = []
+    if current_revisions:
+        for src in sources:
+            file_id = str(src.get("drive_file_id", ""))
+            packet_revision = str(src.get("revision_id", ""))
+            current_revision = str(current_revisions.get(file_id, ""))
+            if current_revision and packet_revision and current_revision != packet_revision:
+                stale_files.append(file_id)
+    if stale_files:
+        return {
+            "valid": False,
+            "execution_gate": "WAITING_SYNC",
+            "reason": "source-revision-changed",
+            "stale_files": stale_files,
+        }
+
+    return {
+        "valid": True,
+        "execution_gate": "READY",
+        "reason": "fresh-matching-packet",
+        "packet_key": packet.get("packet_key", ""),
+        "doc_count": packet_count,
+    }
 
 
 def build_guarded_context(
@@ -68,7 +154,6 @@ def build_guarded_context(
         char_budget=char_budget,
     )
     if route["route_mode"] == "BRAIN_FALLBACK":
-        # Ambiguous input may still load ALWAYS/global memory, but it must not auto-execute a task-specific runner.
         context["execution_gate"] = "WAITING_BRAIN_CLASSIFICATION"
     else:
         context["execution_gate"] = "READY"
