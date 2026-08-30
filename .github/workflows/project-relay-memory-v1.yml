@@ -1,0 +1,63 @@
+name: PROJECT RELAY Selective Memory v1
+
+on:
+  push:
+    branches:
+      - project-relay-v1-virtual
+    paths:
+      - 'project_relay_v1/memory_context_loader.py'
+      - 'project_relay_v1/test_memory_context_loader.py'
+      - 'project_relay_v1/testdata/memory_catalog_fixture.json'
+      - '.github/workflows/project-relay-memory-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selective-memory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile
+        run: python3 -m py_compile project_relay_v1/memory_context_loader.py project_relay_v1/test_memory_context_loader.py
+
+      - name: Run selective memory tests
+        working-directory: project_relay_v1
+        run: python3 test_memory_context_loader.py
+
+      - name: Generate subculture T-shirt context manifest
+        run: |
+          mkdir -p project_relay_v1/.memory_evidence
+          python3 project_relay_v1/memory_context_loader.py \
+            'サブカルキャラTの歴史についてまとめる' \
+            --catalog project_relay_v1/testdata/memory_catalog_fixture.json \
+            --mission-key subculture_character_t_history_20260830 \
+            --out project_relay_v1/.memory_evidence/context_manifest.json
+          test -s project_relay_v1/.memory_evidence/context_manifest.json
+
+      - name: Validate manifest invariants
+        run: |
+          python3 - <<'PY'
+          import json
+          p='project_relay_v1/.memory_evidence/context_manifest.json'
+          d=json.load(open(p, encoding='utf-8'))
+          assert d['task_kind']=='HISTORICAL_RESEARCH', d
+          assert d['selected_doc_count']==3, d
+          assert d['estimated_chars'] <= d['char_budget'], d
+          assert 'task-blender-runner-rules-v1' not in d['selected_memory_keys'], d
+          assert 'task-discord-transport-v1' not in d['selected_memory_keys'], d
+          print('CONTEXT MANIFEST VALID')
+          PY
+
+      - name: Upload context evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-relay-selective-memory-v1-evidence
+          path: project_relay_v1/.memory_evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
