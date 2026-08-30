@@ -16,6 +16,17 @@ const splitCsv = (value) => {
   return new Set(String(value).split(',').map(v => v.trim()).filter(Boolean));
 };
 
+function extractSourceExclusions(text) {
+  const cfg = RULES.source_exclusion ?? {};
+  const markers = (cfg.markers ?? []).map(v => String(v).toLowerCase());
+  if (!markers.some(marker => text.includes(marker))) return [];
+  const excluded = [];
+  for (const [canonical, aliases] of Object.entries(cfg.source_aliases ?? {})) {
+    if (aliases.some(alias => text.includes(String(alias).toLowerCase()))) excluded.push(canonical);
+  }
+  return [...new Set(excluded)].sort();
+}
+
 export function classifyTask(instruction) {
   const text = norm(instruction);
   const scored = [];
@@ -30,7 +41,7 @@ export function classifyTask(instruction) {
   if (scored.length) {
     scored.sort((a, b) => b[0] - a[0] || String(b[1]).localeCompare(String(a[1])));
     [, taskKind, taskHits] = scored[0];
-    if (taskKind === 'RESEARCH_SUMMARY' && ['歴史', '変遷', '起源', '発展'].some(k => text.includes(k))) {
+    if (taskKind === 'RESEARCH_SUMMARY' && ['歴史', '変遷', '起源', '発展', '完成まで', '完成するまで', '紆余曲折', '開発史', '開発経緯', '成立まで', '系譜'].some(k => text.includes(k))) {
       taskKind = 'HISTORICAL_RESEARCH';
     }
     confidence = Math.min(0.99, 0.60 + 0.08 * taskHits.length);
@@ -40,6 +51,11 @@ export function classifyTask(instruction) {
   for (const [domain, keywords] of Object.entries(RULES.domain_rules)) {
     if (keywords.some(kw => text.includes(String(kw).toLowerCase()))) domains.push(domain);
   }
+
+  const excludedSources = extractSourceExclusions(text);
+  const constraintMode = excludedSources.length ? 'EXPLICIT_SOURCE_EXCLUSION' : 'NONE';
+  if (excludedSources.length) domains.push('source_exclusion');
+
   if (['HISTORICAL_RESEARCH', 'RESEARCH_SUMMARY'].includes(taskKind)) {
     domains.push('research');
     if (taskKind === 'HISTORICAL_RESEARCH') domains.push('history');
@@ -53,6 +69,8 @@ export function classifyTask(instruction) {
     domains: [...new Set(domains)].sort(),
     confidence,
     matched_keywords: taskHits,
+    constraint_mode: constraintMode,
+    excluded_sources: excludedSources,
   };
 }
 
