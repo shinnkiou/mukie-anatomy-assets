@@ -33,20 +33,8 @@ def test_subculture_history():
         char_budget=24000,
     )
     keys = result["selected_memory_keys"]
-    assert_contains(
-        keys,
-        "global-project-relay-principles-v1",
-        "task-research-summary-rules-v1",
-        "mission-subculture-character-t-history-brief-v1",
-    )
-    assert_excludes(
-        keys,
-        "task-explicit-source-exclusion-rules-v1",
-        "mission-gundam-zaku-development-pre-origin-brief-v1",
-        "task-blender-runner-rules-v1",
-        "mission-never-tear-3d-brief-v1",
-        "task-discord-transport-v1",
-    )
+    assert_contains(keys, "global-project-relay-principles-v1", "task-research-summary-rules-v1", "mission-subculture-character-t-history-brief-v1")
+    assert_excludes(keys, "task-explicit-source-exclusion-rules-v1", "mission-gundam-zaku-development-pre-origin-brief-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1", "task-discord-transport-v1")
     assert result["selected_doc_count"] == 3, result
     assert result["estimated_chars"] <= result["char_budget"], result
     assert result["selected_doc_count"] <= result["max_docs"], result
@@ -71,20 +59,8 @@ def test_gundam_zaku_history_with_negative_source_constraint():
         char_budget=24000,
     )
     keys = result["selected_memory_keys"]
-    assert_contains(
-        keys,
-        "global-project-relay-principles-v1",
-        "task-research-summary-rules-v1",
-        "task-explicit-source-exclusion-rules-v1",
-        "mission-gundam-zaku-development-pre-origin-brief-v1",
-    )
-    assert_excludes(
-        keys,
-        "mission-subculture-character-t-history-brief-v1",
-        "task-blender-runner-rules-v1",
-        "mission-never-tear-3d-brief-v1",
-        "task-discord-transport-v1",
-    )
+    assert_contains(keys, "global-project-relay-principles-v1", "task-research-summary-rules-v1", "task-explicit-source-exclusion-rules-v1", "mission-gundam-zaku-development-pre-origin-brief-v1")
+    assert_excludes(keys, "mission-subculture-character-t-history-brief-v1", "task-blender-runner-rules-v1", "mission-never-tear-3d-brief-v1", "task-discord-transport-v1")
     assert result["selected_doc_count"] == 4, result
     assert result["estimated_chars"] <= result["char_budget"], result
 
@@ -111,6 +87,17 @@ def test_source_exclusion_phrasing_variants():
         assert task["excluded_sources"] == [], (instruction, task)
 
 
+def test_unknown_and_multiple_source_exclusions_are_not_silently_dropped():
+    unknown = classify_task("サンダーボルトの設定は参照しないで、ザクの開発史をまとめて")
+    assert unknown["constraint_mode"] == "EXPLICIT_SOURCE_EXCLUSION", unknown
+    assert "サンダーボルト" in unknown["excluded_sources"], unknown
+
+    multiple = classify_task("ジ・オリジンとサンダーボルトの設定は参照しない。ザクの開発史をまとめる")
+    assert multiple["constraint_mode"] == "EXPLICIT_SOURCE_EXCLUSION", multiple
+    assert set(multiple["excluded_sources"]) == {"ジ・オリジン", "サンダーボルト"}, multiple
+    assert "source_exclusion" in multiple["domains"], multiple
+
+
 def test_blender_does_not_load_research_rule():
     instruction = "Blenderでバーの3Dモデルを作る"
     result = select_context(instruction, CATALOG, mission_key="bar3d_sandbox")
@@ -121,13 +108,7 @@ def test_blender_does_not_load_research_rule():
 
 
 def test_budget_keeps_global():
-    result = select_context(
-        "サブカルキャラTの歴史についてまとめる",
-        CATALOG,
-        mission_key="subculture_character_t_history_20260830",
-        max_docs=2,
-        char_budget=7000,
-    )
+    result = select_context("サブカルキャラTの歴史についてまとめる", CATALOG, mission_key="subculture_character_t_history_20260830", max_docs=2, char_budget=7000)
     keys = result["selected_memory_keys"]
     assert "global-project-relay-principles-v1" in keys, result
     assert len(keys) <= 2, result
@@ -138,6 +119,7 @@ def main():
     test_subculture_history()
     test_gundam_zaku_history_with_negative_source_constraint()
     test_source_exclusion_phrasing_variants()
+    test_unknown_and_multiple_source_exclusions_are_not_silently_dropped()
     test_blender_does_not_load_research_rule()
     test_budget_keeps_global()
     print("PROJECT RELAY SELECTIVE MEMORY TESTS PASS")
