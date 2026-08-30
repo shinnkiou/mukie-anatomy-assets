@@ -17,6 +17,7 @@
     {"key":"kytric_voxel_path_terrain","name":"Voxel Path And Terrain","url":"https://kytric.itch.io/voxel-path-and-terrain","license":"CC0","format":"vox,obj,gltf","use":"roads/paths/terrain/city props"},
     {"key":"binebirk_build_house","name":"Build A House","url":"https://binebirk.itch.io/build-a-house","license":"CC0","format":"fbx,obj,gltf","use":"snapping-friendly house modules"},
     {"key":"loys_goodies","name":"Loy's Goodies","url":"https://github.com/SL0ANE/Loy-s-Goodies","license":"CC0-1.0","format":"Blockbench/Java block-item models","use":"Minecraft-mapmaking static model templates"},
-    {"key":"sbs_sandbox_textures","name":"Sandbox Style Terrain + Texture Pack","url":"https://screamingbrainstudios.itch.io/sbst-pack","license":"CC0","format":"block textures/tiles","use":"CC0 replacement materials"}
+    {"key":"sbs_sandbox_textures","name":"Sandbox Style Terrain + Texture Pack","url":"https://screamingbrainstudios.itch.io/sbst-pack","license":"CC0","format":"block textures/tiles","use":"CC0 replacement materials"},
+    {"key":"greaby_circle_litematics","name":"Minecraft Circle Litematics","url":"https://github.com/Greaby/minecraft-circles-schematics","license":"CC0-1.0","format":"litematic","use":"real binary Litematica parser regression fixture; not a production building asset"}
   ]
 }
