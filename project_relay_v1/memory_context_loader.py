@@ -28,6 +28,19 @@ def _split_csv(value: Any) -> Set[str]:
     return {x.strip() for x in str(value).split(",") if x.strip()}
 
 
+def _extract_source_exclusions(text: str) -> List[str]:
+    cfg = RULES.get("source_exclusion", {})
+    markers = [str(x).lower() for x in cfg.get("markers", [])]
+    aliases = cfg.get("source_aliases", {})
+    if not any(marker in text for marker in markers):
+        return []
+    excluded: List[str] = []
+    for canonical, names in aliases.items():
+        if any(str(alias).lower() in text for alias in names):
+            excluded.append(str(canonical))
+    return sorted(set(excluded))
+
+
 def classify_task(instruction: str) -> Dict[str, Any]:
     text = _norm(instruction)
     scored: List[Tuple[int, str, List[str]]] = []
@@ -44,7 +57,7 @@ def classify_task(instruction: str) -> Dict[str, Any]:
     else:
         scored.sort(reverse=True)
         _, task_kind, task_hits = scored[0]
-        if task_kind == "RESEARCH_SUMMARY" and any(k in text for k in ["歴史", "変遷", "起源", "発展"]):
+        if task_kind == "RESEARCH_SUMMARY" and any(k in text for k in ["歴史", "変遷", "起源", "発展", "完成まで", "完成するまで", "紆余曲折", "開発史", "開発経緯", "成立まで", "系譜"]):
             task_kind = "HISTORICAL_RESEARCH"
         confidence = min(0.99, 0.60 + 0.08 * len(task_hits))
 
@@ -52,6 +65,11 @@ def classify_task(instruction: str) -> Dict[str, Any]:
     for domain, keywords in DOMAIN_RULES.items():
         if any(k.lower() in text for k in keywords):
             domains.append(domain)
+
+    excluded_sources = _extract_source_exclusions(text)
+    constraint_mode = "EXPLICIT_SOURCE_EXCLUSION" if excluded_sources else "NONE"
+    if excluded_sources:
+        domains.append("source_exclusion")
 
     if task_kind in {"HISTORICAL_RESEARCH", "RESEARCH_SUMMARY"}:
         domains.append("research")
@@ -67,6 +85,8 @@ def classify_task(instruction: str) -> Dict[str, Any]:
         "domains": domains,
         "confidence": confidence,
         "matched_keywords": task_hits,
+        "constraint_mode": constraint_mode,
+        "excluded_sources": excluded_sources,
     }
 
 
