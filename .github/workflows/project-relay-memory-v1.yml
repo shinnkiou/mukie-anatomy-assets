@@ -9,9 +9,11 @@ on:
       - 'project_relay_v1/memory_context_loader.py'
       - 'project_relay_v1/memory_context_loader.mjs'
       - 'project_relay_v1/context_guard.py'
+      - 'project_relay_v1/source_exclusion_filter.py'
       - 'project_relay_v1/test_memory_context_loader.py'
       - 'project_relay_v1/test_context_guard.py'
       - 'project_relay_v1/test_memory_parity.py'
+      - 'project_relay_v1/test_source_exclusion_filter.py'
       - 'project_relay_v1/testdata/memory_catalog_fixture.json'
       - '.github/workflows/project-relay-memory-v1.yml'
   workflow_dispatch:
@@ -33,7 +35,7 @@ jobs:
           node --version
 
       - name: Compile Python
-        run: python3 -m py_compile project_relay_v1/memory_context_loader.py project_relay_v1/context_guard.py project_relay_v1/test_memory_context_loader.py project_relay_v1/test_context_guard.py project_relay_v1/test_memory_parity.py
+        run: python3 -m py_compile project_relay_v1/memory_context_loader.py project_relay_v1/context_guard.py project_relay_v1/source_exclusion_filter.py project_relay_v1/test_memory_context_loader.py project_relay_v1/test_context_guard.py project_relay_v1/test_memory_parity.py project_relay_v1/test_source_exclusion_filter.py
 
       - name: Validate shared rule JSON
         run: python3 -m json.tool project_relay_v1/memory_rules_v1.json >/dev/null
@@ -49,6 +51,10 @@ jobs:
       - name: Run Python JavaScript parity tests
         working-directory: project_relay_v1
         run: python3 test_memory_parity.py
+
+      - name: Run post-retrieval source exclusion tests
+        working-directory: project_relay_v1
+        run: python3 test_source_exclusion_filter.py
 
       - name: Generate mission context manifests
         run: |
