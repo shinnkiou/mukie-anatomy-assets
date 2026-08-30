@@ -1,5 +1,5 @@
 {
-  "version": "memory-rules-v1.3.0",
+  "version": "memory-rules-v1.3.1",
   "task_rules": [
     {
       "task_kind": "CONTINUITY_SYNTHESIS",
@@ -49,15 +49,6 @@
     "blender": ["blender", "bpy", "blend"],
     "project_relay": ["project relay", "relay", "base44", "discord"]
   },
-  "semantic_flags": {
-    "allow_discarded_settings": ["没設定", "初期設定", "企画書", "原案設定"],
-    "probabilistic_synthesis": ["確率", "仮断定", "複数の設定", "設定が混戦", "矛盾しない", "一貫した"],
-    "character_pov": ["視点から", "渚カヲル", "カヲルの口調", "アダムの視点"],
-    "pdf_delivery": ["pdf", "画像つきpdf", "画像付きpdf"],
-    "continuity_bridge": ["tv版からシン", "世界観のつながり", "つながり", "反復", "ループ"],
-    "must_research": ["調べた上", "徹底的に調べ", "めんどくさがらない", "誤魔化さない"],
-    "knowledge_scope_audit": ["どこまでちゃんと知って", "何を知って", "知識", "把握した上"]
-  },
   "source_exclusion": {
     "markers": ["参照しないで", "参照しない", "採用しない", "含めない", "使わない", "対象外", "除外", "抜き", "以外"],
     "source_aliases": {
@@ -65,7 +56,7 @@
     },
     "generic_clause_extraction": {
       "enabled": true,
-      "clause_separators": "。.!?！？\\n;；",
+      "clause_separators": "。.!?！？\n;；",
       "leading_qualifiers": ["ただし", "但し", "ただ", "なお"],
       "source_separators": ["および", "及び", "ならびに", "並びに", "と", "、", ",", "／", "/"],
       "trailing_context_patterns": ["の設定は", "の設定を", "の設定", "の資料は", "の資料を", "の資料", "の内容は", "の内容を", "の内容", "は根拠には", "を根拠には", "は根拠に", "を根拠に", "は参考には", "を参考には", "は参考に", "を参考に", "は", "を"],
