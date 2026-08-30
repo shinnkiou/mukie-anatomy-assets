@@ -1,5 +1,5 @@
 {
-  "version": "memory-rules-v1.1.0",
+  "version": "memory-rules-v1.1.1",
   "task_rules": [
     {
       "task_kind": "HISTORICAL_RESEARCH",
@@ -38,9 +38,9 @@
     "project_relay": ["project relay", "relay", "base44", "discord"]
   },
   "source_exclusion": {
-    "markers": ["参照しない", "参照しないで", "除外", "使わない", "含めない", "採用しない", "対象外"],
+    "markers": ["参照しない", "参照しないで", "除外", "使わない", "含めない", "採用しない", "対象外", "抜き", "以外"],
     "source_aliases": {
-      "ジ・オリジン": ["ジ・オリジン", "the origin", "機動戦士ガンダム the origin"]
+      "ジ・オリジン": ["ジ・オリジン", "オリジン", "the origin", "機動戦士ガンダム the origin"]
     }
   },
   "defaults": {
