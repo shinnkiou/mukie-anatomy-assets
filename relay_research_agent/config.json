@@ -1,0 +1,40 @@
+{
+  "schema_version": "relay-research-agent-v1",
+  "enabled": true,
+  "mission_key": "toyohashi_drum_lesson_rental_20260830",
+  "deadline": "2026-09-05",
+  "location": "豊橋市, 愛知県",
+  "priorities": [
+    "入会不要または一日だけで完結するマンツーマンドラムレッスン",
+    "女性ドラム講師",
+    "即日または9月5日までの空き",
+    "電子ドラム本体レンタル",
+    "ドラムセット本体レンタル",
+    "当日利用可能なドラム常設スタジオ"
+  ],
+  "queries": [
+    "豊橋 ドラム 単発 レッスン マンツーマン 女性 講師",
+    "豊橋 ドラム 1回だけ レッスン 入会不要",
+    "豊橋 電子ドラム レンタル V-Drums Roland",
+    "豊橋 ドラムセット レンタル 楽器",
+    "豊橋 ドラム スタジオ 個人練習 当日",
+    "豊川 電子ドラム レンタル V-Drums",
+    "岡崎 電子ドラム レンタル V-Drums",
+    "愛知 電子ドラム レンタル 配送 Roland V-Drums"
+  ],
+  "monitor_urls": [
+    "https://www.soundstaff1987.com/%E9%9F%B3%E6%A5%BD%E6%95%99%E5%AE%A4/",
+    "https://www.soundstaff1987.com/%E6%A5%BD%E5%99%A8-%E6%A9%9F%E6%9D%90%E3%83%AC%E3%83%B3%E3%82%BF%E3%83%AB/",
+    "https://www.orientmusic.co.jp/lesson/music_lesson_place/toyohashi/",
+    "https://www.studiohayashi.jp/",
+    "https://www.shiraimusic.com/band_rehearsal_studio/bcstudio/"
+  ],
+  "safety": {
+    "no_booking": true,
+    "no_purchase": true,
+    "no_contact_submission": true,
+    "no_credentials": true,
+    "public_information_only": true
+  },
+  "stop_rule": "Set enabled=false when the user says STOP."
+}
