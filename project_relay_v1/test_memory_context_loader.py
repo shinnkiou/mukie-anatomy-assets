@@ -89,6 +89,28 @@ def test_gundam_zaku_history_with_negative_source_constraint():
     assert result["estimated_chars"] <= result["char_budget"], result
 
 
+def test_source_exclusion_phrasing_variants():
+    should_exclude = [
+        "オリジン抜きでザク誕生までの開発史をまとめて",
+        "THE ORIGIN以外の設定だけでザク完成までをまとめる",
+        "ジ・オリジンは根拠には使わないで、ザクの開発経緯をまとめて",
+    ]
+    for instruction in should_exclude:
+        task = classify_task(instruction)
+        assert task["constraint_mode"] == "EXPLICIT_SOURCE_EXCLUSION", (instruction, task)
+        assert "ジ・オリジン" in task["excluded_sources"], (instruction, task)
+        assert "source_exclusion" in task["domains"], (instruction, task)
+
+    should_not_exclude = [
+        "THE ORIGINと旧来設定の違いを説明する",
+        "ジ・オリジンという作品名を含む資料一覧を作る",
+    ]
+    for instruction in should_not_exclude:
+        task = classify_task(instruction)
+        assert task["constraint_mode"] == "NONE", (instruction, task)
+        assert task["excluded_sources"] == [], (instruction, task)
+
+
 def test_blender_does_not_load_research_rule():
     instruction = "Blenderでバーの3Dモデルを作る"
     result = select_context(instruction, CATALOG, mission_key="bar3d_sandbox")
@@ -115,6 +137,7 @@ def test_budget_keeps_global():
 def main():
     test_subculture_history()
     test_gundam_zaku_history_with_negative_source_constraint()
+    test_source_exclusion_phrasing_variants()
     test_blender_does_not_load_research_rule()
     test_budget_keeps_global()
     print("PROJECT RELAY SELECTIVE MEMORY TESTS PASS")
