@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Tuple
 
-VERSION = "memory-context-v1"
+VERSION = "memory-context-v1.0.1"
 DEFAULT_MAX_DOCS = 8
 DEFAULT_CHAR_BUDGET = 24000
 
@@ -39,7 +39,7 @@ TASK_RULES = [
 ]
 
 DOMAIN_RULES = {
-    "fashion_history": ["tシャツ", "t-shirt", "ファッション", "衣服", "アパレル", "服"],
+    "fashion_history": ["tシャツ", "t-shirt", "キャラt", "キャラクターt", "ファッション", "衣服", "アパレル", "服"],
     "character_merchandise": ["キャラt", "キャラクターt", "キャラクター", "グッズ", "merch"],
     "subculture": ["サブカル", "ストリート", "オタク", "ファンダム"],
     "anime_game_culture": ["アニメ", "ゲーム", "同人", "コミケ", "マンガ", "漫画"],
@@ -85,7 +85,6 @@ def classify_task(instruction: str) -> Dict[str, Any]:
         if any(k.lower() in text for k in keywords):
             domains.append(domain)
 
-    # Broad research tags are useful for task-rule selection but do not replace content domains.
     if task_kind in {"HISTORICAL_RESEARCH", "RESEARCH_SUMMARY"}:
         domains.append("research")
         if task_kind == "HISTORICAL_RESEARCH":
@@ -144,7 +143,6 @@ def _relevance(doc: Dict[str, Any], task_kind: str, domains: Set[str], mission_k
         elif policy == "WHEN_DOMAIN":
             return (-1, ["domain-mismatch"])
 
-    # Lower numeric priority means more important.
     priority = int(doc.get("priority", 50))
     score += max(0, 200 - priority)
     if doc.get("required"):
