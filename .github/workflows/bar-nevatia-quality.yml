@@ -1,0 +1,87 @@
+name: BAR NEVATIA Quality Build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "cloud_runner/bar_nevatia_build.py"
+      - ".github/workflows/bar-nevatia-quality.yml"
+      - "docs/BAR_NEVATIA_DESIGN_SPEC_20260830.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bar-nevatia-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      BLENDER_VERSION: "4.2.23"
+      BLENDER_ARCHIVE: "blender-4.2.23-linux-x64.tar.xz"
+      BLENDER_DIR: "blender-4.2.23-linux-x64"
+      BAR_NEVATIA_OUT: "${{ github.workspace }}/artifacts/bar_nevatia"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install headless graphics and Japanese font
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1 libx11-6 libxext6 libxi6 libxrender1 libxfixes3 libxxf86vm1 libsm6 libice6 fonts-noto-cjk jq > /dev/null
+
+      - name: Download and verify Blender 4.2.23
+        run: |
+          set -euo pipefail
+          BASE="https://download.blender.org/release/Blender4.2"
+          curl --fail --location --retry 3 --retry-delay 3 -o "${BLENDER_ARCHIVE}" "${BASE}/${BLENDER_ARCHIVE}"
+          curl --fail --location --retry 3 --retry-delay 3 -o "blender-${BLENDER_VERSION}.sha256" "${BASE}/blender-${BLENDER_VERSION}.sha256"
+          sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing
+          tar -xf "${BLENDER_ARCHIVE}"
+          "${BLENDER_DIR}/blender" --version
+
+      - name: Build modular bar + max 10 QA corrections
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/bar_nevatia/reports
+          "${BLENDER_DIR}/blender" --factory-startup --background --python cloud_runner/bar_nevatia_build.py 2>&1 | tee artifacts/bar_nevatia/reports/blender.log
+
+      - name: Validate result
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          root=pathlib.Path('artifacts/bar_nevatia')
+          man=root/'reports/manifest.json'
+          if not man.exists():
+              print('manifest missing', file=sys.stderr); sys.exit(2)
+          d=json.loads(man.read_text())
+          assert d['schema']=='bar_nevatia_quality_v1'
+          assert 1 <= len(d['qa_rounds']) <= 10
+          assert pathlib.Path(root/d['final_glb']).exists()
+          assert pathlib.Path(root/d['final_blend']).exists()
+          for m in ['SHELL','EXTERIOR','INTERIOR','FURNITURE','PROPS']:
+              assert (root/'models'/f'BAR_NEVATIA_MODULE_{m}_R1.glb').exists()
+          for view in ['EXTERIOR_FRONT','EXTERIOR_OBLIQUE','INTERIOR_COUNTER','INTERIOR_WIDE','TOP_PLAN']:
+              assert (root/'renders'/f'FINAL_{view}.png').exists()
+          print(json.dumps({'status':d['status'],'qa_rounds':len(d['qa_rounds']),'final_stats':d['final_stats']},indent=2))
+          PY
+
+      - name: Checksums and inventory
+        if: always()
+        run: |
+          find artifacts/bar_nevatia -type f -printf '%P\t%s bytes\n' | sort > artifacts/bar_nevatia/reports/FILE_INVENTORY.txt
+          find artifacts/bar_nevatia -type f -print0 | sort -z | xargs -0 sha256sum > artifacts/bar_nevatia/reports/SHA256SUMS.txt
+
+      - name: Upload BAR NEVATIA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bar-nevatia-quality-${{ github.run_id }}
+          path: artifacts/bar_nevatia/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 4
