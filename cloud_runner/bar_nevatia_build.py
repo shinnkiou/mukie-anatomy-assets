@@ -25,6 +25,8 @@ scene.render.resolution_percentage=100
 scene.render.image_settings.file_format='PNG'
 scene.render.film_transparent=False
 scene.render.image_settings.color_mode='RGBA'
+if scene.world is None:
+    scene.world=bpy.data.worlds.new('World')
 scene.world.color=(0.006,0.008,0.012)
 try:
     scene.view_settings.look='AgX - Medium High Contrast'
@@ -76,7 +78,7 @@ def mat_principled(name, base, rough=.5, metal=0.0, ior=1.5, transmission=0.0, a
         if bump:
             b=nt.nodes.new('ShaderNodeBump'); b.inputs['Strength'].default_value=bump; b.inputs['Distance'].default_value=.12
             nt.links.new(tex.outputs['Fac'], b.inputs['Height']); nt.links.new(b.outputs['Normal'], bs.inputs['Normal'])
-    if alpha<1.0:
+    if alpha<1.0 and hasattr(m,'surface_render_method'):
         m.surface_render_method='DITHERED'
     return m
 
