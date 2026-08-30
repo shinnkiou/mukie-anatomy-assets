@@ -15,16 +15,116 @@ const splitCsv = (value) => {
   if (Array.isArray(value)) return new Set(value.map(String).map(v => v.trim()).filter(Boolean));
   return new Set(String(value).split(',').map(v => v.trim()).filter(Boolean));
 };
+const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-function extractSourceExclusions(text) {
-  const cfg = RULES.source_exclusion ?? {};
-  const markers = (cfg.markers ?? []).map(v => String(v).toLowerCase());
-  if (!markers.some(marker => text.includes(marker))) return [];
-  const excluded = [];
-  for (const [canonical, aliases] of Object.entries(cfg.source_aliases ?? {})) {
-    if (aliases.some(alias => text.includes(String(alias).toLowerCase()))) excluded.push(canonical);
+function canonicalizeSource(term) {
+  const cleaned = norm(term).replace(/^[『「【\[\(（"'`\s]+|[』」】\]\)）"'`\s]+$/g, '');
+  if (!cleaned) return '';
+  const aliases = RULES.source_exclusion?.source_aliases ?? {};
+  for (const [canonical, names] of Object.entries(aliases)) {
+    const candidates = [canonical, ...(names ?? [])];
+    for (const alias of candidates) {
+      const a = norm(alias);
+      if (cleaned === a || cleaned.includes(a)) return canonical;
+    }
   }
-  return [...new Set(excluded)].sort();
+  return cleaned;
+}
+
+function sourceExclusionParse(text) {
+  const cfg = RULES.source_exclusion ?? {};
+  const markers = [...new Set((cfg.markers ?? []).map(norm).filter(Boolean))].sort((a, b) => b.length - a.length);
+  const markerHits = [];
+  for (const marker of markers) {
+    let start = 0;
+    while (true) {
+      const idx = text.indexOf(marker, start);
+      if (idx < 0) break;
+      markerHits.push([idx, marker]);
+      start = idx + Math.max(1, marker.length);
+    }
+  }
+  markerHits.sort((a, b) => a[0] - b[0] || b[1].length - a[1].length);
+  if (!markerHits.length) return { sources: [], parse_status: 'NONE', clauses: [], markers: [] };
+
+  const generic = cfg.generic_clause_extraction ?? {};
+  const enabled = Boolean(generic.enabled ?? false);
+  const separators = String(generic.clause_separators ?? '。.!?！？\n;；');
+  const qualifiers = (generic.leading_qualifiers ?? ['ただし', '但し', 'ただ', 'なお']).map(String);
+  const sourceSeparators = (generic.source_separators ?? ['および', '及び', 'ならびに', '並びに', 'と', '、', ',', '／', '/'])
+    .map(String).filter(Boolean).sort((a, b) => b.length - a.length);
+  const trailingPatterns = (generic.trailing_context_patterns ?? []).map(String).filter(Boolean).sort((a, b) => b.length - a.length);
+  const minChars = Number(generic.min_source_chars ?? 2);
+
+  const clauses = [];
+  const rawTerms = [];
+  const seen = new Set();
+  for (const [idx, marker] of markerHits) {
+    const key = `${idx}:${idx + marker.length}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (!enabled) continue;
+
+    const prefix = text.slice(0, idx);
+    let clause = prefix;
+    if (separators) {
+      const rx = new RegExp(`[${[...separators].map(esc).join('') }]+`);
+      const parts = prefix.split(rx);
+      clause = (parts.at(-1) ?? prefix).trim();
+    }
+
+    let changed = true;
+    while (changed && clause) {
+      changed = false;
+      for (const qualifier of qualifiers) {
+        const q = norm(qualifier);
+        if (clause.startsWith(q)) {
+          clause = clause.slice(q.length).replace(/^[\s、,:：]+/, '');
+          changed = true;
+          break;
+        }
+      }
+    }
+
+    changed = true;
+    while (changed && clause) {
+      changed = false;
+      for (const suffix of trailingPatterns) {
+        const s = norm(suffix);
+        if (clause.endsWith(s)) {
+          clause = clause.slice(0, -s.length).replace(/[\s、,:：]+$/, '');
+          changed = true;
+          break;
+        }
+      }
+    }
+
+    clause = clause.replace(/^[『「【\[\(（"'`\s]+|[』」】\]\)）"'`\s]+$/g, '').trim();
+    if (!clause) continue;
+    clauses.push(clause);
+
+    let pieces = [clause];
+    if (sourceSeparators.length) {
+      const splitter = new RegExp(`(?:${sourceSeparators.map(esc).join('|')})`, 'g');
+      pieces = clause.split(splitter);
+    }
+    for (const piece of pieces) {
+      const term = piece.replace(/^[『「【\[\(（"'`\s]+|[』」】\]\)）"'`\s]+$/g, '').trim();
+      if (term.length >= minChars) rawTerms.push(term);
+    }
+  }
+
+  const sources = [];
+  for (const term of rawTerms) {
+    const canonical = canonicalizeSource(term);
+    if (canonical && !sources.includes(canonical)) sources.push(canonical);
+  }
+  return {
+    sources: sources.sort(),
+    parse_status: sources.length ? 'RESOLVED' : 'UNRESOLVED',
+    clauses,
+    markers: [...new Set(markerHits.map(([, marker]) => marker))].sort(),
+  };
 }
 
 export function classifyTask(instruction) {
@@ -52,9 +152,12 @@ export function classifyTask(instruction) {
     if (keywords.some(kw => text.includes(String(kw).toLowerCase()))) domains.push(domain);
   }
 
-  const excludedSources = extractSourceExclusions(text);
-  const constraintMode = excludedSources.length ? 'EXPLICIT_SOURCE_EXCLUSION' : 'NONE';
-  if (excludedSources.length) domains.push('source_exclusion');
+  const exclusion = sourceExclusionParse(text);
+  const excludedSources = exclusion.sources;
+  let constraintMode = 'NONE';
+  if (exclusion.parse_status === 'RESOLVED') constraintMode = 'EXPLICIT_SOURCE_EXCLUSION';
+  else if (exclusion.parse_status === 'UNRESOLVED') constraintMode = 'EXPLICIT_SOURCE_EXCLUSION_UNRESOLVED';
+  if (exclusion.parse_status !== 'NONE') domains.push('source_exclusion');
 
   if (['HISTORICAL_RESEARCH', 'RESEARCH_SUMMARY'].includes(taskKind)) {
     domains.push('research');
@@ -71,6 +174,9 @@ export function classifyTask(instruction) {
     matched_keywords: taskHits,
     constraint_mode: constraintMode,
     excluded_sources: excludedSources,
+    exclusion_parse_status: exclusion.parse_status,
+    exclusion_clauses: exclusion.clauses,
+    exclusion_markers: exclusion.markers,
   };
 }
 
@@ -79,19 +185,15 @@ function relevance(doc, taskKind, domains, missionKey) {
   const policy = doc.load_policy ?? 'WHEN_DOMAIN';
   const reasons = [];
   let score = 0;
-
   if (policy === 'MANUAL_ONLY') return [-1, ['manual-only']];
   if (policy === 'ALWAYS') { score += 10000; reasons.push('ALWAYS'); }
-
   const docMission = String(doc.mission_key ?? '');
   if (missionKey && docMission === missionKey) { score += 9000; reasons.push('mission-exact'); }
   else if (policy === 'WHEN_MISSION' && docMission) return [-1, ['other-mission']];
-
   const taskKinds = splitCsv(doc.task_kinds);
   if (taskKinds.has('ALL')) { score += 500; reasons.push('task-all'); }
   else if (taskKinds.has(taskKind)) { score += 6000; reasons.push('task-kind'); }
   else if (policy === 'WHEN_TASK_KIND') return [-1, ['task-mismatch']];
-
   const docDomains = splitCsv(doc.domains);
   if (docDomains.has('ALL')) { score += 300; reasons.push('domain-all'); }
   else {
@@ -99,7 +201,6 @@ function relevance(doc, taskKind, domains, missionKey) {
     if (overlap.length) { score += 2500 + 200 * overlap.length; reasons.push(`domain:${overlap.join(',')}`); }
     else if (policy === 'WHEN_DOMAIN') return [-1, ['domain-mismatch']];
   }
-
   const priority = Number(doc.priority ?? 50);
   score += Math.max(0, 200 - priority);
   if (doc.required) { score += 500; reasons.push('required'); }
@@ -115,7 +216,6 @@ export function selectContext(instruction, catalog, options = {}) {
   const domains = new Set(task.domains);
   const candidates = [];
   const excluded = [];
-
   for (const doc of catalog) {
     if (![projectKey, '*'].includes(doc.project_key)) {
       excluded.push({ memory_key: doc.memory_key ?? '?', reason: 'project-mismatch' });
@@ -128,7 +228,6 @@ export function selectContext(instruction, catalog, options = {}) {
     }
     candidates.push([score, doc, reasons]);
   }
-
   candidates.sort((a, b) => b[0] - a[0] || Number(a[1].priority ?? 50) - Number(b[1].priority ?? 50) || String(a[1].memory_key).localeCompare(String(b[1].memory_key)));
   const selected = [];
   let usedChars = 0;
@@ -142,18 +241,9 @@ export function selectContext(instruction, catalog, options = {}) {
       excluded.push({ memory_key: doc.memory_key, reason: 'char-budget' });
       continue;
     }
-    selected.push({
-      memory_key: doc.memory_key,
-      title: doc.title ?? '',
-      drive_file_id: doc.drive_file_id ?? '',
-      drive_file_url: doc.drive_file_url ?? '',
-      estimated_chars: size,
-      score,
-      reasons,
-    });
+    selected.push({ memory_key: doc.memory_key, title: doc.title ?? '', drive_file_id: doc.drive_file_id ?? '', drive_file_url: doc.drive_file_url ?? '', estimated_chars: size, score, reasons });
     usedChars += size;
   }
-
   return {
     ...task,
     project_key: projectKey,
