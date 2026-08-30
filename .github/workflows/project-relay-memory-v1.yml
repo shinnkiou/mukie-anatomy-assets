@@ -5,10 +5,13 @@ on:
     branches:
       - project-relay-v1-virtual
     paths:
+      - 'project_relay_v1/memory_rules_v1.json'
       - 'project_relay_v1/memory_context_loader.py'
+      - 'project_relay_v1/memory_context_loader.mjs'
       - 'project_relay_v1/context_guard.py'
       - 'project_relay_v1/test_memory_context_loader.py'
       - 'project_relay_v1/test_context_guard.py'
+      - 'project_relay_v1/test_memory_parity.py'
       - 'project_relay_v1/testdata/memory_catalog_fixture.json'
       - '.github/workflows/project-relay-memory-v1.yml'
   workflow_dispatch:
@@ -24,8 +27,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Compile
-        run: python3 -m py_compile project_relay_v1/memory_context_loader.py project_relay_v1/context_guard.py project_relay_v1/test_memory_context_loader.py project_relay_v1/test_context_guard.py
+      - name: Runtime versions
+        run: |
+          python3 --version
+          node --version
+
+      - name: Compile Python
+        run: python3 -m py_compile project_relay_v1/memory_context_loader.py project_relay_v1/context_guard.py project_relay_v1/test_memory_context_loader.py project_relay_v1/test_context_guard.py project_relay_v1/test_memory_parity.py
+
+      - name: Validate shared rule JSON
+        run: python3 -m json.tool project_relay_v1/memory_rules_v1.json >/dev/null
 
       - name: Run selective memory tests
         working-directory: project_relay_v1
@@ -34,6 +45,10 @@ jobs:
       - name: Run context guard tests
         working-directory: project_relay_v1
         run: python3 test_context_guard.py
+
+      - name: Run Python JavaScript parity tests
+        working-directory: project_relay_v1
+        run: python3 test_memory_parity.py
 
       - name: Generate subculture T-shirt context manifest
         run: |
@@ -54,6 +69,7 @@ jobs:
           assert d['task_kind']=='HISTORICAL_RESEARCH', d
           assert d['selected_doc_count']==3, d
           assert d['estimated_chars'] <= d['char_budget'], d
+          assert d['rules_version']=='memory-rules-v1.0.2', d
           assert 'task-blender-runner-rules-v1' not in d['selected_memory_keys'], d
           assert 'task-discord-transport-v1' not in d['selected_memory_keys'], d
           print('CONTEXT MANIFEST VALID')
