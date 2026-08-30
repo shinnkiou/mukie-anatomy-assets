@@ -50,29 +50,53 @@ jobs:
         working-directory: project_relay_v1
         run: python3 test_memory_parity.py
 
-      - name: Generate subculture T-shirt context manifest
+      - name: Generate mission context manifests
         run: |
           mkdir -p project_relay_v1/.memory_evidence
           python3 project_relay_v1/memory_context_loader.py \
             'サブカルキャラTの歴史についてまとめる' \
             --catalog project_relay_v1/testdata/memory_catalog_fixture.json \
             --mission-key subculture_character_t_history_20260830 \
-            --out project_relay_v1/.memory_evidence/context_manifest.json
-          test -s project_relay_v1/.memory_evidence/context_manifest.json
+            --out project_relay_v1/.memory_evidence/context_manifest_subculture_t.json
+          python3 project_relay_v1/memory_context_loader.py \
+            'ガンダムにおいて、ザクが完成するまでにどのような紆余曲折を経たのかをまとめる資料を作成。ただしジ・オリジンの設定は参照しない' \
+            --catalog project_relay_v1/testdata/memory_catalog_fixture.json \
+            --mission-key gundam_zaku_development_pre_origin_20260830 \
+            --out project_relay_v1/.memory_evidence/context_manifest_gundam_zaku.json
+          test -s project_relay_v1/.memory_evidence/context_manifest_subculture_t.json
+          test -s project_relay_v1/.memory_evidence/context_manifest_gundam_zaku.json
 
       - name: Validate manifest invariants
         run: |
           python3 - <<'PY'
           import json
-          p='project_relay_v1/.memory_evidence/context_manifest.json'
-          d=json.load(open(p, encoding='utf-8'))
-          assert d['task_kind']=='HISTORICAL_RESEARCH', d
-          assert d['selected_doc_count']==3, d
-          assert d['estimated_chars'] <= d['char_budget'], d
-          assert d['rules_version']=='memory-rules-v1.0.2', d
-          assert 'task-blender-runner-rules-v1' not in d['selected_memory_keys'], d
-          assert 'task-discord-transport-v1' not in d['selected_memory_keys'], d
-          print('CONTEXT MANIFEST VALID')
+          from pathlib import Path
+          root=Path('project_relay_v1')
+          rules=json.loads((root/'memory_rules_v1.json').read_text(encoding='utf-8'))
+          sub=json.loads((root/'.memory_evidence/context_manifest_subculture_t.json').read_text(encoding='utf-8'))
+          gun=json.loads((root/'.memory_evidence/context_manifest_gundam_zaku.json').read_text(encoding='utf-8'))
+
+          assert sub['rules_version']==rules['version'], (sub, rules)
+          assert sub['task_kind']=='HISTORICAL_RESEARCH', sub
+          assert sub['selected_doc_count']==3, sub
+          assert sub['constraint_mode']=='NONE', sub
+          assert sub['excluded_sources']==[], sub
+          assert 'task-explicit-source-exclusion-rules-v1' not in sub['selected_memory_keys'], sub
+          assert 'task-blender-runner-rules-v1' not in sub['selected_memory_keys'], sub
+          assert sub['estimated_chars'] <= sub['char_budget'], sub
+
+          assert gun['rules_version']==rules['version'], (gun, rules)
+          assert gun['task_kind']=='HISTORICAL_RESEARCH', gun
+          assert gun['constraint_mode']=='EXPLICIT_SOURCE_EXCLUSION', gun
+          assert gun['excluded_sources']==['ジ・オリジン'], gun
+          assert gun['selected_doc_count']==4, gun
+          assert 'task-explicit-source-exclusion-rules-v1' in gun['selected_memory_keys'], gun
+          assert 'mission-gundam-zaku-development-pre-origin-brief-v1' in gun['selected_memory_keys'], gun
+          assert 'mission-subculture-character-t-history-brief-v1' not in gun['selected_memory_keys'], gun
+          assert 'task-blender-runner-rules-v1' not in gun['selected_memory_keys'], gun
+          assert 'task-discord-transport-v1' not in gun['selected_memory_keys'], gun
+          assert gun['estimated_chars'] <= gun['char_budget'], gun
+          print('ALL CONTEXT MANIFEST INVARIANTS VALID')
           PY
 
       - name: Upload context evidence
