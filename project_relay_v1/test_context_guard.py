@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from context_guard import build_guarded_context, requires_context_rebuild, routing_decision, validate_context_packet
-from memory_context_loader import select_context
+from memory_context_loader import RULES, select_context
 
 ROOT = Path(__file__).resolve().parent
 CATALOG = json.loads((ROOT / "testdata" / "memory_catalog_fixture.json").read_text(encoding="utf-8"))
@@ -19,32 +19,16 @@ def test_ambiguous_instruction_does_not_auto_execute():
 
 
 def test_task_change_forces_context_rebuild():
-    old = select_context(
-        "サブカルキャラTの歴史についてまとめる",
-        CATALOG,
-        mission_key="subculture_character_t_history_20260830",
-    )
-    new = select_context(
-        "Blenderでバーの3Dモデルを作る",
-        CATALOG,
-        mission_key="bar3d_sandbox",
-    )
+    old = select_context("サブカルキャラTの歴史についてまとめる", CATALOG, mission_key="subculture_character_t_history_20260830")
+    new = select_context("Blenderでバーの3Dモデルを作る", CATALOG, mission_key="bar3d_sandbox")
     decision = requires_context_rebuild(old, new)
     assert decision["rebuild"] is True, decision
     assert decision["reason"] in {"mission-changed", "task-kind-changed", "domains-changed"}, decision
 
 
 def test_same_task_can_reuse_context_identity():
-    a = select_context(
-        "サブカルキャラTの歴史についてまとめる",
-        CATALOG,
-        mission_key="subculture_character_t_history_20260830",
-    )
-    b = select_context(
-        "サブカルキャラTの歴史についてまとめる",
-        CATALOG,
-        mission_key="subculture_character_t_history_20260830",
-    )
+    a = select_context("サブカルキャラTの歴史についてまとめる", CATALOG, mission_key="subculture_character_t_history_20260830")
+    b = select_context("サブカルキャラTの歴史についてまとめる", CATALOG, mission_key="subculture_character_t_history_20260830")
     decision = requires_context_rebuild(a, b)
     assert decision["rebuild"] is False, decision
     assert decision["reason"] == "context-compatible", decision
@@ -56,6 +40,7 @@ def context_load_fixture():
         "project_key": "project_relay",
         "mission_key": "subculture_character_t_history_20260830",
         "task_kind": "HISTORICAL_RESEARCH",
+        "rules_version": RULES["version"],
         "selected_memory_keys": "global-project-relay-principles-v1,task-research-summary-rules-v1,mission-subculture-character-t-history-brief-v1",
         "selected_doc_count": 3,
     }
@@ -68,6 +53,7 @@ def packet_fixture():
         "project_key": "project_relay",
         "mission_key": "subculture_character_t_history_20260830",
         "task_kind": "HISTORICAL_RESEARCH",
+        "rules_version": RULES["version"],
         "status": "FRESH",
         "doc_count": 3,
         "source_docs_json": json.dumps([
@@ -93,6 +79,11 @@ def test_context_packet_gate():
     wrong_task["task_kind"] = "BLENDER_3D"
     mismatch = validate_context_packet(wrong_task, context)
     assert mismatch["valid"] is False and mismatch["reason"] == "task_kind-mismatch", mismatch
+
+    old_rules = packet_fixture()
+    old_rules["rules_version"] = "memory-rules-v0.0.0"
+    rules_mismatch = validate_context_packet(old_rules, context)
+    assert rules_mismatch["valid"] is False and rules_mismatch["reason"] == "rules-version-mismatch", rules_mismatch
 
     missing_source = packet_fixture()
     sources = json.loads(missing_source["source_docs_json"])
