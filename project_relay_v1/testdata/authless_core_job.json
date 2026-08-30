@@ -1,0 +1,16 @@
+{
+  "schema_version": "relay-virtual-job-v1",
+  "command_id": "authless-core-ci",
+  "project_key": "project_relay",
+  "runner": "VIRTUAL_FLOW_V1",
+  "auto_repair_limit": 1,
+  "actions": [
+    {"type": "WRITE_TEXT", "path": "result/authless_core.txt", "text": "PROJECT RELAY cloud core executed without Discord OAuth.\n"},
+    {"type": "WRITE_JSON", "path": "result/control_plane.json", "data": {"discord_oauth": false, "windows": false, "transport_dependency": "none", "worker": "github-actions-virtual"}},
+    {"type": "VALIDATE_EXISTS", "path": "result/authless_core.txt"},
+    {"type": "VALIDATE_NONZERO", "path": "result/authless_core.txt"},
+    {"type": "VALIDATE_EXISTS", "path": "result/control_plane.json"},
+    {"type": "VALIDATE_NONZERO", "path": "result/control_plane.json"},
+    {"type": "PACKAGE_ZIP", "path": "RESULTS.zip", "include": ["result/authless_core.txt", "result/control_plane.json"]}
+  ]
+}
