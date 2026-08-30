@@ -110,6 +110,19 @@ def apply_repair(job: Dict[str, Any], plan: Dict[str, Any]) -> Dict[str, Any]:
     return repaired
 
 
+def close_repaired_lifecycle(lifecycle: Dict[str, Any]) -> None:
+    """Close previously retrying failures/plans after a later attempt succeeds."""
+    resolved_at = now_iso()
+    for failure in lifecycle.get("failures", []):
+        if failure.get("status") == "RETRYING":
+            failure["status"] = "RESOLVED"
+            failure["resolved_at"] = resolved_at
+    for plan in lifecycle.get("repair_plans", []):
+        if plan.get("status") == "APPROVED_AUTO":
+            plan["status"] = "APPLIED"
+            plan["applied_at"] = resolved_at
+
+
 def execute_actions(job: Dict[str, Any], out_root: Path) -> List[Dict[str, Any]]:
     events: List[Dict[str, Any]] = []
     for idx, action in enumerate(job["actions"], 1):
@@ -185,6 +198,7 @@ def run(job: Dict[str, Any], base_root: Path) -> Dict[str, Any]:
             attempt["events"] = execute_actions(current_job, attempt_root)
             attempt["status"] = "SUCCESS"
             attempt["finished_at"] = now_iso()
+            close_repaired_lifecycle(lifecycle)
             lifecycle["final_status"] = "SUCCESS"
             lifecycle["successful_attempt"] = attempt_no
             break
