@@ -6,7 +6,7 @@ from typing import Any, Dict, Iterable, Mapping
 
 from memory_context_loader import RULES, classify_task, select_context
 
-VERSION = "context-guard-v1.1"
+VERSION = "context-guard-v1.2"
 DETERMINISTIC_CONFIDENCE_MIN = float(RULES.get("defaults", {}).get("deterministic_confidence_min", 0.60))
 
 
@@ -28,6 +28,7 @@ def context_identity(context: Dict[str, Any]) -> Dict[str, Any]:
         "mission_key": context.get("mission_key", ""),
         "task_kind": context.get("task_kind", "GENERAL"),
         "domains": sorted(set(context.get("domains") or [])),
+        "rules_version": context.get("rules_version", RULES["version"]),
     }
 
 
@@ -42,6 +43,8 @@ def requires_context_rebuild(previous: Dict[str, Any] | None, current: Dict[str,
         return {"rebuild": True, "reason": "mission-changed", "old": old, "new": new}
     if old["task_kind"] != new["task_kind"]:
         return {"rebuild": True, "reason": "task-kind-changed", "old": old, "new": new}
+    if old["rules_version"] != new["rules_version"]:
+        return {"rebuild": True, "reason": "rules-version-changed", "old": old, "new": new}
     old_domains = set(old["domains"])
     new_domains = set(new["domains"])
     if old_domains != new_domains:
@@ -70,12 +73,7 @@ def validate_context_packet(
     *,
     current_revisions: Mapping[str, str] | None = None,
 ) -> Dict[str, Any]:
-    """Validate a Base44 RelayContextPacket before an agent may execute.
-
-    current_revisions maps Drive file id -> latest revision id when direct Drive freshness
-    information is available. When it is not available, the packet can still be accepted
-    as a cached snapshot if its own status and task identity are valid.
-    """
+    """Validate a Base44 RelayContextPacket before an agent may execute."""
     if not packet:
         return {"valid": False, "execution_gate": "WAITING_SYNC", "reason": "packet-missing"}
     if packet.get("status") != "FRESH":
@@ -86,6 +84,19 @@ def validate_context_packet(
     for field in ("project_key", "mission_key", "task_kind"):
         if str(packet.get(field, "")) != str(context_load.get(field, "")):
             return {"valid": False, "execution_gate": "WAITING_SYNC", "reason": f"{field}-mismatch"}
+
+    expected_rules_version = str(context_load.get("rules_version") or RULES["version"])
+    packet_rules_version = str(packet.get("rules_version") or "")
+    if not packet_rules_version:
+        return {"valid": False, "execution_gate": "WAITING_SYNC", "reason": "rules-version-missing"}
+    if packet_rules_version != expected_rules_version:
+        return {
+            "valid": False,
+            "execution_gate": "WAITING_SYNC",
+            "reason": "rules-version-mismatch",
+            "expected": expected_rules_version,
+            "actual": packet_rules_version,
+        }
 
     selected = [x for x in str(context_load.get("selected_memory_keys", "")).split(",") if x]
     sources = _parse_source_docs(packet.get("source_docs_json"))
@@ -132,6 +143,7 @@ def validate_context_packet(
         "reason": "fresh-matching-packet",
         "packet_key": packet.get("packet_key", ""),
         "doc_count": packet_count,
+        "rules_version": packet_rules_version,
     }
 
 
