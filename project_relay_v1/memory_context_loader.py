@@ -7,45 +7,13 @@ import re
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Tuple
 
-VERSION = "memory-context-v1.0.1"
-DEFAULT_MAX_DOCS = 8
-DEFAULT_CHAR_BUDGET = 24000
-
-TASK_RULES = [
-    {
-        "task_kind": "HISTORICAL_RESEARCH",
-        "keywords": ["歴史", "変遷", "起源", "発展", "history", "historical"],
-        "domains": ["history", "research"],
-        "weight": 12,
-    },
-    {
-        "task_kind": "RESEARCH_SUMMARY",
-        "keywords": ["まとめ", "調査", "調べ", "リサーチ", "比較", "要約", "research", "summary"],
-        "domains": ["research"],
-        "weight": 8,
-    },
-    {
-        "task_kind": "BLENDER_3D",
-        "keywords": ["blender", "3d", "blend", "レンダリング", "メッシュ", "bpy"],
-        "domains": ["blender", "3d"],
-        "weight": 10,
-    },
-    {
-        "task_kind": "RELAY_ENGINEERING",
-        "keywords": ["relay", "base44", "discord", "runner", "agent", "github actions", "transport"],
-        "domains": ["project_relay", "engineering"],
-        "weight": 10,
-    },
-]
-
-DOMAIN_RULES = {
-    "fashion_history": ["tシャツ", "t-shirt", "キャラt", "キャラクターt", "ファッション", "衣服", "アパレル", "服"],
-    "character_merchandise": ["キャラt", "キャラクターt", "キャラクター", "グッズ", "merch"],
-    "subculture": ["サブカル", "ストリート", "オタク", "ファンダム"],
-    "anime_game_culture": ["アニメ", "ゲーム", "同人", "コミケ", "マンガ", "漫画"],
-    "blender": ["blender", "bpy", "blend"],
-    "project_relay": ["project relay", "relay", "base44", "discord"],
-}
+RULES_PATH = Path(__file__).with_name("memory_rules_v1.json")
+RULES = json.loads(RULES_PATH.read_text(encoding="utf-8"))
+VERSION = f"memory-context-{RULES['version']}"
+DEFAULT_MAX_DOCS = int(RULES.get("defaults", {}).get("max_docs", 8))
+DEFAULT_CHAR_BUDGET = int(RULES.get("defaults", {}).get("char_budget", 24000))
+TASK_RULES = RULES["task_rules"]
+DOMAIN_RULES = RULES["domain_rules"]
 
 
 def _norm(text: str) -> str:
@@ -93,6 +61,7 @@ def classify_task(instruction: str) -> Dict[str, Any]:
     domains = sorted(set(domains))
     return {
         "classifier_version": VERSION,
+        "rules_version": RULES["version"],
         "task_focus": instruction.strip(),
         "task_kind": task_kind,
         "domains": domains,
