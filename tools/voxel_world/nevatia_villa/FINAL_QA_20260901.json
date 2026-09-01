@@ -7,7 +7,12 @@
     "app_id": "6a2ae58cc6b153727abb83f1",
     "page": "/ai-3d-model-lab",
     "project_record_status": "PASS",
-    "verified_commit": "80d9f36a9296445ed8a68c81a38f6ac4fd67b6a2"
+    "verified_commit_before_final_checkpoint": "80d9f36a9296445ed8a68c81a38f6ac4fd67b6a2",
+    "final_checkpoint": {
+      "name": "NEVATIA Villa Exterior R1 FINAL — 3QA + 7-view WebGL + canon sync",
+      "id": "6a967ba599f7935495b1779a",
+      "commit": "34fd1fa9e7acebaa96e677a1d8a688e635f5d709"
+    }
   },
   "source": {
     "license": "CC0-1.0",
@@ -48,8 +53,15 @@
     "rerender_image_sha_match": "PASS",
     "note": "The seven fixed-view image SHA-256 values matched the earlier exact-builder render after shared-builder extraction. The previous Base44 SDK 404 side effect is absent after QA-page isolation."
   },
+  "canonical_save_readback": {
+    "base44_project_record": "PASS",
+    "github_public_safe_canon": "PASS",
+    "drive_human_readable_canon": "PASS",
+    "drive_document": "NEVATIA_VILLA_EXTERIOR_R1_CANON_20260901",
+    "final_checkpoint_recorded_in_base44_and_drive": "PASS"
+  },
   "completion": {
     "status": "COMPLETE",
-    "definition": "Exterior R1 implementation, provenance, deterministic QA, production build, exact shared-builder WebGL QA, and canonical save/readback are complete. Interior work is outside this scope."
+    "definition": "Exterior R1 implementation, provenance, deterministic QA, production build, exact shared-builder WebGL QA, canonical save/readback, and final restore checkpoint are complete. Interior work is outside this scope."
   }
 }
