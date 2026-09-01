@@ -1,0 +1,25 @@
+{
+  "schema": "bp3d.spatial_observer.public_status.v1",
+  "date": "2026-09-01",
+  "status": "STATIC_FINAL_WITH_EXPLICIT_PENDING_GATES",
+  "clean_body_faces": 13378,
+  "nonhead_faces": 10014,
+  "nonhead_production_coverage_percent": 100.0,
+  "production_label_count": 32,
+  "detail_label_count": 44,
+  "lowerbody_mirror_validation": {
+    "faces_checked": 796,
+    "mismatches": 0
+  },
+  "representation": "Anchor -> Path Bundle -> Muscle Envelope -> Shared Boundary -> Layer",
+  "source_mesh_writes": 0,
+  "r7_writes": 0,
+  "production14_writes": 0,
+  "private_payloads_included": false,
+  "pending_gates": [
+    "SHOULDER_AXILLA_MOTION_FIELD",
+    "HEAD_PHASE",
+    "INDIVIDUAL_ADDUCTOR_SUBDIVISION",
+    "FOREARM_FINE_POSE_MULTIVIEW_VALIDATION"
+  ]
+}
