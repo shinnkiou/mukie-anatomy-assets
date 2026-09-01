@@ -1,0 +1,47 @@
+{
+  "schema": "never-tear-building-project-bootstrap-v1",
+  "project_key": "never_tear_buildings",
+  "canonical_name": "NEVER TEAR Building Factory",
+  "canonical_brand_spelling": "NEVER TEAR",
+  "legacy_alias_policy": {
+    "new_artifacts_must_use_canonical_spelling": true,
+    "historical_identifiers_immutable": true
+  },
+  "drive": {
+    "folder_id": "10FCHHGRthO6drBKTMB1GCpcUsBmy35uN",
+    "folder_url": "https://drive.google.com/drive/folders/10FCHHGRthO6drBKTMB1GCpcUsBmy35uN",
+    "read_first_doc_id": "1l4Dvz6P3M7M-FNcwh9w0WvXs3BH9G6wiNSxd5n2GxM8",
+    "data_references_doc_id": "1oxJIjD7kCEQie0oiERtJ7w-Kwd4ijFc0xllVSie3PlM",
+    "task_schedule_doc_id": "1Xr_mSa62O1kxjrK01Jj4WyOP_HvUsqjZH8hRCk-GWUA",
+    "pipeline_qa_doc_id": "1sixjzwzEahml6D8NJcnpoVe_2fB-oBu3r_ExU9NhCgY"
+  },
+  "base44": {
+    "app_name": "Creative Ops Lab",
+    "app_id": "6a2ae58cc6b153727abb83f1",
+    "page": "/ai-3d-model-lab",
+    "mobile_visibility_fix_checkpoint": "6a96981f6bceddf9426a14ed",
+    "mobile_visibility_fix_commit": "ccf7965ea769fa6b2e902df2be1ef6237485715c",
+    "bootstrap_content_checkpoint": "6a96f4ddea4c3026817f501f",
+    "bootstrap_content_checkpoint_commit": "0a9513e8d13a5e1f601d148ccdda9181f4d2f985",
+    "bootstrap_final_checkpoint": "6a96f50ae64c988b8ab6eacc",
+    "bootstrap_final_checkpoint_commit": "823ab538931193f7bec1d159a05bf24d476a11ab"
+  },
+  "github": {
+    "repository": "shinnkiou/mukie-anatomy-assets",
+    "branch": "never-tear-building-bootstrap-20260902",
+    "historical_building_branch": "voxel-world-foundation-20260830"
+  },
+  "vercel": {
+    "team_id": "team_5Ht9iS7J9RACKzZKSsZwN43u",
+    "project_id": null,
+    "status": "OPTIONAL_NOT_CONFIGURED"
+  },
+  "iteration_target_minutes": 25,
+  "pipeline": ["REFERENCE", "STRUCTURE", "STRUCTURE_QA", "SURFACE", "SURFACE_QA", "RUNTIME_QA", "SYNCED", "COMPLETE"],
+  "schedule": {
+    "automation_title": "NEVER TEAR Building Queue",
+    "cadence": null,
+    "start_time": null,
+    "status": "TO_BE_CREATED_IN_NEW_CHATGPT_PROJECT"
+  }
+}
