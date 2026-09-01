@@ -1,0 +1,15 @@
+{
+  "schema": "bp3d.nonblender_detail_observer.validation.v4.1",
+  "status": "PASS",
+  "checks": {
+    "face_count": true,
+    "detail_label_count": true,
+    "detail_boundary_edges": true,
+    "toolpaths_cover_boundary": true,
+    "views_12": true,
+    "risk_views_10": true,
+    "source_write_zero": true
+  },
+  "canonical_drive_id": "1OTecFY_p5CWiT6Xi_mx-NCtuNrKx7bUU",
+  "package_sha256": "ea68812e6b49233b8a3ed5923d00186995db9ac2aa5fa8ef9971e05693302973"
+}

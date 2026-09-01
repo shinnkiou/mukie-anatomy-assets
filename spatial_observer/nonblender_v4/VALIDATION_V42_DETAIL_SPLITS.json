@@ -1,0 +1,20 @@
+{
+  "schema": "bp3d.detail_split.validation.v4.2",
+  "status": "PASS",
+  "checks": {
+    "source_face_count": 13378,
+    "assignment_face_count": 13378,
+    "detail_label_count": 56,
+    "split_file_count": 56,
+    "all_split_nonempty": true,
+    "union_unique_face_count": 13378,
+    "duplicate_face_ids": 0,
+    "missing_face_ids": 0,
+    "extra_face_ids": 0,
+    "all_split_nonmanifold_zero": true,
+    "source_write_zero": true
+  },
+  "source_writes": {"master":0,"r7":0,"production14":0},
+  "canonical_drive_id": "1E4T3ec0M4cMgFaKSU_8FIY1J-l_joSEY",
+  "package_sha256": "99a0ee15924c84f94d2db6073700700191f9fbc0f1c3c3efe77e5ec5b8868c9c"
+}
