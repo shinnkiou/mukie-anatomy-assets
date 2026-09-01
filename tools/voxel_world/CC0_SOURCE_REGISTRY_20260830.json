@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30",
+  "generated_at": "2026-09-01",
   "policy": {
     "planet_minecraft": "Provider is not site-wide CC0. Only individual project pages with explicit public-domain declarations are accepted.",
     "dynamic_entities": "Exclude mobs/creatures and other dynamic entities.",
@@ -18,6 +18,7 @@
     {"key":"binebirk_build_house","name":"Build A House","url":"https://binebirk.itch.io/build-a-house","license":"CC0","format":"fbx,obj,gltf","use":"snapping-friendly house modules"},
     {"key":"loys_goodies","name":"Loy's Goodies","url":"https://github.com/SL0ANE/Loy-s-Goodies","license":"CC0-1.0","format":"Blockbench/Java block-item models","use":"Minecraft-mapmaking static model templates"},
     {"key":"sbs_sandbox_textures","name":"Sandbox Style Terrain + Texture Pack","url":"https://screamingbrainstudios.itch.io/sbst-pack","license":"CC0","format":"block textures/tiles","use":"CC0 replacement materials"},
-    {"key":"greaby_circle_litematics","name":"Minecraft Circle Litematics","url":"https://github.com/Greaby/minecraft-circles-schematics","license":"CC0-1.0","format":"litematic","use":"real binary Litematica parser regression fixture; not a production building asset"}
+    {"key":"greaby_circle_litematics","name":"Minecraft Circle Litematics","url":"https://github.com/Greaby/minecraft-circles-schematics","license":"CC0-1.0","format":"litematic","use":"real binary Litematica parser regression fixture; not a production building asset"},
+    {"key":"oga_family_house_collection","name":"Family House Collection","url":"https://opengameart.org/content/family-house-collection","download_url":"https://opengameart.org/sites/default/files/houses_oga_0.zip","license":"CC0-1.0","format":"obj,blend,dae,3ds","sha256_archive":"d702ce00fd4ab5bd1e375a44f052b7641b8102a860f9d309bad91165c3c25759","selected_file":"house5_baked.obj","sha256_selected_file":"9ebbe8b355e5c99a295f5f673a7d94ab0dae9ae0308987e5c7e920d472bb7796","use":"NEVATIA Villa contemporary Japanese-house exterior donor; geometry only, project-owned procedural materials"}
   ]
 }
