@@ -1,0 +1,52 @@
+{
+  "schema": "bp3d.evidence_practical_validation.v4.3",
+  "status": "PASS",
+  "checks": {
+    "canonical_face_count": true,
+    "side_split_object_count": true,
+    "shell_split_object_count": true,
+    "side_split_union_unique": true,
+    "side_split_no_duplicate": true,
+    "side_split_exact_face_set": true,
+    "mirror_side_counts_all_equal": true,
+    "detail_adjacency_color_conflicts_zero": true,
+    "detail_graph_colors_at_most_5": true,
+    "candidate_overlay_source_write_zero": true,
+    "canonical_assignment_unchanged": true,
+    "textbook_images_preserved": true,
+    "medical_head_hypotheses_all_reviewed": true,
+    "master_r7_prod14_write_zero": true,
+    "obj_import_readiness_all_pass": true,
+    "readability_adjacency_image_exists": true,
+    "readability_evidence_image_exists": true,
+    "visual_review_status_pass": true
+  },
+  "counts": {
+    "canonical_faces": 13378,
+    "detail_labels": 56,
+    "side_objects": 112,
+    "shell_objects": 128,
+    "textbook_images": 19,
+    "candidate_overlay_objects": 6,
+    "adjacency_pairs": 127,
+    "colors_required": 5,
+    "obj_files_total": 246
+  },
+  "metrics": {
+    "canonical_face_coverage": 1.0,
+    "non_hypothesis_label_ratio": 0.9285714285714286,
+    "area_weighted_evidence_confidence": 0.7855267007083014,
+    "textbook_one_to_one_split_coverage": 0.717948717948718,
+    "textbook_exact_or_group_representation": 0.8461538461538461
+  },
+  "visual_review": {
+    "status": "PASS",
+    "adjacency_mode": "5-color graph coloring; 0 adjacent same-color pairs",
+    "evidence_mode": "evidence-state color encoding; hypotheses remain visibly distinct",
+    "scope": "human-readable diagnostic visualization, not clinical validation"
+  },
+  "canonical_drive_id": "1GM3kIz6ySOTgMIn3Jy_z8z7BayuD0rA-",
+  "package_sha256": "e5298195cf7ad59f61d038b0577bc4134e83a8a68fa5d32cbec7cde37a083669",
+  "source_writes": {"master":0,"r7":0,"production14":0},
+  "production13": "PERMANENTLY_FORBIDDEN"
+}
