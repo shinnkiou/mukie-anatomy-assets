@@ -1,0 +1,19 @@
+{
+  "schema": "bp3d.nonblender_observer.validation.v4",
+  "status": "PASS",
+  "checks": {
+    "face_count": {"pass": true, "detail": 13378},
+    "closed_manifold": {"pass": true, "detail": {"vertices":13380,"edges":26756,"faces":13378,"euler_characteristic":2,"closed":true,"nonmanifold_edge_count":0,"genus_if_connected_orientable":0.0}},
+    "mirror_zero": {"pass": true, "detail": {"mirror_missing":0,"production_mismatch":0,"detail_mismatch":0,"max_centroid_mirror_error_m":4.449591077262561e-16,"tolerance_m":1e-9}},
+    "cut_edge_exact": {"pass": true, "detail": {"missing_boundary_edges":0,"extra_cut_edges":0,"uv_seam_boundary_edges":76,"interior_point_count":126}},
+    "cut_toolpaths_cover_2108": {"pass": true, "detail": {"path_count":186,"boundary_edge_segments":2108}},
+    "directional_obs_all": {"pass": true, "detail": {"view_count":42,"all_production_labels_fully_frontface_observable_proxy":true}},
+    "multipart_mirror_structured": {"pass": true},
+    "views_12": {"pass": true, "detail":12},
+    "risk_views_7": {"pass": true, "detail":7},
+    "no_fail_findings": {"pass": true, "detail":[]}
+  },
+  "package_sha256": "ac5fd46e9e32cf086a1a51850a4a13a2de400caef600c36c9c71e727ee984aaf",
+  "drive_file_id": "1FQoDVi5C9td7NuAR6ESNN82rlv6Jlsrw",
+  "source_writes": {"master":0,"r7":0,"production14":0}
+}
