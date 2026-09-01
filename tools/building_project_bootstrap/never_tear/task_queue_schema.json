@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NEVER TEAR Building Task Queue",
+  "type": "object",
+  "required": ["schema", "project_key", "tasks"],
+  "properties": {
+    "schema": {"const": "never-tear-building-task-queue-v1"},
+    "project_key": {"const": "never_tear_buildings"},
+    "updated_at": {"type": ["string", "null"]},
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["task_id", "title", "building_name", "original_request", "goal", "priority", "dependencies", "phase_scope", "time_budget_minutes", "references", "acceptance_criteria", "status", "attempt_count", "artifact_refs", "qa_summary", "next_action", "notes"],
+        "properties": {
+          "task_id": {"type": "string", "pattern": "^NT-BLD-[0-9]{3,}$"},
+          "title": {"type": "string"},
+          "building_name": {"type": "string"},
+          "original_request": {"type": "string"},
+          "goal": {"type": "string"},
+          "priority": {"enum": ["URGENT", "HIGH", "NORMAL", "LOW"]},
+          "dependencies": {"type": "array", "items": {"type": "string"}},
+          "phase_scope": {"enum": ["STRUCTURE", "SURFACE", "FULL", "QA_ONLY", "RUNTIME_ONLY", "BLENDER_FINAL"]},
+          "time_budget_minutes": {"type": "integer", "minimum": 1, "default": 25},
+          "references": {"type": "array"},
+          "acceptance_criteria": {"type": "array", "items": {"type": "string"}},
+          "status": {"enum": ["PLANNED", "READY", "ACTIVE", "STRUCTURE", "STRUCTURE_QA", "SURFACE", "SURFACE_QA", "RUNTIME_QA", "BLOCKED", "SYNCED", "COMPLETE", "FAILED", "PAUSED"]},
+          "attempt_count": {"type": "integer", "minimum": 0},
+          "last_error": {"type": ["string", "null"]},
+          "blocker": {"type": ["string", "null"]},
+          "artifact_refs": {"type": "array"},
+          "qa_summary": {"type": "object"},
+          "next_action": {"type": ["string", "null"]},
+          "notes": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}
