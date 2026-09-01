@@ -1,0 +1,55 @@
+{
+  "schema": "nevatia-villa-final-qa-v1",
+  "project_key": "nevatia_villa_exterior_r1",
+  "status": "PASS",
+  "scope": "exterior_only",
+  "base44": {
+    "app_id": "6a2ae58cc6b153727abb83f1",
+    "page": "/ai-3d-model-lab",
+    "project_record_status": "PASS",
+    "verified_commit": "80d9f36a9296445ed8a68c81a38f6ac4fd67b6a2"
+  },
+  "source": {
+    "license": "CC0-1.0",
+    "source_obj_sha256": "9ebbe8b355e5c99a295f5f673a7d94ab0dae9ae0308987e5c7e920d472bb7796",
+    "component_obj_sha256": "bf229fab6e1d26137f36880c157256d297acb5273fb830cbf7106b6c8822f507",
+    "vertices": 388,
+    "faces": 352,
+    "connected_components": 17
+  },
+  "implementation": {
+    "shared_builder_sha256": "8024c53d8a3dabf78c3b7e89cb48b806900cce7caaaa42b458e4950acbdd0b86",
+    "canon_json_sha256": "fa820a0ad46b53d0d4465b5c077c8050f0fb3e6ac441811f8e1edf4ee5e45d3a",
+    "machine_qa_sha256": "1115e1e4f1e70a11fcc0f970d8670c29988a4a84a8219d55cc45ca7a3430247a",
+    "material_qa_sha256": "a7cc2c8d72680fefa8cad2ed38762f9a69e9c578f9f6e31858bdc00e612c9669",
+    "appearance_qa_sha256": "01655f502f0da8c9f4b22f6e03bed2a0f43833bdf58bcc0ff48a72bc4e3ed4b0",
+    "browser_capture_sha256": "badb693bd0fbcc98da92cb24fb9f49f80593e3af9bccaf9e2c02338bb50c8b82"
+  },
+  "deterministic_qa": {
+    "structure": {"status": "PASS", "passed": 26, "total": 26},
+    "material": {"status": "PASS", "passed": 13, "total": 13},
+    "appearance_proxy": {"status": "PASS", "passed": 14, "total": 14},
+    "production_build": "PASS"
+  },
+  "exact_webgl_qa": {
+    "status": "PASS",
+    "exact_shared_builder": true,
+    "http_status": 200,
+    "views": ["front_threequarter", "front", "east", "rear_threequarter", "rear", "west", "elevated_front"],
+    "view_count": 7,
+    "scene_meshes": 117,
+    "scene_vertex_entries": 5952,
+    "transparent_meshes": 14,
+    "lights": 4,
+    "root_name": "NEVATIA_VILLA_EXTERIOR_R1",
+    "webgl": "WebGL 2.0",
+    "page_errors": 0,
+    "console_errors": 0,
+    "rerender_image_sha_match": "PASS",
+    "note": "The seven fixed-view image SHA-256 values matched the earlier exact-builder render after shared-builder extraction. The previous Base44 SDK 404 side effect is absent after QA-page isolation."
+  },
+  "completion": {
+    "status": "COMPLETE",
+    "definition": "Exterior R1 implementation, provenance, deterministic QA, production build, exact shared-builder WebGL QA, and canonical save/readback are complete. Interior work is outside this scope."
+  }
+}
