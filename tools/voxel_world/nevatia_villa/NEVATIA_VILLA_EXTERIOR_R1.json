@@ -2,7 +2,6 @@
   "schema": "nevatia-villa-exterior-v1",
   "project_key": "nevatia_villa_exterior_r1",
   "title": "NEVATIA Villa Exterior R1",
-  "date": "2026-09-01",
   "scope": "exterior_only",
   "style_target": "ordinary contemporary Japanese detached house / villa; not ryokan",
   "base_source": {
@@ -25,43 +24,105 @@
     "bbox_max": [1.074975, 0.900988, 0.773883],
     "source_extents": [2.134742, 1.675984, 2.416054],
     "vertical_axis": "Y",
-    "selected_reason": "house5 has compact two-storey modern massing and strong deck/porch conversion potential"
+    "selected_reason": "Among the six CC0 family-house meshes, house5 has compact two-storey modern massing and the strongest balcony/porch/deck conversion potential."
   },
   "scale": {
     "basis": "Japanese 910 mm residential module",
     "target_width_modules": 9,
     "target_width_m": 8.19,
     "uniform_scale": 3.8365291918180273,
-    "derived_dimensions_m": {"width": 8.19, "depth": 9.269261700008713, "height": 6.429961541019944}
+    "derived_dimensions_m": {
+      "width": 8.19,
+      "depth": 9.269261700008713,
+      "height": 6.429961541019944
+    }
   },
   "exterior_design": {
-    "primary_wall": "neutral fiber-cement siding proxy",
-    "feature_wall": "charcoal feature field",
-    "window_system": "black aluminum sash and large sliding deck doors",
-    "deck": {"width_m": 6.35, "depth_m": 2.18, "top_elevation_m": 0.43, "board_count": 14, "steps": 3},
-    "entrance": ["ordinary dark residential door", "flat canopy", "intercom", "mail slot"],
-    "service_side": ["2 outdoor AC units", "fan grilles", "refrigerant covers", "condensate drains", "electric meter", "gas meter/pipe", "vent hoods", "exterior outlet", "outdoor faucet", "drain grates", "gravel/pavers"],
-    "rainwater": ["gutters", "downspouts"],
-    "lighting": ["warm entrance light", "warm deck light"],
-    "excluded_motifs": ["ryokan signage", "noren", "shoji facade", "torii", "decorative kawara emphasis", "traditional inn lattice overload"]
+    "primary_wall": "light-to-medium neutral fiber-cement siding appearance",
+    "feature_wall": "charcoal gray siding/panel field around deck glazing",
+    "window_system": "black aluminum sash with large sliding glass doors",
+    "wood_use": "deck, limited entrance/soffit/privacy-screen accents only",
+    "deck": {
+      "width_m": 6.35,
+      "depth_m": 2.18,
+      "top_elevation_m": 0.43,
+      "board_count": 14,
+      "steps": 3,
+      "privacy_screen": "partial vertical slats on one side"
+    },
+    "entrance": ["dark ordinary residential door", "compact flat canopy", "intercom", "mail slot"],
+    "service_side": [
+      "2 outdoor AC units on concrete feet",
+      "fan grilles",
+      "refrigerant pipe covers",
+      "condensate drain hoses",
+      "electric meter box",
+      "gas meter and exposed service pipe",
+      "3 vent hoods",
+      "exterior weatherproof outlet",
+      "outdoor faucet",
+      "ground drain grates",
+      "service gravel and stepping pavers"
+    ],
+    "rainwater": ["front/rear gutters", "east/west downspouts"],
+    "lighting": ["warm entrance wall light", "warm deck wall light"],
+    "soft_detail": ["small deck planter"],
+    "excluded_motifs": [
+      "ryokan signage",
+      "noren",
+      "shoji facade",
+      "torii",
+      "decorative kawara emphasis",
+      "traditional inn lattice overload"
+    ]
   },
-  "material_policy": {"geometry_material_separation": true, "source_texture_required": false, "base_wall_opaque": true, "avoid_double_surface": true},
+  "material_policy": {
+    "geometry_material_separation": true,
+    "source_texture_required": false,
+    "r1_materials": "project-owned procedural/plain Three.js materials",
+    "base_wall_opaque": true,
+    "avoid_double_surface": true
+  },
   "qa": {
     "minimum_rounds": 3,
     "maximum_rounds": 10,
+    "status": "PASS",
     "rounds": [
-      {"round": 1, "type": "structure", "status": "IN_PROGRESS"},
-      {"round": 2, "type": "material", "status": "PENDING"},
-      {"round": 3, "type": "appearance", "status": "PENDING"}
+      {"round": 1, "type": "structure", "status": "PASS", "check_count": 26},
+      {"round": 2, "type": "material", "status": "PASS", "check_count": 13},
+      {"round": 3, "type": "appearance", "status": "PASS", "check_count": 14}
     ],
     "base44_build": "PASS",
-    "source_asset_dist_sha_readback": "PASS",
-    "visual_browser_or_blender_qa": "PENDING"
+    "visual_browser_qa": {
+      "status": "PASS",
+      "exact_shared_builder": true,
+      "view_count": 7,
+      "http_status": 200,
+      "page_errors": 0,
+      "console_errors": 0,
+      "webgl": "WebGL 2.0",
+      "scene_meshes": 117,
+      "scene_vertex_entries": 5952,
+      "capture_sha256": "badb693bd0fbcc98da92cb24fb9f49f80593e3af9bccaf9e2c02338bb50c8b82",
+      "rerender_image_sha_match": "PASS"
+    }
   },
   "implementation": {
     "base44_app": "Creative Ops Lab",
     "base44_page": "/ai-3d-model-lab",
     "preset_op": "nevatia_villa_exterior_preset",
-    "root_name": "NEVATIA_VILLA_EXTERIOR_R1"
+    "root_name": "NEVATIA_VILLA_EXTERIOR_R1",
+    "shared_builder_path": "src/lib/3d/nevatiaVillaExteriorR1.js",
+    "shared_builder_sha256": "8024c53d8a3dabf78c3b7e89cb48b806900cce7caaaa42b458e4950acbdd0b86",
+    "source_copy_path": "public/assets/nevatia_villa/house5_cc0.obj",
+    "component_split_path": "public/assets/nevatia_villa/house5_components_r1.obj",
+    "component_split_sha256": "bf229fab6e1d26137f36880c157256d297acb5273fb830cbf7106b6c8822f507",
+    "qa_capture_path": "artifacts/nevatia_villa/visual_qa_exact_r1/browser_exact_capture.json",
+    "base44_commit_at_final_verification": "80d9f36a9296445ed8a68c81a38f6ac4fd67b6a2"
+  },
+  "completion": {
+    "status": "COMPLETE",
+    "scope": "NEVATIA Villa exterior R1 only",
+    "note": "Exterior implementation, deterministic QA, exact shared-builder WebGL QA, and canonical provenance are complete. Interior design is intentionally outside this R1 scope."
   }
 }
