@@ -1,0 +1,28 @@
+{
+  "schema":"bp3d.textbook_structure_crosswalk.v4.3.github_record",
+  "source":"19 user-supplied textbook images preserved in canonical Drive package",
+  "metrics":{
+    "inventory_count":40,
+    "surface_split_relevant_count":39,
+    "exact_or_reviewed_1to1_count":28,
+    "group_or_context_count":5,
+    "missing_surface_refinement_count":6,
+    "deep_context_count":1,
+    "one_to_one_textbook_split_coverage":0.717948717948718,
+    "represented_exact_or_group_coverage":0.8461538461538461,
+    "interpretation":"Project audit coverage against visible textbook structures; not clinical diagnostic accuracy."
+  },
+  "exact_or_reviewed":["sternocleidomastoid","trapezius","deltoid","biceps_brachii","triceps_brachii","pectoralis_major","latissimus_dorsi","rectus_abdominis","external_oblique","gluteus_maximus","gluteus_medius","tensor_fasciae_latae","rectus_femoris","vastus_lateralis","vastus_medialis","adductor_longus","adductor_magnus","gracilis","biceps_femoris","medial_hamstring_surface","tibialis_anterior","gastrocnemius_medial_head","gastrocnemius_lateral_head","soleus","brachioradialis","extensor_carpi_radialis_longus","flexor_carpi_radialis","pronator_teres"],
+  "group_or_context":["iliotibial_band","extensor_digitorum_forearm","abductor_pollicis_longus","thoracolumbar_fascia","knee_surface_landmark_complex"],
+  "missing_surface_refinements":["serratus_anterior","sartorius","pectineus","extensor_digitorum_longus_leg","extensor_hallucis_longus","fibularis_group"],
+  "deep_context_only":["rotator_cuff"],
+  "noncanonical_review_candidates":{
+    "serratus_anterior":20,
+    "sartorius":46,
+    "pectineus":14,
+    "tibialis_anterior_retained":24,
+    "extensor_digitorum_longus_leg":12,
+    "fibularis_lateral_surface":10
+  },
+  "explicit_non_actions":["Do not force extensor hallucis longus into a skin-surface physical split without stronger 3D evidence.","Do not force rotator cuff or teres major into fake skin-surface muscle ownership.","Candidate overlays do not modify canonical Face ownership."]
+}
