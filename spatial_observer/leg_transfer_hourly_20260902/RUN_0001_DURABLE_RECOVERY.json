@@ -1,0 +1,23 @@
+{
+  "run_key": "LEG02_RUN_0001_20260902_1250JST",
+  "status": "DURABLE_GEOMETRY_BASELINE_RESTORED",
+  "score": 0.9680600700192865,
+  "face_coverage": 0.9980582524271845,
+  "area_coverage": 0.9995184731381808,
+  "two_view_face_fraction": 0.9145631067961165,
+  "two_view_area_fraction": 0.916740084602283,
+  "unobserved_faces": [922, 951],
+  "drive_folder_id": "1s786FG0aiJppq-8wwqoaZ6vBnkHDUtC1",
+  "drive_zip_id": "12_LyXGhHTiNSVs6cLByW1AZJ1M8iU7_2",
+  "drive_metrics_id": "1mwWO9MyU6xsdWp_ZBJ8FNQyCaSzO_8Oi",
+  "drive_report_id": "1zvgaBb29bPvzHX6ngSr9X2-2f_N3rnPS",
+  "drive_contact_sheet_id": "1U43GJso-M2j-ccX3DZ0xFJn0FNd4Ae3c",
+  "sha256": "2304674999b7a6b8f4c69b536a08052ccf67d8c55d07ee991447b28cd94cdf7a",
+  "drive_readback_sha_verified": true,
+  "zip_crc_verified": true,
+  "canonical_face_assignment_changed": false,
+  "MASTER_write": 0,
+  "R7_write": 0,
+  "Production14": "HOLD",
+  "Production13": "FORBIDDEN"
+}
