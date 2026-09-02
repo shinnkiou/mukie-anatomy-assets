@@ -1,16 +1,18 @@
 {
   "project_key": "never_tear_buildings",
-  "updated_at": "2026-09-03T02:27:00+09:00",
-  "active_task": "NT-BLD-008",
-  "last_complete": "NT-BLD-007",
-  "next_action": "3室の役割別Structureを、コンソール/ラック/会議区画と保守動線として実配置しreadbackする",
+  "updated_at": "2026-09-03T02:36:00+09:00",
+  "active_task": "NT-BLD-009",
+  "last_complete": "NT-BLD-008",
+  "next_action": "room11へ処置ベイ、ベッド列、医療棚、酸素/機器、ストレッチャー動線をStructure実配置しreadbackする",
   "walkmyplan_plan_id": "aacb32598eb746758d60c8",
   "drive_007": "1LTNwz0De6cdPSNyUfo5IuScEIehxUelZOZpoWV9RFFY",
+  "drive_008": "1cvdlloa9xHLGpPY11RpPPIE21-xgaAflqJkh48KWN7s",
   "linear_007": "RIO-27",
   "linear_008": "RIO-28",
-  "supabase_state": "NT-BLD-001..007 COMPLETE; NT-BLD-008 ACTIVE",
+  "linear_009": "RIO-29",
+  "supabase_state": "NT-BLD-001..008 COMPLETE; NT-BLD-009 ACTIVE",
   "base44_checkpoint": "6a985c78bcf0e5e40a244168",
   "base44_commit": "0b74b86e8ae5db4018a43be064595eaa05a024cc",
   "qa_caveat": "WalkMyPlan hangar area display changed 166.0->163.6m2 at rev201 while hangar geometry remained unchanged; recheck in Runtime/appearance QA.",
-  "note": "Legacy task_queue.json still requires status normalization; this runtime_state is the current durable recovery point."
+  "note": "Base44 task_queue is current through NT-BLD-009. GitHub legacy task_queue.json still requires normalization; runtime_state is the durable current recovery point."
 }
