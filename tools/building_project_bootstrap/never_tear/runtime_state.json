@@ -1,11 +1,15 @@
 {
   "project_key": "never_tear_buildings",
-  "updated_at": "2026-09-03T02:00:00+09:00",
-  "active_task": "NT-BLD-006",
-  "last_complete": "NT-BLD-005",
-  "next_action": "中央通路room 2の断面、耐圧/防火扉、露出鉄骨、主配管・ケーブルラック、非常設備位置をStructureとして固定する",
+  "updated_at": "2026-09-03T02:17:00+09:00",
+  "active_task": "NT-BLD-007",
+  "last_complete": "NT-BLD-006",
+  "next_action": "中央通路から分岐する副通路ルートを選定し、狭幅通路・保守アクセス・高密度ユーティリティ位置をStructureとして実配置する",
   "walkmyplan_plan_id": "aacb32598eb746758d60c8",
-  "linear_issue": "RIO-25",
-  "supabase_state": "NT-BLD-001..005 COMPLETE; NT-BLD-006 ACTIVE",
-  "base44_state": "recovered and readback passed"
+  "drive_006": "1a9i1dMdH0SaMZ9cbsMVyPKpnpbCCd_PJKLowdnFecsk",
+  "linear_006": "RIO-25",
+  "linear_007": "RIO-27",
+  "supabase_state": "NT-BLD-001..006 COMPLETE; NT-BLD-007 ACTIVE",
+  "base44_checkpoint": "6a985a48934383fe9e7e7cbc",
+  "base44_commit": "a17a249c3f776d089757fce6c9f3fa3c2e0763bf",
+  "note": "Legacy task_queue.json still requires status normalization; this runtime_state is the current durable recovery point."
 }
