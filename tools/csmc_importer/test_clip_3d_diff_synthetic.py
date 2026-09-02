@@ -105,6 +105,8 @@ def main() -> None:
         assert result['identity_relation']['same_character_uuid'] is True
         assert result['identity_relation']['same_model_guid'] is True
         assert result['camera_equal'] is True
+        assert result['sql_controls_equal'] is True
+        assert all(result['sql_control_table_equal'].values())
         assert result['model_diff']['exact_equal'] is True
         assert result['scene_diff']['exact_equal'] is False
         assert result['scene_diff']['different_bytes_including_length_delta'] == 1
@@ -114,6 +116,7 @@ def main() -> None:
         print('scene_different_bytes=', result['scene_diff']['different_bytes_including_length_delta'])
         print('model_exact_equal=', result['model_diff']['exact_equal'])
         print('camera_equal=', result['camera_equal'])
+        print('sql_controls_equal=', result['sql_controls_equal'])
 
 
 if __name__ == '__main__':
