@@ -85,6 +85,37 @@ def _read_ref(raw) -> str | None:
     return bytes(raw).decode("ascii", "replace")
 
 
+def _norm_sql_value(v):
+    if isinstance(v, (bytes, bytearray)):
+        b = bytes(v)
+        # External references are semantic strings, not opaque numeric BLOBs.
+        if b.startswith(b"extrnlid"):
+            return {"external_ref": b.decode("ascii", "replace")}
+        # Preserve short BLOB hex for reproducible numeric-state comparisons,
+        # hash larger BLOBs to keep output bounded.
+        if len(b) <= 128:
+            return {"blob_len": len(b), "hex": b.hex()}
+        return {"blob_len": len(b), "sha256": hashlib.sha256(b).hexdigest()}
+    return v
+
+
+def _table_snapshot(con: sqlite3.Connection, table: str, keep: list[str] | None = None, order_by: str = "_PW_ID"):
+    tables = {r[0] for r in con.execute("select name from sqlite_master where type='table'")}
+    if table not in tables:
+        return None
+    cols = [r[1] for r in con.execute(f'pragma table_info("{table}")')]
+    chosen = [c for c in (keep or cols) if c in cols]
+    if not chosen:
+        return None
+    qcols = ",".join('"' + c.replace('"', '""') + '"' for c in chosen)
+    order = f' order by "{order_by}"' if order_by in cols else ""
+    rows = con.execute(f'select {qcols} from "{table}"{order}').fetchall()
+    return [
+        {c: _norm_sql_value(v) for c, v in zip(chosen, row)}
+        for row in rows
+    ]
+
+
 def inspect_clip(path: str | Path) -> dict:
     p = Path(path)
     raw = p.read_bytes()
@@ -160,6 +191,34 @@ def inspect_clip(path: str | Path) -> dict:
                         "FrustumOrtho", "ViewportWidth", "ViewportHeight",
                     ]
                     camera = {k: d.get(k) for k in keep}
+
+            sql_controls = {
+                "Canvas": _table_snapshot(con, "Canvas", [
+                    "CanvasUnit", "CanvasWidth", "CanvasHeight", "CanvasResolution",
+                    "Canvas3DModelDataLoaderIndex"
+                ]),
+                "CanvasItem": _table_snapshot(con, "CanvasItem", [
+                    "ItemUuid", "ItemType", "ItemCaption", "ItemDataHoldMethod",
+                    "ItemRegistedDirect", "kLabelItem3DDataID"
+                ]),
+                "LayerObject": _table_snapshot(con, "LayerObject", [
+                    "MainId", "ObjectUuid", "ObjectName", "ObjectLock", "ObjectVisibility",
+                    "ObjectSelect", "ObjectPickmask", "Camera", "BankItemUuid",
+                    "Character", "Light", "ObjectNext"
+                ], order_by="MainId"),
+                "CharacterInfo": _table_snapshot(con, "CharacterInfo", [
+                    "LayerObjectId", "CharacterUUID"
+                ]),
+                "Manager3DOd_controls": _table_snapshot(con, "Manager3DOd", [
+                    "CanvasRectLeft", "CanvasRectTop", "CanvasRectRight", "CanvasRectBottom",
+                    "CameraNearFarAutoSet", "MultiViewTargetPosition", "MultiViewZoom",
+                    "MultiViewPresetCameraFrustum", "MultiViewPresetCameraOrthographic",
+                    "MultiViewPresetCameraTwist", "MultiViewPresetCameraPosition",
+                    "MultiViewPresetCameraRotate", "MultiViewPresetCameraDistance",
+                    "MultiViewPresetCameraUpGuide", "MultiViewNearClipEnable",
+                    "MultiViewNearClipPosition"
+                ]),
+            }
         finally:
             con.close()
 
@@ -180,6 +239,7 @@ def inspect_clip(path: str | Path) -> dict:
         "model": _c3d_meta(model_blob) if model_blob is not None else None,
         "scene": _c3d_meta(scene_blob) if scene_blob is not None else None,
         "camera": camera,
+        "sql_controls": sql_controls,
         "_model_blob": model_blob,
         "_scene_blob": scene_blob,
     }
@@ -254,6 +314,11 @@ def compare(a_path: str | Path, b_path: str | Path) -> dict:
             ),
         },
         "camera_equal": a["camera"] == b["camera"],
+        "sql_controls_equal": a.get("sql_controls") == b.get("sql_controls"),
+        "sql_control_table_equal": {
+            key: a.get("sql_controls", {}).get(key) == b.get("sql_controls", {}).get(key)
+            for key in sorted(set(a.get("sql_controls", {})) | set(b.get("sql_controls", {})))
+        },
         "model_diff": _diff_bytes(am or b"", bm or b""),
         "scene_diff": _diff_bytes(ascene or b"", bscene or b""),
     }
