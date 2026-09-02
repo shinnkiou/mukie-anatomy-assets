@@ -1,5 +1,6 @@
 {
   "run_family": "BP3D_LEG_TRANSFER_HOURLY",
+  "mainline": "02_DIVERSITY_HYPOTHESIS_CONTINUOUS_EXPERIMENT",
   "target": "RIGHT_LEG_FIRST_PASS",
   "scope": ["hip_surface", "thigh", "knee", "lower_leg"],
   "foot_role": "alignment_reference_only_first_pass",
@@ -11,5 +12,11 @@
   "fusion": "confidence_weighted_multiview_vote",
   "black_boundary_rule": "internal_muscle_boundaries_only",
   "promotion_rule": "objective_improvement_and_no_safety_regression",
+  "permission_policy": {
+    "external_uploaded_reference_default": "EMERGENCY_ONLY_DISABLED",
+    "activation_condition": "explicit_author_permission_or_verified_compatible_license",
+    "until_activated": "do_not_use_pixels_for_transfer_training_or_boundary_fitting",
+    "primary_active_sources": ["user_textbook_exact","self_derived_model_observation","licensed_or_public_domain_anatomy_text"]
+  },
   "source_safety": {"MASTER_write":0,"R7_write":0,"Production14":"HOLD","Production13":"FORBIDDEN"}
 }
