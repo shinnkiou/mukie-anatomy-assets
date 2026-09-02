@@ -22,11 +22,16 @@ jobs:
           python -m py_compile \
             tools/csmc_importer/csmc_core.py \
             tools/csmc_importer/clip_3d_diff.py \
+            tools/csmc_importer/runtime_blob_compare.py \
             tools/csmc_importer/test_probe_synthetic.py \
-            tools/csmc_importer/test_clip_3d_diff_synthetic.py
+            tools/csmc_importer/test_clip_3d_diff_synthetic.py \
+            tools/csmc_importer/test_runtime_blob_compare_synthetic.py
       - name: CSMC/CS3C schema smoke
         working-directory: tools/csmc_importer
         run: python test_probe_synthetic.py
       - name: Synthetic CLIP scene differential smoke
         working-directory: tools/csmc_importer
         run: python test_clip_3d_diff_synthetic.py
+      - name: Synthetic runtime blob identity/mutation/insertion smoke
+        working-directory: tools/csmc_importer
+        run: python test_runtime_blob_compare_synthetic.py
