@@ -11,10 +11,13 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 MAGIC = b"CLIP_STUDIO_3D_DATA2"
+# Use longer byte signatures to reduce false positives inside high-entropy payloads.
+# These offsets are still only raw byte-occurrence diagnostics, not proof of an embedded file.
 SIGNATURES = {
     "png": b"\x89PNG\r\n\x1a\n",
-    "jpeg": b"\xff\xd8\xff",
-    "zip": b"PK\x03\x04",
+    "jpeg_jfif": b"\xff\xd8\xff\xe0",
+    "jpeg_exif": b"\xff\xd8\xff\xe1",
+    "zip_local_header": b"PK\x03\x04",
     "fbx_binary": b"Kaydara FBX Binary",
     "gltf": b"glTF",
 }
@@ -35,8 +38,11 @@ class ProbeResult:
     logical_size: int | None
     stored_size: int | None
     blob_size: int
+    payload_offset: int | None
+    payload_size_available: int | None
     entropy_first_1m: float
     signatures: dict[str, int]
+    signature_note: str
 
 
 def _read_lp_string(blob: bytes, offset: int) -> tuple[bytes, int]:
@@ -58,23 +64,48 @@ def _entropy(data: bytes) -> float:
     return -sum((v / n) * math.log2(v / n) for v in c.values())
 
 
+def _table_columns(con: sqlite3.Connection, table: str) -> set[str]:
+    return {r[1] for r in con.execute(f'pragma table_info("{table}")')}
+
+
 def _select_blob(con: sqlite3.Connection) -> tuple[str, str, int | None, bytes]:
     tables = {r[0] for r in con.execute("select name from sqlite_master where type='table'")}
-    if "character" not in tables:
-        raise ValueError("character table not found")
+    candidates = [
+        ("character", "catalog_data"),
+        ("character", "character"),
+        ("catalog_character", "catalog_data"),
+    ]
+    seen_schemas = {}
+    for table, blob_col in candidates:
+        if table not in tables:
+            continue
+        cols = _table_columns(con, table)
+        seen_schemas[table] = sorted(cols)
+        if blob_col not in cols:
+            continue
+        version_col = "version" if "version" in cols else None
+        select_cols = f'"{blob_col}"' if version_col is None else f'"{version_col}", "{blob_col}"'
+        row = con.execute(f'select {select_cols} from "{table}" limit 1').fetchone()
+        if not row:
+            continue
+        if version_col is None:
+            outer_version, raw = None, row[0]
+        else:
+            outer_version, raw = row[0], row[1]
+        if raw is None:
+            continue
+        return table, blob_col, outer_version, bytes(raw)
+    raise ValueError(f"unsupported/missing CELSYS character schema: {seen_schemas or sorted(tables)}")
 
-    cols = [r[1] for r in con.execute("pragma table_info(character)")]
-    if "catalog_data" in cols:
-        blob_col = "catalog_data"
-    elif "character" in cols:
-        blob_col = "character"
-    else:
-        raise ValueError(f"unsupported character schema: {cols}")
 
-    row = con.execute(f"select version, {blob_col} from character limit 1").fetchone()
-    if not row or row[1] is None:
-        raise ValueError("character row/blob missing")
-    return "character", blob_col, row[0], bytes(row[1])
+def extract_character_blob(path: str | Path) -> tuple[bytes, str, str, int | None]:
+    p = Path(path)
+    con = sqlite3.connect(str(p))
+    try:
+        table, blob_col, outer_version, blob = _select_blob(con)
+    finally:
+        con.close()
+    return blob, table, blob_col, outer_version
 
 
 def probe(path: str | Path) -> ProbeResult:
@@ -82,11 +113,7 @@ def probe(path: str | Path) -> ProbeResult:
     raw = p.read_bytes()
     sha = hashlib.sha256(raw).hexdigest()
 
-    con = sqlite3.connect(str(p))
-    try:
-        table, blob_col, outer_version, blob = _select_blob(con)
-    finally:
-        con.close()
+    blob, table, blob_col, outer_version = extract_character_blob(p)
 
     magic, off = _read_lp_string(blob, 0)
     kind, off = _read_lp_string(blob, off)
@@ -94,10 +121,12 @@ def probe(path: str | Path) -> ProbeResult:
         raise ValueError(f"unexpected magic: {magic!r}")
 
     guid = None
-    inner_version = logical_size = stored_size = None
+    inner_version = logical_size = stored_size = payload_offset = payload_available = None
     if off + 28 <= len(blob):
         guid = blob[off:off + 16].hex()
         inner_version, logical_size, stored_size = struct.unpack_from("<III", blob, off + 16)
+        payload_offset = off + 28
+        payload_available = len(blob) - payload_offset
 
     sample = blob[: min(len(blob), 1_000_000)]
     signatures = {name: blob.find(sig) for name, sig in SIGNATURES.items()}
@@ -116,8 +145,11 @@ def probe(path: str | Path) -> ProbeResult:
         logical_size=logical_size,
         stored_size=stored_size,
         blob_size=len(blob),
+        payload_offset=payload_offset,
+        payload_size_available=payload_available,
         entropy_first_1m=_entropy(sample),
         signatures=signatures,
+        signature_note="Raw byte offsets only; high-entropy payloads can contain accidental matches. Treat as a lead, not embedded-file proof.",
     )
 
 
