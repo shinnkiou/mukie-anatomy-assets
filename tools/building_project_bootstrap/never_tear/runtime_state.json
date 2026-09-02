@@ -1,0 +1,11 @@
+{
+  "project_key": "never_tear_buildings",
+  "updated_at": "2026-09-03T02:00:00+09:00",
+  "active_task": "NT-BLD-006",
+  "last_complete": "NT-BLD-005",
+  "next_action": "中央通路room 2の断面、耐圧/防火扉、露出鉄骨、主配管・ケーブルラック、非常設備位置をStructureとして固定する",
+  "walkmyplan_plan_id": "aacb32598eb746758d60c8",
+  "linear_issue": "RIO-25",
+  "supabase_state": "NT-BLD-001..005 COMPLETE; NT-BLD-006 ACTIVE",
+  "base44_state": "recovered and readback passed"
+}
