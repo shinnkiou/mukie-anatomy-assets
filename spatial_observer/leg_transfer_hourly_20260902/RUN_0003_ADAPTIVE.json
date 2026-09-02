@@ -1,0 +1,32 @@
+{
+  "run_key": "LEG02_RUN_0003_ADAPTIVE_20260902",
+  "status": "ADAPTIVE_VIEW_ACCEPTED_GAP_RECOVERY",
+  "authoritative_baseline_replaced": false,
+  "semantic_best_promoted": false,
+  "accepted_view": {
+    "name": "POSTERIOR_MEDIAL_LOW_30",
+    "azimuth_deg": 150,
+    "elevation_deg": 30
+  },
+  "original_unseen_face_recovery": {
+    "922": {"seen": true, "abs_normal_dot_ray": 0.5349042237313543},
+    "951": {"seen": true, "abs_normal_dot_ray": 0.5196379316744245}
+  },
+  "grazing_threshold": 0.25,
+  "tested_previous_candidates": {
+    "BACK_OBLIQUE_15": {"922": false, "951": false},
+    "BACK_OBLIQUE_45": {"922": false, "951": false},
+    "BACK_LOW_15": {"922": true, "951": false}
+  },
+  "independent_raster_re_evaluation_only": true,
+  "drive_folder_id": "1DWCsKBUCtgjtuPjRceta0z9BlmKS878_",
+  "drive_zip_id": "1067kG4d8Ki5DBU8IOPj3-TIkgGRWXuEj",
+  "drive_metrics_id": "1WlVxRFtzjKOXGg3ibZ3aqfqWEM2oVGmy",
+  "drive_report_id": "1gssgnVuDjldrSqAd0s9qCT5ktoSFbuyB",
+  "drive_montage_id": "1QBrVmu4SBWFaJ5ukhQ4HCVr_MVE30Xfs",
+  "sha256": "4b7c22497b70a4eea910c1a73da67807ac04ce93b9e68312098f0468919f2a80",
+  "drive_readback_sha_verified": true,
+  "zip_crc_verified": true,
+  "external_author_pixels_used": false,
+  "canonical_face_assignment_changed": false
+}
