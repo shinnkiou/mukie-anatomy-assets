@@ -1,0 +1,32 @@
+name: CSMC importer smoke
+
+on:
+  push:
+    branches:
+      - csmc-importer-experimental-20260902
+    paths:
+      - 'tools/csmc_importer/**'
+      - '.github/workflows/csmc-importer-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  synthetic-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile public-safe probes
+        run: |
+          python -m py_compile \
+            tools/csmc_importer/csmc_core.py \
+            tools/csmc_importer/clip_3d_diff.py \
+            tools/csmc_importer/test_probe_synthetic.py \
+            tools/csmc_importer/test_clip_3d_diff_synthetic.py
+      - name: CSMC/CS3C schema smoke
+        working-directory: tools/csmc_importer
+        run: python test_probe_synthetic.py
+      - name: Synthetic CLIP scene differential smoke
+        working-directory: tools/csmc_importer
+        run: python test_clip_3d_diff_synthetic.py
