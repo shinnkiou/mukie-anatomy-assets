@@ -1,0 +1,15 @@
+{
+  "run_family": "BP3D_LEG_TRANSFER_HOURLY",
+  "target": "RIGHT_LEG_FIRST_PASS",
+  "scope": ["hip_surface", "thigh", "knee", "lower_leg"],
+  "foot_role": "alignment_reference_only_first_pass",
+  "drive_reference_folder_id": "1-67PreRemtOPv4wBOvN9W9ZEiAdjGiFQ",
+  "drive_manifest_id": "1enzWcAnEU0M_MVIeG0KvXDD2jmctLbqq",
+  "views": ["FRONT","FRONT_OBLIQUE_30","LATERAL","BACK_OBLIQUE_30","BACK","MEDIAL","FRONT_HIGH_15","BACK_HIGH_15"],
+  "landmarks": ["ASIS_or_hip_anchor","greater_trochanter","patella_center","knee_joint_line","tibial_axis","medial_malleolus","lateral_malleolus"],
+  "transfer_method": "semantic_transfer_cage_first_hit_raycast",
+  "fusion": "confidence_weighted_multiview_vote",
+  "black_boundary_rule": "internal_muscle_boundaries_only",
+  "promotion_rule": "objective_improvement_and_no_safety_regression",
+  "source_safety": {"MASTER_write":0,"R7_write":0,"Production14":"HOLD","Production13":"FORBIDDEN"}
+}
