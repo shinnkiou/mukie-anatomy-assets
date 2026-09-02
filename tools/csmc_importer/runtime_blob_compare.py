@@ -5,6 +5,7 @@ import hashlib
 import json
 import sqlite3
 import struct
+from collections import Counter
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -29,6 +30,7 @@ class BlobMeta:
     payload_offset: int | None
     payload_size_available: int | None
     payload_sha256: str | None
+    stored_minus_align8_logical: int | None
 
 
 def _lp(blob: bytes, off: int) -> tuple[bytes, int]:
@@ -44,9 +46,7 @@ def _lp(blob: bytes, off: int) -> tuple[bytes, int]:
 def _sqlite_blob(path: Path) -> tuple[bytes, str, str, int | None]:
     con = sqlite3.connect(str(path))
     try:
-        tables = {r[0] for r in con.execute(
-            "select name from sqlite_master where type='table'"
-        )}
+        tables = {r[0] for r in con.execute("select name from sqlite_master where type='table'")}
         candidates = [
             ("character", "character"),
             ("character", "catalog_data"),
@@ -55,11 +55,11 @@ def _sqlite_blob(path: Path) -> tuple[bytes, str, str, int | None]:
         for table, col in candidates:
             if table not in tables:
                 continue
-            cols = {r[1] for r in con.execute(f"pragma table_info({table})")}
+            cols = {r[1] for r in con.execute(f'pragma table_info("{table}")')}
             if col not in cols:
                 continue
             version_col = "version" if "version" in cols else None
-            sql = f"select {version_col + ',' if version_col else ''}{col} from {table} limit 1"
+            sql = f'select {"version," if version_col else ""}"{col}" from "{table}" limit 1'
             row = con.execute(sql).fetchone()
             if not row:
                 continue
@@ -89,6 +89,7 @@ def load_blob(path: str | Path) -> tuple[bytes, BlobMeta]:
     magic = kind = guid = None
     iv = logical = stored = payload_off = payload_avail = None
     payload_sha = None
+    pad_relation = None
     try:
         m, off = _lp(blob, 0)
         k, off = _lp(blob, off)
@@ -100,28 +101,28 @@ def load_blob(path: str | Path) -> tuple[bytes, BlobMeta]:
             payload_off = off + 28
             payload_avail = max(0, len(blob) - payload_off)
             payload_sha = hashlib.sha256(blob[payload_off:]).hexdigest()
+            pad_relation = stored - (((logical + 7) // 8) * 8)
     except Exception:
         pass
 
     meta = BlobMeta(
-        source=str(p),
-        container=container,
-        table=table,
-        column=col,
-        outer_version=outer_version,
-        blob_size=len(blob),
-        blob_sha256=hashlib.sha256(blob).hexdigest(),
-        magic=magic,
-        kind=kind,
-        guid_hex=guid,
-        inner_version=iv,
-        logical_size=logical,
-        stored_size=stored,
-        payload_offset=payload_off,
-        payload_size_available=payload_avail,
-        payload_sha256=payload_sha,
+        source=str(p), container=container, table=table, column=col,
+        outer_version=outer_version, blob_size=len(blob),
+        blob_sha256=hashlib.sha256(blob).hexdigest(), magic=magic, kind=kind,
+        guid_hex=guid, inner_version=iv, logical_size=logical, stored_size=stored,
+        payload_offset=payload_off, payload_size_available=payload_avail,
+        payload_sha256=payload_sha, stored_minus_align8_logical=pad_relation,
     )
     return blob, meta
+
+
+def _payload(blob: bytes, meta: BlobMeta) -> bytes:
+    if meta.payload_offset is None:
+        return b""
+    available = blob[meta.payload_offset:]
+    if meta.stored_size is not None and meta.stored_size <= len(available):
+        return available[:meta.stored_size]
+    return available
 
 
 def _ranges(a: bytes, b: bytes, cap: int = 100) -> tuple[list[dict], int]:
@@ -150,6 +151,64 @@ def _ranges(a: bytes, b: bytes, cap: int = 100) -> tuple[list[dict], int]:
     return out, count
 
 
+def _mix64(x: int) -> int:
+    x ^= x >> 30
+    x = (x * 0xbf58476d1ce4e5b9) & 0xffffffffffffffff
+    x ^= x >> 27
+    x = (x * 0x94d049bb133111eb) & 0xffffffffffffffff
+    return x ^ (x >> 31)
+
+
+def _anchor_index(payload: bytes, mask_bits: int = 10) -> tuple[dict[int, int], dict]:
+    """Sample ~1/2**mask_bits 8-byte block values and keep unambiguous anchors.
+
+    This makes moved-block comparison practical for large CELSYS payloads without
+    allocating a full counter for millions of blocks. Only sampled values seen
+    exactly once in each payload are used as position anchors.
+    """
+    n = len(payload) // 8
+    mask = (1 << mask_bits) - 1
+    first: dict[int, int] = {}
+    count: dict[int, int] = {}
+    sampled = 0
+    view = memoryview(payload)[:n * 8]
+    for i, (x,) in enumerate(struct.iter_unpack("<Q", view)):
+        if (_mix64(x) & mask) != 0:
+            continue
+        sampled += 1
+        if x not in count:
+            first[x] = i
+            count[x] = 1
+        else:
+            count[x] += 1
+    unique = {x: first[x] for x, c in count.items() if c == 1}
+    return unique, {
+        "total_blocks": n,
+        "sampled_occurrences": sampled,
+        "sampled_unique_values": len(unique),
+        "mask_bits": mask_bits,
+    }
+
+
+def _anchor_relation(pa: bytes, pb: bytes) -> dict:
+    ia, sa = _anchor_index(pa)
+    ib, sb = _anchor_index(pb)
+    shared = set(ia).intersection(ib)
+    deltas = Counter(ib[x] - ia[x] for x in shared)
+    top = [
+        {"delta_blocks_b_minus_a": d, "count": c, "delta_bytes": d * 8}
+        for d, c in deltas.most_common(10)
+    ]
+    union = len(set(ia).union(ib))
+    return {
+        "a": sa,
+        "b": sb,
+        "shared_unique_anchors": len(shared),
+        "unique_anchor_jaccard": len(shared) / union if union else None,
+        "top_position_delta_peaks": top,
+    }
+
+
 def compare(a_path: str | Path, b_path: str | Path) -> dict:
     a, am = load_blob(a_path)
     b, bm = load_blob(b_path)
@@ -157,12 +216,14 @@ def compare(a_path: str | Path, b_path: str | Path) -> dict:
     first = next((i for i in range(n) if a[i] != b[i]), None)
     if first is None and len(a) != len(b):
         first = n
-
     ranges, diff_bytes = _ranges(a, b)
-    blocks = n // 8
-    same_blocks = sum(
-        1 for i in range(blocks)
-        if a[i * 8:(i + 1) * 8] == b[i * 8:(i + 1) * 8]
+
+    pa, pb = _payload(a, am), _payload(b, bm)
+    pn = min(len(pa), len(pb))
+    pblocks = pn // 8
+    psame = sum(
+        1 for i in range(pblocks)
+        if pa[i * 8:(i + 1) * 8] == pb[i * 8:(i + 1) * 8]
     )
 
     return {
@@ -173,46 +234,39 @@ def compare(a_path: str | Path, b_path: str | Path) -> dict:
         "length_delta_b_minus_a": len(b) - len(a),
         "first_difference": first,
         "different_bytes_including_length_delta": diff_bytes,
-        "aligned_8byte_blocks_compared": blocks,
-        "aligned_8byte_blocks_equal": same_blocks,
-        "aligned_8byte_equal_fraction": (same_blocks / blocks) if blocks else None,
         "difference_ranges_first_100": ranges,
         "header_relation": {
             "same_magic": am.magic == bm.magic,
             "same_kind": am.kind == bm.kind,
             "same_guid": am.guid_hex == bm.guid_hex,
             "same_inner_version": am.inner_version == bm.inner_version,
-            "logical_delta": (
-                bm.logical_size - am.logical_size
-                if am.logical_size is not None and bm.logical_size is not None else None
-            ),
-            "stored_delta": (
-                bm.stored_size - am.stored_size
-                if am.stored_size is not None and bm.stored_size is not None else None
-            ),
-            "payload_offset_delta": (
-                bm.payload_offset - am.payload_offset
-                if am.payload_offset is not None and bm.payload_offset is not None else None
-            ),
+            "logical_delta": bm.logical_size - am.logical_size if am.logical_size is not None and bm.logical_size is not None else None,
+            "stored_delta": bm.stored_size - am.stored_size if am.stored_size is not None and bm.stored_size is not None else None,
+            "payload_offset_delta": bm.payload_offset - am.payload_offset if am.payload_offset is not None and bm.payload_offset is not None else None,
+        },
+        "payload_relation": {
+            "length_a": len(pa),
+            "length_b": len(pb),
+            "length_delta_b_minus_a": len(pb) - len(pa),
+            "aligned_8byte_blocks_compared": pblocks,
+            "aligned_8byte_blocks_equal": psame,
+            "aligned_8byte_equal_fraction": psame / pblocks if pblocks else None,
+            "sampled_anchor_relation": _anchor_relation(pa, pb) if pblocks else None,
         },
     }
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(
-        description="Read-only comparator for saved CSMC/CS3C character BLOBs and Observer runtime BLOB dumps"
-    )
+    ap = argparse.ArgumentParser(description="Read-only comparator for saved CELSYS character BLOBs and Observer runtime BLOB dumps")
     ap.add_argument("a")
     ap.add_argument("b", nargs="?")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
-
     if args.b:
         result = compare(args.a, args.b)
     else:
         _, meta = load_blob(args.a)
         result = asdict(meta)
-
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
