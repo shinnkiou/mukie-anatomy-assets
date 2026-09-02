@@ -1,18 +1,20 @@
 {
   "project_key": "never_tear_buildings",
-  "updated_at": "2026-09-03T02:36:00+09:00",
-  "active_task": "NT-BLD-009",
-  "last_complete": "NT-BLD-008",
-  "next_action": "room11へ処置ベイ、ベッド列、医療棚、酸素/機器、ストレッチャー動線をStructure実配置しreadbackする",
+  "updated_at": "2026-09-03T02:44:00+09:00",
+  "active_task": "NT-BLD-010",
+  "last_complete": "NT-BLD-009",
+  "next_action": "room13の睡眠・ロッカー・机区画とroom12の食卓・配膳・簡易厨房区画をStructure実配置しreadbackする",
   "walkmyplan_plan_id": "aacb32598eb746758d60c8",
   "drive_007": "1LTNwz0De6cdPSNyUfo5IuScEIehxUelZOZpoWV9RFFY",
   "drive_008": "1cvdlloa9xHLGpPY11RpPPIE21-xgaAflqJkh48KWN7s",
+  "drive_009": "13J_RCO0piEyhmlfaMTMjBPRCdlXa3dN4YCSQJDWqAnQ",
   "linear_007": "RIO-27",
   "linear_008": "RIO-28",
   "linear_009": "RIO-29",
-  "supabase_state": "NT-BLD-001..008 COMPLETE; NT-BLD-009 ACTIVE",
-  "base44_checkpoint": "6a985c78bcf0e5e40a244168",
-  "base44_commit": "0b74b86e8ae5db4018a43be064595eaa05a024cc",
+  "linear_010": "RIO-30",
+  "supabase_state": "NT-BLD-001..009 COMPLETE; NT-BLD-010 ACTIVE",
+  "base44_checkpoint": "6a986071536fc25a6b43b7b1",
+  "base44_commit": "b25ab58eec162ac736d917c39d6fb698cf75e570",
   "qa_caveat": "WalkMyPlan hangar area display changed 166.0->163.6m2 at rev201 while hangar geometry remained unchanged; recheck in Runtime/appearance QA.",
-  "note": "Base44 task_queue is current through NT-BLD-009. GitHub legacy task_queue.json still requires normalization; runtime_state is the durable current recovery point."
+  "note": "Base44 compact task_queue is current through NT-BLD-010. GitHub legacy detailed task_queue.json remains historical/stale; runtime_state is the durable current recovery point."
 }
