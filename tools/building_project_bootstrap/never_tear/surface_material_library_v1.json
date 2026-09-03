@@ -1,0 +1,110 @@
+{
+  "schema": "never-tear-surface-material-library-v1",
+  "project_key": "never_tear_buildings",
+  "task_id": "NT-BLD-016",
+  "status": "COMPLETE",
+  "updated_at": "2026-09-03T14:11:00+09:00",
+  "render_target": "Three.js / WebGL / mobile-first",
+  "color_space": {
+    "base_color": "sRGB",
+    "data_maps": "linear",
+    "normal": "tangent-space"
+  },
+  "channel_packing": {
+    "orm": "R=AO, G=Roughness, B=Metallic",
+    "height": "separate only when parallax/displacement is actually used",
+    "normal": "separate texture; do not store in sRGB"
+  },
+  "texture_budget": {
+    "small_props": "512px",
+    "shared_material_default": "1024px",
+    "hero_module": "2048px only when close-view readability requires it",
+    "atlas_rule": "reuse common masks/decals; avoid unique 2K sets for repeated small props"
+  },
+  "geometry_vs_surface_rule": {
+    "geometry": "silhouette, meaningful depth, contact, collision, large pipes/tanks/furniture/generators/racks/beds/vehicles/large debris",
+    "surface": "screws, fine grilles, fan microdetail, vents, weld microbeads, small bolt rows, shallow scratches, labels, micro roughness",
+    "mobile_threshold": "if a feature is normally below roughly 4 screen pixels or does not change silhouette/contact, prefer Normal/AO/texture"
+  },
+  "materials": [
+    {
+      "id": "NT-MAT-STEEL-PAINTED-01",
+      "name": "Painted Steel",
+      "tile_scale_m": 1.0,
+      "base_color": "neutral industrial paint; color variants via tint/mask",
+      "roughness": "0.45-0.70",
+      "metallic": "0.0 for intact paint; exposed-edge mask may reach 1.0",
+      "normal": "subtle orange-peel/rolled texture + weld/pressed detail",
+      "height": "very subtle; usually off at runtime",
+      "ao": "contact/recess only; avoid painting global darkness into BaseColor",
+      "notes": "Default structural panels, doors, equipment housings. Edge wear is a mask, not duplicated geometry."
+    },
+    {
+      "id": "NT-MAT-IRON-EXPOSED-01",
+      "name": "Exposed Iron / Bare Steel",
+      "tile_scale_m": 0.5,
+      "base_color": "dark neutral iron/steel; rust handled by later damage masks",
+      "roughness": "0.35-0.60 clean; higher where oxidized",
+      "metallic": "1.0 on bare metal",
+      "normal": "rolled grain, machining/scratch microdetail",
+      "height": "micro only",
+      "ao": "recess/contact only",
+      "notes": "Use for chipped edges, rails, machinery, exposed structural members."
+    },
+    {
+      "id": "NT-MAT-CONCRETE-01",
+      "name": "Industrial Concrete",
+      "tile_scale_m": 2.0,
+      "base_color": "cool-neutral grey with low-frequency aggregate variation",
+      "roughness": "0.75-0.95",
+      "metallic": "0.0",
+      "normal": "pores, trowel marks, formwork microdetail",
+      "height": "subtle 2-4 mm visual relief only",
+      "ao": "optional for deep pores/recesses",
+      "notes": "Do not bake large soot/burn zones here; those belong to NT-BLD-017 masks."
+    },
+    {
+      "id": "NT-MAT-RUBBER-01",
+      "name": "Industrial Rubber",
+      "tile_scale_m": 0.5,
+      "base_color": "near-black neutral, never pure #000000",
+      "roughness": "0.65-0.90",
+      "metallic": "0.0",
+      "normal": "molded grain/tread where needed",
+      "height": "micro tread only",
+      "ao": "optional",
+      "notes": "Tires, seals, pads, hoses. Large hose silhouette remains geometry; surface ribbing may be Normal."
+    },
+    {
+      "id": "NT-MAT-GLASS-01",
+      "name": "Reinforced / Industrial Glass",
+      "tile_scale_m": 1.0,
+      "base_color": "very light neutral/cool tint",
+      "roughness": "0.05-0.25 clear; higher for dirty/frosted variants",
+      "metallic": "0.0",
+      "normal": "off for clear glass; optional subtle wired/frosted detail",
+      "height": "off",
+      "ao": "off except frame contact handled separately",
+      "runtime": "prefer MeshPhysicalMaterial transmission ~0.85-1.0 and IOR ~1.45-1.52; fall back to alpha blend on lower-end devices",
+      "notes": "Frame is separate material/geometry. Dust and cracks belong to later masks."
+    }
+  ],
+  "surface_gate": {
+    "structure_locked": true,
+    "may_modify_geometry": false,
+    "next_task_after_pass": "NT-BLD-017"
+  },
+  "qa": {
+    "status": "PASS",
+    "checks": [
+      "five material families defined",
+      "ORM packing defined",
+      "texture budget defined",
+      "geometry-vs-surface rule defined",
+      "Adobe reference visually inspected: PASS; five swatches separable under near-uniform lighting; image is REFERENCE only, not final PBR maps",
+      "Adobe output: https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:611c2ce2-780b-4cdf-9142-80b691b31abe",
+      "Firefly board: urn:aaid:sc:AP:bba8cb04-5d38-43fa-afd1-1fa7866329d4",
+      "Board entity: 20cb295d-60a7-486d-a7ce-0b1cf744200d"
+    ]
+  }
+}
