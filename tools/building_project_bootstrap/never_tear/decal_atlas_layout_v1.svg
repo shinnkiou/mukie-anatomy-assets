@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#00000000"/>
+  <style>.cell{stroke:#F2F2EC;stroke-width:4}.t{font-family:Arial,Helvetica,sans-serif;font-weight:800;text-anchor:middle;dominant-baseline:middle;letter-spacing:1px}.dark{fill:#17191C}.light{fill:#F2F2EC}.yellow{fill:#F2C230}.red{fill:#C63C32}.green{fill:#2E8B57}.cyan{fill:#58AFC2}.blue{fill:#3E7FB4}</style>
+  <g><rect class="cell yellow" x="0" y="0" width="256" height="204.8"/><text class="t dark" x="128" y="102.4" font-size="44">WARNING</text></g>
+  <g><rect class="cell yellow" x="256" y="0" width="256" height="204.8"/><text class="t dark" x="384" y="102.4" font-size="44">CAUTION</text></g>
+  <g><rect class="cell red" x="512" y="0" width="256" height="204.8"/><text class="t light" x="640" y="102.4" font-size="48">FIRE</text></g>
+  <g><rect class="cell green" x="768" y="0" width="256" height="204.8"/><text class="t light" x="896" y="102.4" font-size="48">EXIT</text></g>
+  <g><rect class="cell dark" x="0" y="204.8" width="256" height="204.8"/><text class="t light" x="128" y="307.2" font-size="44">AIRLOCK</text></g>
+  <g><rect class="cell cyan" x="256" y="204.8" width="256" height="204.8"/><text class="t light" x="384" y="307.2" font-size="42">MEDICAL</text></g>
+  <g><rect class="cell dark" x="512" y="204.8" width="256" height="204.8"/><text class="t light" x="640" y="307.2" font-size="42">STORAGE</text></g>
+  <g><rect class="cell dark" x="768" y="204.8" width="256" height="204.8"/><text class="t light" x="896" y="307.2" font-size="42">COMMAND</text></g>
+  <g><rect class="cell dark" x="0" y="409.6" width="256" height="204.8"/><text class="t light" x="128" y="512" font-size="30">COMMUNICATION</text></g>
+  <g><rect class="cell dark" x="256" y="409.6" width="256" height="204.8"/><text class="t light" x="384" y="512" font-size="44">HANGAR</text></g>
+  <g><rect class="cell yellow" x="512" y="409.6" width="256" height="204.8"/><text class="t dark" x="640" y="512" font-size="44">RUNWAY</text></g>
+  <g><rect class="cell yellow" x="768" y="409.6" width="256" height="204.8"/><text class="t dark" x="896" y="512" font-size="34">LANDING ZONE</text></g>
+  <g><rect class="cell red" x="0" y="614.4" width="256" height="204.8"/><text class="t light" x="128" y="716.8" font-size="38">EMERGENCY</text></g>
+  <g><rect class="cell yellow" x="256" y="614.4" width="256" height="204.8"/><text class="t dark" x="384" y="716.8" font-size="31">HIGH VOLTAGE</text></g>
+  <g><rect class="cell blue" x="512" y="614.4" width="256" height="204.8"/><text class="t light" x="640" y="716.8" font-size="44">OXYGEN</text></g>
+  <g><rect class="cell dark" x="768" y="614.4" width="256" height="204.8"/><text class="t light" x="896" y="716.8" font-size="40">PRESSURE</text></g>
+  <g><rect class="cell red" x="0" y="819.2" width="256" height="204.8"/><text class="t light" x="128" y="921.6" font-size="21"><tspan x="128" dy="-14">AUTHORIZED</tspan><tspan x="128" dy="28">PERSONNEL ONLY</tspan></text></g>
+  <g><rect class="cell dark" x="256" y="819.2" width="256" height="204.8"/><text class="t light" x="384" y="921.6" font-size="40">SECTOR 01</text></g>
+  <g><rect class="cell dark" x="512" y="819.2" width="256" height="204.8"/><text class="t light" x="640" y="921.6" font-size="40">SECTOR 02</text></g>
+  <g><rect class="cell dark" x="768" y="819.2" width="256" height="204.8"/><text class="t light" x="896" y="921.6" font-size="40">SECTOR 03</text></g>
+</svg>
