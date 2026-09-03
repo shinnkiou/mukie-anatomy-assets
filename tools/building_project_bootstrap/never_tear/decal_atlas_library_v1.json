@@ -1,0 +1,27 @@
+{
+  "schema": "never-tear-decal-atlas-library-v1",
+  "project_key": "never_tear_buildings",
+  "task_id": "NT-BLD-018",
+  "status": "COMPLETE",
+  "updated_at": "2026-09-04T03:42:00+09:00",
+  "structure_locked": true,
+  "render_target": "Three.js / WebGL / mobile-first",
+  "atlas": {"default_size_px":1024,"grid":{"columns":4,"rows":5,"cell_uv_width":0.25,"cell_uv_height":0.2},"format":"PNG/WebP alpha or SVG source; sRGB color + alpha","hero_max_size_px":2048,"small_subatlas_px":512,"padding_rule":"minimum 8px at 1K between opaque content and cell edge; duplicate edge pixels when rasterized to avoid mip bleed","mipmap_rule":"generate mipmaps; clamp decal UV to cell with half-texel inset at runtime"},
+  "palette": {"warning_yellow":"#F2C230","danger_red":"#C63C32","exit_green":"#2E8B57","medical_cyan":"#58AFC2","oxygen_blue":"#3E7FB4","industrial_black":"#17191C","industrial_white":"#F2F2EC","neutral_grey":"#6C737A"},
+  "cells": [
+    {"index":0,"text":"WARNING","category":"warning","style":"yellow_black"},{"index":1,"text":"CAUTION","category":"warning","style":"yellow_black"},{"index":2,"text":"FIRE","category":"emergency","style":"red_white"},{"index":3,"text":"EXIT","category":"wayfinding","style":"green_white"},
+    {"index":4,"text":"AIRLOCK","category":"pressure","style":"black_white"},{"index":5,"text":"MEDICAL","category":"medical","style":"cyan_white"},{"index":6,"text":"STORAGE","category":"room","style":"black_white"},{"index":7,"text":"COMMAND","category":"room","style":"black_white"},
+    {"index":8,"text":"COMMUNICATION","category":"room","style":"black_white","font_scale":0.78},{"index":9,"text":"HANGAR","category":"room","style":"black_white"},{"index":10,"text":"RUNWAY","category":"external","style":"yellow_black"},{"index":11,"text":"LANDING ZONE","category":"external","style":"yellow_black","font_scale":0.82},
+    {"index":12,"text":"EMERGENCY","category":"emergency","style":"red_white","font_scale":0.86},{"index":13,"text":"HIGH VOLTAGE","category":"electrical","style":"yellow_black","font_scale":0.78},{"index":14,"text":"OXYGEN","category":"utility","style":"blue_white"},{"index":15,"text":"PRESSURE","category":"utility","style":"black_white"},
+    {"index":16,"text":"AUTHORIZED PERSONNEL ONLY","category":"security","style":"red_white","font_scale":0.48},{"index":17,"text":"SECTOR 01","category":"sector","style":"black_white"},{"index":18,"text":"SECTOR 02","category":"sector","style":"black_white"},{"index":19,"text":"SECTOR 03","category":"sector","style":"black_white"}
+  ],
+  "uv_formula":"col=index%4; row=floor(index/4); u0=col*0.25; v0=row*0.2; u1=u0+0.25; v1=v0+0.2",
+  "damage_overlay":{"separate_from_text_atlas":true,"layers":["edge_chip","scratch","soot","burn","mars_dust","peeled_paint"],"rule":"keep pristine semantic text atlas reusable; apply damage with separate shared masks so the same wording is not duplicated into multiple damaged textures","zone_mapping":{"A":"heavy burn/soot/peeled paint, readability may be intentionally partial","B":"medium burn/scratch/soot","C":"light soot/dust/scratch","D":"dust/service wear only"}},
+  "runtime":{"material":"transparent decal plane or projected decal; avoid adding thickness unless silhouette/contact requires it","alpha_test":"prefer alphaTest for hard-edged signage on low-end devices; alphaBlend only when soft damage edge is needed","normal_ao":"do not create per-sign Normal/AO; use one optional shared raised-paint/wear map","geometry_change":"forbidden"},
+  "text_integrity":{"canonical_source":"this JSON + decal_atlas_layout_v1.svg","ai_generated_text":"REFERENCE ONLY","acceptance":"Every canonical word must exactly match the cells list; garbled or misspelled AI text is rejected even when visual style is useful"},
+  "qa":{"exact_text_list":"PASS","atlas_capacity":"PASS 20/20 cells","uv_layout":"PASS","damage_overlay_separation":"PASS","structure_lock":"PASS","adobe_reference_text_visual_qa":"FAIL_AS_TEXT_DONOR / PASS_STYLE_REFERENCE: HANGAR→HENIGAR, LANDING ZONE→LANDING JONE, duplicated/merged/missing labels detected; canonical text remains deterministic JSON+SVG"},
+  "adobe_output":"https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:3a6aff92-272a-449b-a688-21452829f09d",
+  "adobe_board_entity":"c681a642-c6c6-4cb0-b9e4-a12e6a0e1a61",
+  "drive_canon":"184nB-NywxUgok5AyHlj2iQWScppMZrsOgO3KxELo22c",
+  "next_action":"NT-BLD-019 火星支部 各区画 Surface統合へ移行"
+}
