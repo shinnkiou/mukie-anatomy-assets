@@ -1,17 +1,20 @@
 {
   "schema":"never-tear-task-queue-status-override-v1",
   "project_key":"never_tear_buildings",
-  "updated_at":"2026-09-04T04:00:00+09:00",
-  "authoritative_status_source":"Base44 project_bootstrap/never_tear_buildings/task_queue.json + Supabase never_tear_build_tasks + Linear",
+  "updated_at":"2026-09-04T08:48:00+09:00",
+  "authoritative_status_source":"Base44 project_bootstrap/never_tear_buildings/runtime_state.json + Supabase never_tear_build_tasks + Linear + Drive readback",
   "note":"Preserves the richer historical GitHub task_queue.json definition without destructive metadata reduction. Apply these statuses/next_action until the detailed file is programmatically merged.",
   "statuses":{
-    "NT-BLD-001":"COMPLETE","NT-BLD-002":"COMPLETE","NT-BLD-003":"COMPLETE","NT-BLD-004":"COMPLETE","NT-BLD-005":"COMPLETE","NT-BLD-006":"COMPLETE","NT-BLD-007":"COMPLETE","NT-BLD-008":"COMPLETE","NT-BLD-009":"COMPLETE","NT-BLD-010":"COMPLETE","NT-BLD-011":"COMPLETE","NT-BLD-012":"COMPLETE","NT-BLD-013":"COMPLETE","NT-BLD-014":"COMPLETE","NT-BLD-015":"COMPLETE","NT-BLD-016":"COMPLETE","NT-BLD-017":"COMPLETE","NT-BLD-018":"COMPLETE","NT-BLD-019":"ACTIVE","NT-BLD-020":"PLANNED"
+    "NT-BLD-001":"COMPLETE","NT-BLD-002":"COMPLETE","NT-BLD-003":"COMPLETE","NT-BLD-004":"COMPLETE","NT-BLD-005":"COMPLETE","NT-BLD-006":"COMPLETE","NT-BLD-007":"COMPLETE","NT-BLD-008":"COMPLETE","NT-BLD-009":"COMPLETE","NT-BLD-010":"COMPLETE","NT-BLD-011":"COMPLETE","NT-BLD-012":"COMPLETE","NT-BLD-013":"COMPLETE","NT-BLD-014":"COMPLETE","NT-BLD-015":"COMPLETE","NT-BLD-016":"COMPLETE","NT-BLD-017":"COMPLETE","NT-BLD-018":"COMPLETE","NT-BLD-019":"COMPLETE","NT-BLD-020":"ACTIVE"
   },
-  "active_task":"NT-BLD-019",
-  "last_complete":"NT-BLD-018",
-  "next_action":"Load/import canonical Mars model or tagged Mars preview into AI3DModelLab, run Mars Surface/apply_never_tear_mars_surface, inspect P0 landing/hangar/central corridor + Zone A-D + decal metadata and verify Structure geometry unchanged; then validate remaining modules. Do not mark 019 COMPLETE until canonical runtime readback passes.",
+  "active_task":"NT-BLD-020",
+  "last_complete":"NT-BLD-019",
+  "next_action":"Run NT-BLD-020 Runtime QA / Base44 optimization on canonical tagged Mars preview: shared material reuse, renderer mobile-first settings, bundle/build and runtime stats; apply fixes, save and read back.",
   "drive_019":"1f7XCnreTPEUaUyPaHMDrIiocGQ2u3jQ3eQXk-cTyjMc",
   "linear_019":"RIO-39",
-  "base44_checkpoint":"6a99c3d98ec2dd2775847512",
-  "base44_commit":"aec6bf600e811a4dd9a7236d09a75ebb13c5cf95"
+  "supabase":"NT-BLD-019 COMPLETE / NT-BLD-020 ACTIVE readback PASS",
+  "base44_checkpoint":"6a9a0939c2db838e3bf10f7a",
+  "base44_commit":"2fb014779426becfcee94172c074e13dcfee75ff",
+  "canonical_runtime_qa_019":"canonical_runtime_qa_019.json",
+  "canonical_runtime_qa_commit":"96467fbab47590a8db9ce4b53ea0f121fc25e3ac"
 }
