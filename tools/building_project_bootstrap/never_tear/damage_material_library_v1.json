@@ -1,0 +1,41 @@
+{
+  "schema": "never-tear-damage-material-library-v1",
+  "project_key": "never_tear_buildings",
+  "task_id": "NT-BLD-017",
+  "status": "COMPLETE",
+  "updated_at": "2026-09-04T03:40:00+09:00",
+  "structure_locked": true,
+  "base_library": "surface_material_library_v1.json",
+  "mask_priority": ["structural_damage_zone","burn_char","soot_smoke","heat_tint","paint_loss_edgewear","rust_oxidation","mars_dust","ash_extinguisher","oil_coolant"],
+  "mars_dust": {
+    "palette": ["red-brown","orange","ochre"],
+    "base_color_effect": "warm desaturated deposit; do not uniformly recolor vertical surfaces",
+    "roughness_effect": "+0.10 to +0.30 depending on thickness",
+    "normal_height": "very shallow powder buildup; use mask/normal, not new geometry",
+    "placement": ["upward-facing surfaces","seams and gaps","wheel/track edges","leeward drift","base of walls and equipment","recesses protected from direct cleaning"],
+    "avoid": ["uniform full-surface orange wash","equal density on ceilings and vertical faces"]
+  },
+  "zones": {
+    "A": {"name":"Blast Core","structure_source":"NT-BLD-015 Zone A","surface_stack":["black carbonization","paint loss","melt/spall exposure","heavy soot","char","ash","limited surviving Mars dust"],"base_color":"near-black char plus exposed substrate; retain some material identity","roughness":"highly variable 0.45-0.95","metallic":"follow exposed metal mask; char itself non-metallic","normal_height":"spall, bubbled/peeled coating, coarse char only where silhouette is not required","dust_weight":0.2,"soot_weight":1.0,"heat_weight":1.0,"edgewear_weight":1.0},
+    "B": {"name":"Strong Heat","structure_source":"NT-BLD-015 Zone B","surface_stack":["soot","burnt brown-dark red","heat tint","bubbled paint","paint loss","medium cracks","Mars dust in sheltered pockets"],"base_color":"burnt brown/dark red/grey with substrate visible locally","roughness":"0.55-0.90","metallic":"exposed metal only","normal_height":"bubbled paint and medium crack relief","dust_weight":0.4,"soot_weight":0.8,"heat_weight":0.9,"edgewear_weight":0.7},
+    "C": {"name":"Smoke Heat","structure_source":"NT-BLD-015 Zone C","surface_stack":["grey smoke staining","light soot","grime","dust","minor heat discoloration"],"base_color":"original material remains dominant","roughness":"slightly increased by dust/grime","metallic":"unchanged except small wear","normal_height":"small scratches and shallow cracks only","dust_weight":0.7,"soot_weight":0.4,"heat_weight":0.3,"edgewear_weight":0.3},
+    "D": {"name":"Intact / Control","structure_source":"outside NT-BLD-015 Zone C within Zone D control boundary","surface_stack":["normal base material","Mars dust","light operational grime","very light heat influence near boundary"],"base_color":"base material first","roughness":"base material plus dust variation","metallic":"base material","normal_height":"normal service wear only","dust_weight":1.0,"soot_weight":0.1,"heat_weight":0.1,"edgewear_weight":0.2}
+  },
+  "reusable_masks": {
+    "dust":"large-scale accumulation + seam/recess detail; directional",
+    "soot":"upward plume bias from blast/fire origin; avoid isotropic noise",
+    "heat":"gradient outward from Zone A/B; hue/roughness modulation",
+    "burn_char":"high-frequency broken edge inside broad burn region",
+    "paint_loss_edgewear":"edge curvature/contact-driven; must reveal correct substrate",
+    "rust":"secondary moisture/oxidation mask; do not dominate fresh blast core",
+    "ash_extinguisher":"powdery pale/grey deposits in low areas and intervention paths",
+    "oil_coolant":"localized dark/wet contamination around machinery, floor flow paths and damaged pipes"
+  },
+  "runtime_rules": {"packing":"reuse ORM convention from NT-BLD-016","mask_resolution":"512 for small props; 1K shared by default; 2K only for hero damage zones","blend_strategy":"base material + shared damage masks; avoid unique full PBR set per object","geometry_change":"forbidden in NT-BLD-017; large deformation already belongs to NT-BLD-015 Structure"},
+  "qa": {"zone_mapping":"PASS","directional_dust_rule":"PASS","mask_reuse_rule":"PASS","adobe_reference_visual_qa":"PASS; A→B→C→D→pure dust progression is visually distinct; D/pure dust orange is reference only, not direct final BaseColor"},
+  "adobe_output": "https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:a11cc26a-6076-47b5-842e-595478c4223b",
+  "adobe_board": "urn:aaid:sc:AP:bba8cb04-5d38-43fa-afd1-1fa7866329d4",
+  "adobe_board_entity": "f8e00953-097c-4704-9329-2e573941fc2f",
+  "drive_canon": "18q25rghKofe08KQ21tJCtqSZYLhZ4ZoVwNGfziZJ30s",
+  "next_action": "NT-BLD-018 サイン・警告・区画番号デカールライブラリ Surfaceへ移行"
+}
