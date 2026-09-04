@@ -1,20 +1,25 @@
 {
   "schema":"never-tear-task-queue-status-override-v1",
   "project_key":"never_tear_buildings",
-  "updated_at":"2026-09-04T08:48:00+09:00",
-  "authoritative_status_source":"Base44 project_bootstrap/never_tear_buildings/runtime_state.json + Supabase never_tear_build_tasks + Linear + Drive readback",
-  "note":"Preserves the richer historical GitHub task_queue.json definition without destructive metadata reduction. Apply these statuses/next_action until the detailed file is programmatically merged.",
+  "updated_at":"2026-09-04T09:09:00+09:00",
+  "authoritative_status_source":"Drive + Base44 + Supabase + Linear + GitHub readback",
+  "note":"Preserves richer historical task_queue.json metadata. Mars Branch sequence NT-BLD-001..020 is complete.",
   "statuses":{
-    "NT-BLD-001":"COMPLETE","NT-BLD-002":"COMPLETE","NT-BLD-003":"COMPLETE","NT-BLD-004":"COMPLETE","NT-BLD-005":"COMPLETE","NT-BLD-006":"COMPLETE","NT-BLD-007":"COMPLETE","NT-BLD-008":"COMPLETE","NT-BLD-009":"COMPLETE","NT-BLD-010":"COMPLETE","NT-BLD-011":"COMPLETE","NT-BLD-012":"COMPLETE","NT-BLD-013":"COMPLETE","NT-BLD-014":"COMPLETE","NT-BLD-015":"COMPLETE","NT-BLD-016":"COMPLETE","NT-BLD-017":"COMPLETE","NT-BLD-018":"COMPLETE","NT-BLD-019":"COMPLETE","NT-BLD-020":"ACTIVE"
+    "NT-BLD-001":"COMPLETE","NT-BLD-002":"COMPLETE","NT-BLD-003":"COMPLETE","NT-BLD-004":"COMPLETE","NT-BLD-005":"COMPLETE","NT-BLD-006":"COMPLETE","NT-BLD-007":"COMPLETE","NT-BLD-008":"COMPLETE","NT-BLD-009":"COMPLETE","NT-BLD-010":"COMPLETE","NT-BLD-011":"COMPLETE","NT-BLD-012":"COMPLETE","NT-BLD-013":"COMPLETE","NT-BLD-014":"COMPLETE","NT-BLD-015":"COMPLETE","NT-BLD-016":"COMPLETE","NT-BLD-017":"COMPLETE","NT-BLD-018":"COMPLETE","NT-BLD-019":"COMPLETE","NT-BLD-020":"COMPLETE"
   },
-  "active_task":"NT-BLD-020",
-  "last_complete":"NT-BLD-019",
-  "next_action":"Run NT-BLD-020 Runtime QA / Base44 optimization on canonical tagged Mars preview: shared material reuse, renderer mobile-first settings, bundle/build and runtime stats; apply fixes, save and read back.",
+  "active_task":null,
+  "last_complete":"NT-BLD-020",
+  "next_action":"Mars Branch 001-020 COMPLETE. Wait for next building target.",
   "drive_019":"1f7XCnreTPEUaUyPaHMDrIiocGQ2u3jQ3eQXk-cTyjMc",
-  "linear_019":"RIO-39",
-  "supabase":"NT-BLD-019 COMPLETE / NT-BLD-020 ACTIVE readback PASS",
-  "base44_checkpoint":"6a9a0939c2db838e3bf10f7a",
-  "base44_commit":"2fb014779426becfcee94172c074e13dcfee75ff",
-  "canonical_runtime_qa_019":"canonical_runtime_qa_019.json",
-  "canonical_runtime_qa_commit":"96467fbab47590a8db9ce4b53ea0f121fc25e3ac"
+  "drive_020":"1OYwycTbOuo8bpqXjPaH14oB7_E90NOiZE3C3YYJm7FU",
+  "linear_019":"RIO-39 Done",
+  "linear_020":"RIO-40 Done",
+  "supabase":"NT-BLD-019 COMPLETE / NT-BLD-020 COMPLETE readback PASS",
+  "walkmyplan":"aacb32598eb746758d60c8 / 50 walls / 26 openings / 87 fixtures / Structure locked",
+  "runtime_qa_019":"canonical_runtime_qa_019.json",
+  "runtime_qa_020":"runtime_qa_020.json",
+  "runtime_surface_code":"runtime/neverTearMarsSurface.js",
+  "canonical_preview_code":"runtime/neverTearMarsCanonicalPreview.js",
+  "base44_checkpoint_pre_final_mirror":"6a9a0baa4f0d2a985f2cb450",
+  "base44_commit_pre_final_mirror":"ffb89b0f65ff279005307e7edb3b3da839682ae6"
 }
