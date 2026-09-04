@@ -2,8 +2,8 @@
   "schema":"never-tear-runtime-qa-v1",
   "project_key":"never_tear_buildings",
   "task_id":"NT-BLD-020",
-  "timestamp":"2026-09-04T09:05:00+09:00",
-  "status":"QA_PASS_SYNC_PENDING",
+  "timestamp":"2026-09-04T09:09:00+09:00",
+  "status":"COMPLETE",
   "source_plan":"WalkMyPlan:aacb32598eb746758d60c8",
   "structure_readback":"50 walls / 26 openings / 87 fixtures",
   "structure_lock":"PASS / no WalkMyPlan geometry edits",
@@ -15,10 +15,11 @@
   "code_qa":{"targeted_eslint":"PASS / exit 0","new_helper_typecheck_errors":0,"global_typecheck":"BASELINE_FAIL / exit 2 / 2475 output lines from pre-existing app typing issues; no new helper errors","production_build":"PASS / exit 0","browserslist_warning":"caniuse-lite 7 months old; non-blocking"},
   "bundle_qa":{"dist_bytes":2386284,"dist_human":"about 2.3 MB","main_js_bytes":2143967,"main_css_bytes":105179,"assessment":"WARN_NONBLOCKING: existing app bundle baseline is large; no broad unrelated code-splitting refactor in this task"},
   "to3d":"job 8b16ab22-ef00-487a-b47f-ee01c947e991 current API status failed; excluded from canon",
-  "base44_checkpoint":"6a9a0baa4f0d2a985f2cb450",
-  "base44_commit":"ffb89b0f65ff279005307e7edb3b3da839682ae6",
   "drive_020":"1OYwycTbOuo8bpqXjPaH14oB7_E90NOiZE3C3YYJm7FU",
-  "linear_020":"RIO-40",
-  "completion_gate":"Final status write/readback pending",
-  "next_action":"After all service readbacks, mark NT-BLD-020 COMPLETE and queue 001-020 COMPLETE"
+  "linear_020":"RIO-40 Done",
+  "supabase":"NT-BLD-020 COMPLETE readback PASS",
+  "base44_checkpoint_pre_final_mirror":"6a9a0baa4f0d2a985f2cb450",
+  "base44_commit_pre_final_mirror":"ffb89b0f65ff279005307e7edb3b3da839682ae6",
+  "completion_gate":"PASS",
+  "next_action":"Mars Branch NT-BLD-001..020 COMPLETE; wait for next building target"
 }
