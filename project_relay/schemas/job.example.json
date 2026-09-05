@@ -1,0 +1,31 @@
+{
+  "schema": "project-relay-job-v1",
+  "command_id": "example-20260828-001",
+  "project": "example",
+  "action": "run_process",
+  "runner": "example_runner",
+  "created_at": "2026-08-28T14:00:00+09:00",
+  "deadline": null,
+  "stop_mode_at_deadline": "SOFT",
+  "input": {
+    "path": null,
+    "find": null,
+    "require_success_marker": false
+  },
+  "process": {
+    "argv": ["python", "-c", "print('hello relay')"],
+    "cwd": null,
+    "env": {},
+    "success_markers": [],
+    "failure_markers": [],
+    "required_outputs": []
+  },
+  "on_success": {
+    "collect_results": true,
+    "package": false
+  },
+  "on_failure": {
+    "collect_diagnostics": true,
+    "preserve_partial": true
+  }
+}
