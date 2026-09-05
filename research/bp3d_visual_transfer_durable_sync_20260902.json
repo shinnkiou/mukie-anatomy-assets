@@ -1,0 +1,84 @@
+{
+  "schema": "bp3d.visual_transfer.durable_sync.v1",
+  "date": "2026-09-02",
+  "authority": ["Final-v3", "Non-Blender v4/v4.1/v4.2", "V45"],
+  "guards": {
+    "anatomical_front": "NEGATIVE_Y",
+    "pre_v45_rollback": "FORBIDDEN",
+    "MASTER_write": 0,
+    "R7_write": 0,
+    "Production14": "HOLD",
+    "Production13": "FORBIDDEN",
+    "canonical_face_assignment_changed": false,
+    "external_author_pixels_policy": "EMERGENCY_ONLY_DISABLED_UNTIL_RIGHTS_VERIFIED"
+  },
+  "arm": {
+    "geometry_best": {
+      "run_key": "ARM_TRANSFER_DURABLE_REGEN_20260902T052130Z",
+      "status": "DURABLE_BEST_READBACK_PASS",
+      "hit_rate": 0.9869281045751634,
+      "overflow_rate": 0.013071895424836602,
+      "geometry_score": 0.898139331790019,
+      "drive_zip_id": "1IcFuyrEbmE9xG_KatW0QsWgzpbGe-3Ue",
+      "sha256": "8a66b899b4d9bd5b364e0d35ea96e201a2f3a5d348b439521756d81be41fc2c1",
+      "drive_readback": true
+    },
+    "three_view_fusion": {
+      "run_key": "ARM_3VIEW_FUSION_20260902T054013Z",
+      "required_views": ["FRONT", "FRONT_OBLIQUE_30", "RADIAL"],
+      "source_faces": 1002,
+      "confirmed_faces": 394,
+      "unknown_faces": 608,
+      "unknown_insufficient_views": 562,
+      "unknown_source_unresolved": 46,
+      "conflict_faces": 0,
+      "texture_bake_executed": false,
+      "drive_folder_id": "1VvBmE1NNuiedB1p7-Qdw3uQSHEey0bTD",
+      "drive_zip_id": "1zMvy8-5JzQBDFrqlTISG_xn_Euw8CzW4",
+      "sha256": "d51b054e4ef5b110346f323a5d370f88a3ba74ef838f36cec9d2485ba6dc6772",
+      "drive_readback": true
+    }
+  },
+  "leg": {
+    "geometry_baseline": {
+      "run_key": "LEG02_RUN_0001_20260902_1250JST",
+      "status": "DURABLE_GEOMETRY_BASELINE_RESTORED",
+      "score": 0.9680600700192865,
+      "face_coverage": 0.9980582524271845,
+      "surface_area_coverage": 0.9995184731381808,
+      "two_view_face_fraction": 0.9145631067961165,
+      "two_view_area_fraction": 0.916740084602283,
+      "unobserved_faces": [922, 951],
+      "drive_zip_id": "12_LyXGhHTiNSVs6cLByW1AZJ1M8iU7_2",
+      "sha256": "2304674999b7a6b8f4c69b536a08052ccf67d8c55d07ee991447b28cd94cdf7a",
+      "drive_readback": true
+    },
+    "adaptive": {
+      "durable_run": "LEG02_RUN_0003_ADAPTIVE_20260902",
+      "durable_view": "POSTERIOR_MEDIAL_LOW_30",
+      "recovered_original_unseen_faces": [922, 951],
+      "minimal_re_evaluation_view": "POSTERIOR_MEDIAL_LOW_15",
+      "minimal_re_evaluation_artifact_durable": false,
+      "authoritative_baseline_replaced": false
+    }
+  },
+  "foot_lowerleg_v011": {
+    "run_key": "FOOT_LOWERLEG_V011_20260902_2348JST",
+    "status": "DURABLE_CANDIDATE_QA_PASS_NOT_FINAL_PROMOTED",
+    "selected_faces": 2378,
+    "selected_vertices": 2404,
+    "dark_pixels_lt80_before": 64406,
+    "dark_pixels_lt80_after": 223,
+    "dark_pixel_reduction_fraction": 0.9965375896655592,
+    "palette_nearest_mean_rgb_error_before": 58.69916669687554,
+    "palette_nearest_mean_rgb_error_after": 19.66440665313298,
+    "palette_error_reduction_fraction": 0.6649968345431438,
+    "drive_folder_id": "1j6YuR8VUxplrpHGIF5_R_KAL-uqFapdo",
+    "drive_zip_id": "1G_6Q0Lm7ismhnZq-i6QZbGLW8jvOmITd",
+    "sha256": "c1d962e6a32bbc52e564fdf962bc6a6dd6fa3682565a0406879d916afacd41c7",
+    "size_bytes": 2794638,
+    "drive_readback": true,
+    "zip_crc": true,
+    "semantic_promotion": false
+  }
+}

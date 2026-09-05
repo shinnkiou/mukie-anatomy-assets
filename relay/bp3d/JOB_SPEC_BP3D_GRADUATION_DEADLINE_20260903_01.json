@@ -1,0 +1,69 @@
+{
+  "schema_version": "project-relay-job-spec-v1",
+  "command_id": "BP3D_GRADUATION_DEADLINE_20260903_01",
+  "project_key": "bp3d",
+  "runner": "BP3D_GRADUATION_ONE_CLICK_V01",
+  "priority": "URGENT",
+  "execution_kind": "BLENDER",
+  "input_references": {
+    "local_relative": "00_INPUT/BP3D_GRADUATION_ONE_CLICK_V01_20260903.zip",
+    "artifact_key": "GRADUATION_ONE_CLICK_V01_20260903",
+    "sha256": "8a2cfc9a9f89dcb4161bf86a23222bf4db464bb590601f2984c055650d02098e",
+    "size_bytes": 4400833
+  },
+  "workspace_contract": {
+    "root": "E:\\PROJECT_RELAY\\WORKSPACES\\bp3d",
+    "input": "00_INPUT",
+    "specs": "10_SPECS",
+    "work": "20_WORK",
+    "output": "30_OUTPUT",
+    "report": "40_REPORT",
+    "checkpoint": "50_CHECKPOINT",
+    "log": "90_LOG",
+    "archive": "99_ARCHIVE"
+  },
+  "bounded_run_dir": "20_WORK/BP3D_GRADUATION_DEADLINE_20260903_01",
+  "bounded_output_dir": "30_OUTPUT",
+  "bounded_report_dir": "40_REPORT",
+  "deadline": {"type": "START_PLUS_MINUTES", "minutes": 240},
+  "stop_strategy": "PROCESS_TREE",
+  "resume_supported": false,
+  "preconditions": [
+    "Blender 4.2.x available by BLENDER_EXE, PATH, or supported default path",
+    "input ZIP SHA-256 equals declared hash",
+    "real-Blender QA must PASS before H1-H5 capture starts"
+  ],
+  "success_markers": [
+    "40_REPORT/BP3D_GRADUATION_PIPELINE_RESULT.json has status PASS",
+    "40_REPORT/BP3D_DEADLINE_BUILD_QA_RESULT.json has status PASS",
+    "40_REPORT/BP3D_H1H5_CAPTURE_RESULT.json has status PASS",
+    "30_OUTPUT/BP3D_GRADUATION_CAPTURE_OUTPUT.zip exists and is fresh",
+    "40_REPORT/SUCCESS_BP3D_GRADUATION_DEADLINE_20260903_01.txt exists"
+  ],
+  "failure_markers": [
+    "40_REPORT/FAILURE_BP3D_GRADUATION_DEADLINE_20260903_01.txt",
+    "nonzero process exit",
+    "missing or stale expected artifact",
+    "QA JSON status not PASS",
+    "capture JSON status not PASS"
+  ],
+  "source_guards": {
+    "semantic_authority": "Final-v3 + V45",
+    "anatomical_front": "NEGATIVE_Y",
+    "MASTER_write": 0,
+    "R7_write": 0,
+    "Production14": "HOLD",
+    "Production13": "FORBIDDEN",
+    "pre_V45_rollback": "FORBIDDEN",
+    "external_author_pixels": 0,
+    "source_mesh_mutation": 0,
+    "canonical_semantic_mutation": 0
+  },
+  "control_plane_state": {
+    "windows_main": "OFFLINE",
+    "selftest": "QUEUED",
+    "queue_runner_enabled": false,
+    "manual_fallback_ready": true,
+    "github_blender_4_2_static_gate": "PASS"
+  }
+}

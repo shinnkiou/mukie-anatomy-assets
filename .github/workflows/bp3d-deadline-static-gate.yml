@@ -1,0 +1,112 @@
+name: BP3D Deadline Static Gate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "blender/BP3D_BUILD_DEADLINE_SCENE_V02.py"
+      - "blender/BP3D_DEADLINE_BUILD_HEADLESS_QA_V02.py"
+      - "blender/BP3D_CAPTURE_H1H5_V01.py"
+      - "blender/RUN_BP3D_DEADLINE_BUILD_QA.bat"
+      - "blender/RUN_BP3D_H1H5_CAPTURE.bat"
+      - "blender/RUN_BP3D_GRADUATION_PIPELINE.bat"
+      - "relay/bp3d/**"
+      - "bp3d/deadline/CAPTURE_CONTRACT_H1H5_V01.json"
+      - "bp3d/durable/DEADLINE_CAPTURE_H1H5_V01_20260903.md"
+      - "bp3d/durable/GRADUATION_ONE_CLICK_V01_20260903.md"
+      - "bp3d/durable/PROJECT_RELAY_WORKSPACE_DROP_V01_20260903.md"
+      - ".github/workflows/bp3d-deadline-static-gate.yml"
+  pull_request:
+    paths:
+      - "blender/**"
+      - "relay/bp3d/**"
+      - "bp3d/deadline/**"
+      - "bp3d/durable/**"
+      - ".github/workflows/bp3d-deadline-static-gate.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bp3d-deadline-static-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deadline-static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      BLENDER_VERSION: "4.2.23"
+      BLENDER_ARCHIVE: "blender-4.2.23-linux-x64.tar.xz"
+      BLENDER_DIR: "blender-4.2.23-linux-x64"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python and contract static checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            blender/BP3D_BUILD_DEADLINE_SCENE_V02.py \
+            blender/BP3D_DEADLINE_BUILD_HEADLESS_QA_V02.py \
+            blender/BP3D_CAPTURE_H1H5_V01.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          c=json.loads(Path('bp3d/deadline/CAPTURE_CONTRACT_H1H5_V01.json').read_text(encoding='utf-8'))
+          assert c['view_count']==26, c
+          assert c['anatomical_front']=='NEGATIVE_Y', c
+          assert c['height_levels']['H1']['geometry']=='lower_pole'
+          assert c['height_levels']['H2']['geometry']=='lower_ring'
+          assert c['height_levels']['H3']['geometry']=='middle_ring'
+          assert c['height_levels']['H4']['geometry']=='upper_ring'
+          assert c['height_levels']['H5']['geometry']=='upper_pole'
+          assert len(c['height_levels']['H2']['azimuths_deg'])==8
+          assert len(c['height_levels']['H3']['azimuths_deg'])==8
+          assert len(c['height_levels']['H4']['azimuths_deg'])==8
+
+          bat=Path('blender/RUN_BP3D_GRADUATION_PIPELINE.bat').read_text(encoding='utf-8')
+          for required in ['RUN_BP3D_DEADLINE_BUILD_QA.bat','QA result JSON is missing or not PASS','RUN_BP3D_H1H5_CAPTURE.bat','FULL,ARM_ISOLATED,LEG_ISOLATED,TORSO_ISOLATED','BP3D_GRADUATION_CAPTURE_OUTPUT.zip']:
+              assert required in bat, required
+
+          spec=json.loads(Path('relay/bp3d/JOB_SPEC_BP3D_GRADUATION_DEADLINE_20260903_01.json').read_text(encoding='utf-8'))
+          assert spec['schema_version']=='project-relay-job-spec-v1'
+          assert spec['project_key']=='bp3d'
+          assert spec['runner']=='BP3D_GRADUATION_ONE_CLICK_V01'
+          assert spec['workspace_contract']['root']==r'E:\PROJECT_RELAY\WORKSPACES\bp3d'
+          assert spec['input_references']['sha256']=='8a2cfc9a9f89dcb4161bf86a23222bf4db464bb590601f2984c055650d02098e'
+          assert spec['source_guards']['Production13']=='FORBIDDEN'
+          assert spec['source_guards']['Production14']=='HOLD'
+          assert spec['source_guards']['MASTER_write']==0
+          assert spec['source_guards']['R7_write']==0
+          assert spec['control_plane_state']['queue_runner_enabled'] is False
+
+          relaybat=Path('relay/bp3d/RUN_MANUAL_BP3D_GRADUATION_DEADLINE.bat').read_text(encoding='utf-8')
+          for required in ['EXPECTED_SHA=8a2cfc9a9f89dcb4161bf86a23222bf4db464bb590601f2984c055650d02098e','RUN_BP3D_GRADUATION_PIPELINE.bat','No stale output promoted','SUCCESS_BP3D_GRADUATION_DEADLINE_20260903_01.txt','BP3D_GRADUATION_CAPTURE_OUTPUT.zip.sha256']:
+              assert required in relaybat, required
+
+          for p in ['bp3d/durable/DEADLINE_CAPTURE_H1H5_V01_20260903.md','bp3d/durable/GRADUATION_ONE_CLICK_V01_20260903.md','bp3d/durable/PROJECT_RELAY_WORKSPACE_DROP_V01_20260903.md']:
+              t=Path(p).read_text(encoding='utf-8')
+              for guard in ['Production13','Production14','MASTER','R7']:
+                  assert guard in t, (p,guard)
+          print('STATIC_CONTRACT_PASS')
+          PY
+
+      - name: Download and verify Blender 4.2.23
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://download.blender.org/release/Blender4.2"
+          curl --fail --location --retry 3 --retry-delay 3 --output "${BLENDER_ARCHIVE}" "${BASE}/${BLENDER_ARCHIVE}"
+          curl --fail --location --retry 3 --retry-delay 3 --output "blender-${BLENDER_VERSION}.sha256" "${BASE}/blender-${BLENDER_VERSION}.sha256"
+          sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing
+          tar -xf "${BLENDER_ARCHIVE}"
+          "${BLENDER_DIR}/blender" --version
+
+      - name: Blender 4.2 compile gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          "${BLENDER_DIR}/blender" --factory-startup --background --python-expr "from pathlib import Path; files=['blender/BP3D_BUILD_DEADLINE_SCENE_V02.py','blender/BP3D_DEADLINE_BUILD_HEADLESS_QA_V02.py','blender/BP3D_CAPTURE_H1H5_V01.py']; [compile(Path(p).read_text(encoding='utf-8'),p,'exec') for p in files]; print('BLENDER_4_2_COMPILE_PASS')"
