@@ -1,0 +1,27 @@
+{
+  "schema": "bp3d.arm.continuous_texture.validation.v461",
+  "status": "PASS",
+  "source_v46_unchanged": true,
+  "source_v45_face_labels_unchanged": true,
+  "master_written": false,
+  "r7_written": false,
+  "production14_written": false,
+  "support_halo_rings": 2,
+  "seed_vertex_count": 2110,
+  "support_vertex_count": 2450,
+  "support_face_count": 2606,
+  "mirror_probability_max_error": 0.0,
+  "outer_boundary_mean_opacity_jump_v46": 0.48215899196428563,
+  "outer_boundary_mean_opacity_jump_v461": 0.36638807846116217,
+  "outer_boundary_jump_reduction": 0.2401094150115919,
+  "joint_blend_seed_mean_opacity_v46": 0.11791624620795108,
+  "joint_blend_seed_mean_opacity_v461": 0.1628519090066126,
+  "textbook_constraints": [
+    "p132 multiple arm directions",
+    "p133 forearm rotation",
+    "p85-87 shoulder movement and front/back visibility"
+  ],
+  "artifact_drive_id": "1WbAXt5fmrYA9P8_6Cg5VrvokaSpwXpGF",
+  "artifact_sha256": "e8ac1dd3af82971d7efa92daa6343ff558e86c4a130da7cae7589c1ce49b042b",
+  "note": "Two-ring virtual halo smooths visual texture beyond hard face boundaries. It does not change semantic ownership."
+}
