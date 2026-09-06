@@ -1,6 +1,6 @@
 {
   "project_key":"never_tear_buildings",
-  "updated_at":"2026-09-04T09:09:00+09:00",
+  "updated_at":"2026-09-06T14:03:31+09:00",
   "active_task":null,
   "last_complete":"NT-BLD-020",
   "next_action":"Mars Branch NT-BLD-001..020 COMPLETE. Wait for next building target.",
@@ -14,6 +14,8 @@
   "supabase_state":"NT-BLD-019 COMPLETE / NT-BLD-020 COMPLETE readback PASS",
   "base44_checkpoint_pre_final_mirror":"6a9a0baa4f0d2a985f2cb450",
   "base44_commit_pre_final_mirror":"ffb89b0f65ff279005307e7edb3b3da839682ae6",
+  "base44_final_checkpoint":"6a9a0d204f0d2a985f2cb558",
+  "base44_final_commit":"b809d0f63cf878c3321e194d1ef477e5b8f7e409",
   "runtime_qa_019":"canonical_runtime_qa_019.json",
   "runtime_qa_020":"runtime_qa_020.json",
   "runtime_surface_code":"runtime/neverTearMarsSurface.js",
@@ -27,5 +29,6 @@
   "runtime_qa_020_commit":"4dc51183748eae78713e5a5986bbfc0115f40388",
   "runtime_surface_commit":"5db7cde36ca0962d8759e8deff03cd65b406a2ea",
   "canonical_preview_commit":"638fc28279317cb15b24fcba14060577b688152d",
+  "final_metadata_sync":"PASS: Base44 final recovery checkpoint/commit mirrored to Drive, Linear, Supabase and GitHub; final readback pending in this run",
   "note":"Mars Branch complete. New work should enter as a new NEVER TEAR task instead of modifying completed history without an explicit new task."
 }
