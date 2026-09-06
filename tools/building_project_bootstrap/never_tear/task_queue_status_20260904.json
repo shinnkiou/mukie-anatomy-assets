@@ -1,7 +1,7 @@
 {
   "schema":"never-tear-task-queue-status-override-v1",
   "project_key":"never_tear_buildings",
-  "updated_at":"2026-09-04T09:09:00+09:00",
+  "updated_at":"2026-09-06T14:03:31+09:00",
   "authoritative_status_source":"Drive + Base44 + Supabase + Linear + GitHub readback",
   "note":"Preserves richer historical task_queue.json metadata. Mars Branch sequence NT-BLD-001..020 is complete.",
   "statuses":{
@@ -21,5 +21,9 @@
   "runtime_surface_code":"runtime/neverTearMarsSurface.js",
   "canonical_preview_code":"runtime/neverTearMarsCanonicalPreview.js",
   "base44_checkpoint_pre_final_mirror":"6a9a0baa4f0d2a985f2cb450",
-  "base44_commit_pre_final_mirror":"ffb89b0f65ff279005307e7edb3b3da839682ae6"
+  "base44_commit_pre_final_mirror":"ffb89b0f65ff279005307e7edb3b3da839682ae6",
+  "base44_final_checkpoint":"6a9a0d204f0d2a985f2cb558",
+  "base44_final_commit":"b809d0f63cf878c3321e194d1ef477e5b8f7e409",
+  "github_runtime_state_metadata_commit":"d5c3a94aa585b4ebf6d9390f7baf5d2af2c50247",
+  "final_metadata_sync":"PASS; verify all mirrors in final readback before queue idle handoff"
 }
