@@ -1,6 +1,6 @@
 {
   "project_key":"never_tear_buildings",
-  "updated_at":"2026-09-06T14:03:31+09:00",
+  "updated_at":"2026-09-06T14:06:00+09:00",
   "active_task":null,
   "last_complete":"NT-BLD-020",
   "next_action":"Mars Branch NT-BLD-001..020 COMPLETE. Wait for next building target.",
@@ -11,7 +11,7 @@
   "drive_020":"1OYwycTbOuo8bpqXjPaH14oB7_E90NOiZE3C3YYJm7FU",
   "linear_019":"RIO-39 Done",
   "linear_020":"RIO-40 Done",
-  "supabase_state":"NT-BLD-019 COMPLETE / NT-BLD-020 COMPLETE readback PASS",
+  "supabase_state":"NT-BLD-020 COMPLETE; final recovery metadata readback PASS",
   "base44_checkpoint_pre_final_mirror":"6a9a0baa4f0d2a985f2cb450",
   "base44_commit_pre_final_mirror":"ffb89b0f65ff279005307e7edb3b3da839682ae6",
   "base44_final_checkpoint":"6a9a0d204f0d2a985f2cb558",
@@ -29,6 +29,6 @@
   "runtime_qa_020_commit":"4dc51183748eae78713e5a5986bbfc0115f40388",
   "runtime_surface_commit":"5db7cde36ca0962d8759e8deff03cd65b406a2ea",
   "canonical_preview_commit":"638fc28279317cb15b24fcba14060577b688152d",
-  "final_metadata_sync":"PASS: Base44 final recovery checkpoint/commit mirrored to Drive, Linear, Supabase and GitHub; final readback pending in this run",
+  "final_metadata_sync":"PASS: Base44 final recovery checkpoint/commit mirrored to Drive, Linear, Supabase and GitHub; Drive/Linear/Supabase/GitHub readback PASS; queue idle",
   "note":"Mars Branch complete. New work should enter as a new NEVER TEAR task instead of modifying completed history without an explicit new task."
 }
