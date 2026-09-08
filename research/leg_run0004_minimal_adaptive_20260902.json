@@ -1,0 +1,45 @@
+{
+  "schema": "bp3d.leg02.adaptive_observation.v0004",
+  "run_key": "LEG02_RUN_0004_MINIMAL_ADAPTIVE_20260902",
+  "status": "DURABLE_MINIMAL_ADAPTIVE_VIEW_READBACK_PASS",
+  "source_model": "BP3D_BALANCED_FINAL_R5.glb",
+  "authoritative_baseline": {
+    "run_key": "LEG02_RUN_0001_20260902_1250JST",
+    "score": 0.9680600700192865,
+    "replaced": false
+  },
+  "candidate": {
+    "name": "POSTERIOR_MEDIAL_LOW_15",
+    "azimuth_deg": 150,
+    "elevation_deg": 15,
+    "original_unseen_recovered": [922, 951],
+    "face922_abs_normal_dot": 0.2989109895253706,
+    "face951_abs_normal_dot": 0.2829229595508022,
+    "grazing_threshold": 0.25,
+    "independent_face_coverage_with_candidate": 1.0,
+    "independent_two_view_face_fraction_with_candidate": 0.996116504854369,
+    "independent_two_view_area_fraction_with_candidate": 0.998829829097071
+  },
+  "decision": {
+    "preferred_minimal_extra_observation": true,
+    "run0003_plus30_kept_as_stronger_incidence_fallback": true,
+    "semantic_best_promoted": false,
+    "canonical_face_assignment_changed": false
+  },
+  "artifact": {
+    "drive_folder_id": "1u2t1oTmV11obDaC6sYA5ySznpo2BWEH7",
+    "drive_zip_id": "19v17ksHOIguCQOgblWWErhB6oqzHANOL",
+    "sha256": "a48e1a06366b5874fd5c90a550ad71a3756238702a4c984f78e234cf12d8e55f",
+    "size_bytes": 33684,
+    "drive_readback_sha_verified": true,
+    "zip_crc_verified": true
+  },
+  "guards": {
+    "MASTER_write": 0,
+    "R7_write": 0,
+    "Production14": "HOLD",
+    "Production13": "FORBIDDEN",
+    "anatomical_front": "NEGATIVE_Y",
+    "external_author_pixels_used": false
+  }
+}

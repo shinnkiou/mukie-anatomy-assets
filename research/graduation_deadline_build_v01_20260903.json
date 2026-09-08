@@ -1,0 +1,38 @@
+{
+  "schema": "bp3d.graduation_deadline_build.v0.1",
+  "status": "DURABLE_INTEGRATED_DEADLINE_BUILD_READBACK_PASS",
+  "semantic_authority": "Final-v3 + V45",
+  "inputs": {
+    "arm": {"version":"v4.6.2","sha256":"fe8c95734d8a2f89e44bb686b2d82bb23a6ad9fc60a4d586327fa01d1633e7a1","display_faces":2004},
+    "foot_lowerleg": {"version":"V01.1","sha256":"c1d962e6a32bbc52e564fdf962bc6a6dd6fa3682565a0406879d916afacd41c7","display_faces":2378},
+    "thigh_pelvis_torso": {"version":"V0.1","sha256":"14c99ec3662b6780d7b37e03bb0191c0ccf9082b270652d71aff2b3b10a1b487","source_display_faces":2356,"deltoid_faces_skipped_to_avoid_overlap":428,"integrated_faces":1928}
+  },
+  "integrated_display_face_sum": 6310,
+  "arm_mask": ["DELTOID","BICEPS_BRACHII","TRICEPS_BRACHII","FOREARM_ANTERIOR_COMPARTMENT","FOREARM_POSTERIOR_COMPARTMENT","ELBOW","WRIST"],
+  "artifact": {
+    "drive_folder_id":"1aYWWaq2vZZ96_zEL6ej6TFS81FYMBZe1",
+    "drive_zip_id":"1d-TmzmnVC4f4TpD8U-lxluvGrLEnz0Lv",
+    "drive_sha_id":"1BzwxVJ_TJrPJjSUN0JBTb7MNE8xPITtY",
+    "drive_qa_image_id":"1CPaZWxVKiNiK8LPuE5cuQ4OpUiSg4WAM",
+    "drive_validation_id":"1RB-dwsOUjqq394LGLUrBL30Jhcwe4Krn",
+    "zip_size_bytes":3673780,
+    "sha256":"c331f96a7b53b4ebdcc7c99ce78413cd4168e4c85dbf340b8d059b367d071783",
+    "drive_exact_byte_readback":true,
+    "zip_crc_pass":true
+  },
+  "qa": {
+    "blender_script_python_syntax":"PASS",
+    "real_blender_integrated_visual_qa":"PENDING"
+  },
+  "guards": {
+    "canonical_face_change":0,
+    "source_mesh_mutation":0,
+    "external_author_pixels_used":0,
+    "MASTER_write":0,
+    "R7_write":0,
+    "Production14":"HOLD",
+    "Production13":"FORBIDDEN",
+    "pre_V45_rollback":"FORBIDDEN"
+  },
+  "next":"Run integrated Blender visual QA; if no concrete blocker, freeze visual algorithms and proceed to H1-H5/pose/close-up output."
+}

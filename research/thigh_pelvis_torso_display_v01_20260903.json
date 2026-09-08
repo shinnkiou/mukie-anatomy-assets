@@ -1,0 +1,42 @@
+{
+  "schema": "bp3d.thigh_pelvis_torso.display.v0.1.durable",
+  "status": "DURABLE_DISPLAY_CANDIDATE_READBACK_PASS",
+  "semantic_authority": "Final-v3 + V45",
+  "display_faces": 2356,
+  "selected_faces_before_display_cleanup": 2362,
+  "display_island_faces_hidden": 6,
+  "detail_labels": 19,
+  "component_objects": 38,
+  "boundary_segments": 494,
+  "boundary_pairs": 37,
+  "canonical_face_change": 0,
+  "source_mesh_mutation": 0,
+  "external_author_pixels_used": 0,
+  "unsupported_labels_asserted": 0,
+  "real_blender_visual_qa": "PENDING",
+  "hidden_islands": [
+    {"label":"LATISSIMUS_DORSI","side":"L","faces":2},
+    {"label":"LATISSIMUS_DORSI","side":"R","faces":2},
+    {"label":"TRAPEZIUS_UPPER","side":"L","faces":1},
+    {"label":"TRAPEZIUS_UPPER","side":"R","faces":1}
+  ],
+  "artifact": {
+    "drive_folder_id": "1hQ6Yc2vPCSw6S38nXI2tY7UsEnowfg7V",
+    "drive_zip_id": "1sJPqmKJcnjJj6-GFIkZLdCVngwk9fSzB",
+    "drive_sha_id": "1FByKhFvVJ1aE_tJ-3v98dq1w-o_JGgmi",
+    "drive_montage_id": "1u4VonqK3t5GQTZ6UU1Wb5DCaTim55n1-",
+    "drive_validation_id": "1id7ywz8IEBUh78ENk06hNkTlj1j5ZlOp",
+    "zip_size_bytes": 246068,
+    "sha256": "14c99ec3662b6780d7b37e03bb0191c0ccf9082b270652d71aff2b3b10a1b487",
+    "drive_exact_byte_readback": true,
+    "zip_crc_pass": true
+  },
+  "guards": {
+    "MASTER_write": 0,
+    "R7_write": 0,
+    "Production14": "HOLD",
+    "Production13": "FORBIDDEN",
+    "pre_V45_rollback": "FORBIDDEN"
+  },
+  "next": "Build a single graduation Deadline Build assembler from Arm v4.6.2 + Foot/Lower-leg V01.1 + Thigh/Pelvis/Torso V0.1. Do not restart segmentation."
+}
