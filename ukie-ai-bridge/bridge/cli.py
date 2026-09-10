@@ -3,8 +3,8 @@
 The packaged entrypoint keeps the established diagnostic command surface while
 routing artifact-producing local-analyze jobs through the atomic exact-once state
 store and the preview-producing analysis runner. It also exposes a self-contained
-physical Blender canary, offline evidence verification, and a non-mutating release
-promotion evaluator.
+physical Blender canary, offline evidence verification, non-mutating release
+promotion evaluation, and a capability-scoped physical GPU render-route probe.
 """
 
 from __future__ import annotations
@@ -32,6 +32,7 @@ try:
     from bridge.analyze_runner import run_local_analyze as run_preview_analyze
     from bridge.blender_canary import run_blender_canary
     from bridge.canary_verifier import CanaryVerificationError, verify_canary_bundle
+    from bridge.gpu_probe import GPUProbeError, run_gpu_probe, verify_gpu_report
     from bridge.job_controller import execute_once
     from bridge.release_gate import ReleasePromotionError, evaluate_release_promotion
     from bridge.retry_contract import RetryContractError, validate_retry_contract
@@ -44,6 +45,7 @@ except ModuleNotFoundError:
     from analyze_runner import run_local_analyze as run_preview_analyze
     from blender_canary import run_blender_canary
     from canary_verifier import CanaryVerificationError, verify_canary_bundle
+    from gpu_probe import GPUProbeError, run_gpu_probe, verify_gpu_report
     from job_controller import execute_once
     from release_gate import ReleasePromotionError, evaluate_release_promotion
     from retry_contract import RetryContractError, validate_retry_contract
@@ -53,7 +55,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.8.1-p0.6"
+BRIDGE_VERSION = "0.9.0-p0.7"
 CURRENT_CAPABILITIES = [
     "device_status",
     "analyze_blend",
@@ -70,6 +72,8 @@ CURRENT_CAPABILITIES = [
     "blender_canary",
     "canary_evidence_verifier_v2",
     "release_promotion_gate_v1",
+    "windows_display_adapter_inventory",
+    "gpu_render_route_probe_v1",
 ]
 
 
@@ -98,6 +102,8 @@ def cmd_current_self_test() -> int:
             "synthetic_canary_release_promotion": False,
             "release_gate_mutation": False,
             "stable_requires_separate_soak": True,
+            "gpu_probe_saves_preferences": False,
+            "gpu_probe_claims_external_utilization": False,
         },
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -110,11 +116,12 @@ def cmd_current_device_status() -> int:
     result["bridge_core_version"] = bridge_main.BRIDGE_VERSION
     result["capabilities"] = list(dict.fromkeys([*(result.get("capabilities") or []), *CURRENT_CAPABILITIES]))
     # Presence of Blender is a prerequisite, not authorization to accept AI jobs.
-    # The local executable cannot prove the cloud-side Drive readback/promotion gate,
-    # so it must remain fail-closed until the control plane registers a verified canary.
+    # The local executable cannot prove cloud-side Drive readback/promotion gates,
+    # so it remains fail-closed until the control plane registers physical evidence.
     result["ready_for_ai"] = False
     result["readiness_gate"] = "PHYSICAL_CANARY_DRIVE_READBACK_AND_RELEASE_PROMOTION_REQUIRED"
     result["physical_canary_verified"] = False
+    result["gpu_render_ready"] = False
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
@@ -166,6 +173,30 @@ def cmd_verify_canary_bundle(argv: list[str]) -> int:
     result["bridge_version"] = BRIDGE_VERSION
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("status") == "CANARY_EVIDENCE_VALID" else 2
+
+
+def cmd_gpu_check(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE gpu-check")
+    parser.add_argument("--workspace", required=True)
+    args = parser.parse_args(argv)
+    result = run_gpu_probe(Path(args.workspace))
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result.get("ready_for_gpu_render") is True else 2
+
+
+def cmd_verify_gpu_report(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE verify-gpu-report")
+    parser.add_argument("--report", required=True)
+    parser.add_argument("--render")
+    args = parser.parse_args(argv)
+    result = verify_gpu_report(
+        _load_object(Path(args.report)),
+        Path(args.render) if args.render else None,
+    )
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result.get("ready_for_gpu_render") is True else 2
 
 
 def cmd_validate_release_promotion(argv: list[str]) -> int:
@@ -247,6 +278,10 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_blender_canary(argv[1:])
         if argv and argv[0] == "verify-canary-bundle":
             return cmd_verify_canary_bundle(argv[1:])
+        if argv and argv[0] == "gpu-check":
+            return cmd_gpu_check(argv[1:])
+        if argv and argv[0] == "verify-gpu-report":
+            return cmd_verify_gpu_report(argv[1:])
         if argv and argv[0] == "validate-release-promotion":
             return cmd_validate_release_promotion(argv[1:])
         return run_passthrough(argv)
@@ -257,6 +292,7 @@ def main(argv: list[str] | None = None) -> int:
         RetryContractError,
         StateConflictError,
         CanaryVerificationError,
+        GPUProbeError,
         ReleasePromotionError,
         FileNotFoundError,
         RuntimeError,
