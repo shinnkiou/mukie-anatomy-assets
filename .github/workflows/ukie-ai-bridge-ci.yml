@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Compile Python sources
-        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/release_gate.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py fixtures/build_synthetic_canary_bundle.py
+        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/gpu_probe.py bridge/release_gate.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py blender/gpu_probe.py fixtures/build_synthetic_canary_bundle.py
 
       - name: Run protocol and historical regression tests
         run: python -m unittest discover -s tests -v
@@ -55,6 +55,12 @@ jobs:
           $sha = (Get-FileHash ci-preflight\synthetic_canary.zip -Algorithm SHA256).Hash.ToLower()
           python bridge/cli.py verify-canary-bundle ci-preflight\synthetic_canary.zip --expected-sha256 $sha
 
+      - name: Verify synthetic GPU report contract without claiming physical GPU
+        shell: pwsh
+        run: |
+          python -c "from pathlib import Path; Path(r'ci-preflight\synthetic_gpu.png').write_bytes(b'\x89PNG\r\n\x1a\n' + b'P'*2048)"
+          python bridge/cli.py verify-gpu-report --report fixtures\gpu_probe.synthetic.valid.json --render ci-preflight\synthetic_gpu.png
+
       - name: Prove source release gate rejects synthetic canary promotion
         shell: pwsh
         run: |
@@ -67,7 +73,7 @@ jobs:
       - name: Build one-file Windows executable
         run: |
           python -m pip install --disable-pip-version-check pyinstaller
-          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.release_gate --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" bridge/cli.py
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.release_gate --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli.py
 
       - name: Run packaged executable self-test
         shell: pwsh
@@ -83,6 +89,7 @@ jobs:
           .\dist\UKIE_AI_BRIDGE.exe state-snapshot --state-root ci-preflight\state
           $sha = (Get-FileHash ci-preflight\synthetic_canary.zip -Algorithm SHA256).Hash.ToLower()
           .\dist\UKIE_AI_BRIDGE.exe verify-canary-bundle ci-preflight\synthetic_canary.zip --expected-sha256 $sha
+          .\dist\UKIE_AI_BRIDGE.exe verify-gpu-report --report fixtures\gpu_probe.synthetic.valid.json --render ci-preflight\synthetic_gpu.png
           .\dist\UKIE_AI_BRIDGE.exe validate-release-promotion --release fixtures\release_promotion.synthetic_release.json --canary fixtures\release_promotion.synthetic_canary.json --target CANARY_PASS
           $gateExit = $LASTEXITCODE
           if ($gateExit -ne 2) { throw "packaged production release gate unexpectedly accepted synthetic canary; exit=$gateExit" }
