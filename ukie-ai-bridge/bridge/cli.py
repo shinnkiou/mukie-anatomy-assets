@@ -2,10 +2,9 @@
 
 The packaged entrypoint keeps the established diagnostic command surface while
 routing artifact-producing local-analyze jobs through the atomic exact-once state
-store and the preview-producing analysis runner. It also exposes a self-contained
-physical Blender canary, offline evidence verification, non-mutating release
-promotion evaluation, a capability-scoped GPU render-route probe, one-command
-physical acceptance orchestration, and fail-closed acceptance bundle verification.
+store and the preview-producing analysis runner. It exposes physical canary,
+release-bound acceptance, offline verification, capability-scoped GPU probing,
+release promotion evaluation, and P0.10 safe sync-folder handoff.
 """
 
 from __future__ import annotations
@@ -35,6 +34,7 @@ try:
     from bridge.blender_canary import run_blender_canary
     from bridge.canary_verifier import CanaryVerificationError, verify_canary_bundle
     from bridge.gpu_probe import GPUProbeError, run_gpu_probe, verify_gpu_report
+    from bridge.handoff import HandoffError, configure_handoff, run_acceptance_and_handoff
     from bridge.job_controller import execute_once
     from bridge.physical_acceptance import run_physical_acceptance
     from bridge.release_gate import ReleasePromotionError, evaluate_release_promotion
@@ -50,6 +50,7 @@ except ModuleNotFoundError:
     from blender_canary import run_blender_canary
     from canary_verifier import CanaryVerificationError, verify_canary_bundle
     from gpu_probe import GPUProbeError, run_gpu_probe, verify_gpu_report
+    from handoff import HandoffError, configure_handoff, run_acceptance_and_handoff
     from job_controller import execute_once
     from physical_acceptance import run_physical_acceptance
     from release_gate import ReleasePromotionError, evaluate_release_promotion
@@ -60,7 +61,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.11.0-p0.9"
+BRIDGE_VERSION = "0.12.0-p0.10"
 CURRENT_CAPABILITIES = [
     "device_status",
     "analyze_blend",
@@ -83,6 +84,9 @@ CURRENT_CAPABILITIES = [
     "one_click_acceptance_launcher",
     "acceptance_evidence_verifier_v1",
     "release_bound_physical_acceptance",
+    "sync_folder_handoff_v1",
+    "atomic_handoff_copy",
+    "handoff_sha_sidecar",
 ]
 
 
@@ -117,6 +121,10 @@ def cmd_current_self_test() -> int:
             "physical_acceptance_uploads": False,
             "physical_acceptance_promotes_release": False,
             "acceptance_verifier_executes_evidence": False,
+            "handoff_uses_google_api_tokens": False,
+            "handoff_claims_cloud_presence": False,
+            "handoff_claims_drive_readback": False,
+            "handoff_overwrites_different_content": False,
         },
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -129,7 +137,7 @@ def cmd_current_device_status() -> int:
     result["bridge_core_version"] = bridge_main.BRIDGE_VERSION
     result["capabilities"] = list(dict.fromkeys([*(result.get("capabilities") or []), *CURRENT_CAPABILITIES]))
     result["ready_for_ai"] = False
-    result["readiness_gate"] = "PHYSICAL_ACCEPTANCE_DRIVE_READBACK_AND_RELEASE_PROMOTION_REQUIRED"
+    result["readiness_gate"] = "PHYSICAL_ACCEPTANCE_CLOUD_READBACK_AND_RELEASE_PROMOTION_REQUIRED"
     result["physical_canary_verified"] = False
     result["gpu_render_ready"] = False
     print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -165,10 +173,7 @@ def cmd_blender_canary(argv: list[str]) -> int:
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--state-root")
     args = parser.parse_args(argv)
-    result = run_blender_canary(
-        Path(args.workspace),
-        Path(args.state_root) if args.state_root else None,
-    )
+    result = run_blender_canary(Path(args.workspace), Path(args.state_root) if args.state_root else None)
     result["bridge_version"] = BRIDGE_VERSION
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("status") == "CANARY_LOCAL_PASS" else 2
@@ -200,10 +205,7 @@ def cmd_verify_gpu_report(argv: list[str]) -> int:
     parser.add_argument("--report", required=True)
     parser.add_argument("--render")
     args = parser.parse_args(argv)
-    result = verify_gpu_report(
-        _load_object(Path(args.report)),
-        Path(args.render) if args.render else None,
-    )
+    result = verify_gpu_report(_load_object(Path(args.report)), Path(args.render) if args.render else None)
     result["bridge_version"] = BRIDGE_VERSION
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("ready_for_gpu_render") is True else 2
@@ -223,8 +225,6 @@ def cmd_physical_acceptance(argv: list[str]) -> int:
     )
     result["bridge_version"] = BRIDGE_VERSION
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    # GPU is capability-scoped. A core canary PASS returns success even when the
-    # GPU lane is blocked, while the report preserves that blocked capability.
     return 0 if result.get("local_core_ready") is True else 2
 
 
@@ -243,6 +243,42 @@ def cmd_verify_acceptance_bundle(argv: list[str]) -> int:
     result["bridge_version"] = BRIDGE_VERSION
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("status") == "ACCEPTANCE_EVIDENCE_VALID" else 2
+
+
+def cmd_configure_handoff(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE configure-handoff")
+    parser.add_argument("--destination")
+    parser.add_argument("--config")
+    args = parser.parse_args(argv)
+    result = configure_handoff(
+        Path(args.destination) if args.destination else None,
+        config_path=Path(args.config) if args.config else None,
+        interactive=args.destination is None,
+    )
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_acceptance_and_handoff(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE acceptance-and-handoff")
+    parser.add_argument("--workspace", required=True)
+    parser.add_argument("--state-root")
+    parser.add_argument("--release-info", required=True)
+    parser.add_argument("--handoff-config")
+    args = parser.parse_args(argv)
+    release_info = _load_object(Path(args.release_info))
+    result = run_acceptance_and_handoff(
+        Path(args.workspace),
+        release_info,
+        run_physical_acceptance,
+        state_root=Path(args.state_root) if args.state_root else None,
+        config_path=Path(args.handoff_config) if args.handoff_config else None,
+    )
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    acceptance = result.get("acceptance") if isinstance(result.get("acceptance"), dict) else {}
+    return 0 if acceptance.get("local_core_ready") is True else 2
 
 
 def cmd_validate_release_promotion(argv: list[str]) -> int:
@@ -270,20 +306,13 @@ def cmd_local_analyze_once(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace)
     job = load_and_validate(job_path)
     store = BridgeStateStore(args.state_root if getattr(args, "state_root", None) else None)
-
-    outcome = execute_once(
-        job,
-        store,
-        lambda: run_preview_analyze(job_path, input_path, workspace),
-    )
+    outcome = execute_once(job, store, lambda: run_preview_analyze(job_path, input_path, workspace))
     outcome["bridge_version"] = BRIDGE_VERSION
     outcome["exact_once"] = True
     outcome["visual_qa_artifacts_required"] = ["preview_front.png", "preview_side.png"]
     print(json.dumps(outcome, ensure_ascii=False, indent=2))
-
     if outcome.get("executed"):
         return 0 if outcome.get("decision") in {"LOCAL_SAVED", "VERIFIED", "COMPLETED"} else 2
-
     receipt = outcome.get("receipt") or {}
     status = receipt.get("status")
     if status in {"LOCAL_SAVED", "HASHED", "UPLOADING", "UPLOADED", "READBACK_VERIFYING", "VERIFIED", "COMPLETED"}:
@@ -300,7 +329,6 @@ def run_passthrough(argv: list[str]) -> int:
             raise JobValidationError("--state-root requires a value")
         state_root = argv[idx + 1]
         argv = argv[:idx] + argv[idx + 2:]
-
     args = parser.parse_args(argv)
     if getattr(args, "command", None) == "local-analyze":
         args.state_root = state_root
@@ -332,6 +360,10 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_physical_acceptance(argv[1:])
         if argv and argv[0] == "verify-acceptance-bundle":
             return cmd_verify_acceptance_bundle(argv[1:])
+        if argv and argv[0] == "configure-handoff":
+            return cmd_configure_handoff(argv[1:])
+        if argv and argv[0] == "acceptance-and-handoff":
+            return cmd_acceptance_and_handoff(argv[1:])
         if argv and argv[0] == "validate-release-promotion":
             return cmd_validate_release_promotion(argv[1:])
         return run_passthrough(argv)
@@ -344,6 +376,7 @@ def main(argv: list[str] | None = None) -> int:
         CanaryVerificationError,
         GPUProbeError,
         AcceptanceVerificationError,
+        HandoffError,
         ReleasePromotionError,
         FileNotFoundError,
         RuntimeError,
