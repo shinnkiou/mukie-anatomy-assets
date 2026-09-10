@@ -3,8 +3,8 @@
 The outer acceptance ZIP is untrusted until this module validates archive safety,
 release binding, local-only invariants, Windows/Blender identity, the embedded
 physical canary bundle, and capability-scoped GPU evidence. No evidence is
-executed. The nested canary/render bytes are copied only to temporary files for
-existing offline verifiers and are deleted automatically.
+executed. Nested evidence bytes are copied only into a private temporary directory
+for existing offline verifiers and are deleted automatically.
 """
 
 from __future__ import annotations
@@ -148,11 +148,11 @@ def _verify_nested_canary(canary_bytes: bytes, outer_manifest: dict[str, Any]) -
     if isinstance(bundle_claim.get("byte_size"), int) and bundle_claim["byte_size"] != len(canary_bytes):
         raise AcceptanceVerificationError("nested canary size disagrees with core canary claim")
 
-    with tempfile.NamedTemporaryFile(suffix=".zip", delete=True) as handle:
-        handle.write(canary_bytes)
-        handle.flush()
+    with tempfile.TemporaryDirectory(prefix="ukie_acceptance_canary_") as temp:
+        nested_path = Path(temp) / "nested_canary.zip"
+        nested_path.write_bytes(canary_bytes)
         try:
-            verified = verify_canary_bundle(Path(handle.name))
+            verified = verify_canary_bundle(nested_path)
         except CanaryVerificationError as exc:
             raise AcceptanceVerificationError(f"nested canary verification failed: {exc}") from exc
 
@@ -183,11 +183,11 @@ def _verify_gpu(zf: zipfile.ZipFile, root: PurePosixPath, manifest: dict[str, An
         if len(render_bytes) < 1024 or render_bytes[:8] != PNG_SIGNATURE:
             raise AcceptanceVerificationError("GPU render evidence is not a plausible PNG")
         report = _read_json_bytes(report_bytes, report_name)
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as handle:
-            handle.write(render_bytes)
-            handle.flush()
+        with tempfile.TemporaryDirectory(prefix="ukie_acceptance_gpu_") as temp:
+            render_path = Path(temp) / "gpu_probe.png"
+            render_path.write_bytes(render_bytes)
             try:
-                verified = verify_gpu_report(report, Path(handle.name))
+                verified = verify_gpu_report(report, render_path)
             except GPUProbeError as exc:
                 raise AcceptanceVerificationError(f"GPU report verification failed: {exc}") from exc
         if verified.get("ready_for_gpu_render") is not True:
