@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Compile Python sources
-        run: python -m py_compile bridge/validator.py bridge/main.py blender/analyze_scene.py
+        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/main.py blender/analyze_scene.py
 
       - name: Run protocol tests
         run: python -m unittest discover -s tests -v
@@ -35,6 +35,8 @@ jobs:
           python bridge/main.py self-test
           python bridge/main.py validate-job fixtures/job_analyze_blend.valid.json
           python bridge/main.py device-status
+          python bridge/main.py tool-discovery
+          python bridge/main.py validate-install-manifest fixtures/install_approval.valid.json
 
       - name: Build one-file Windows executable
         run: |
@@ -46,6 +48,8 @@ jobs:
           .\dist\UKIE_AI_BRIDGE.exe self-test
           .\dist\UKIE_AI_BRIDGE.exe validate-job fixtures\job_analyze_blend.valid.json
           .\dist\UKIE_AI_BRIDGE.exe device-status
+          .\dist\UKIE_AI_BRIDGE.exe tool-discovery
+          .\dist\UKIE_AI_BRIDGE.exe validate-install-manifest fixtures\install_approval.valid.json
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
