@@ -23,7 +23,34 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Compile Python sources
-        run: python -m py_compile bridge/validator.py blender/analyze_scene.py
+        run: python -m py_compile bridge/validator.py bridge/main.py blender/analyze_scene.py
+
       - name: Run protocol tests
         run: python -m unittest discover -s tests -v
+
+      - name: Run source self-test
+        run: |
+          python bridge/main.py self-test
+          python bridge/main.py validate-job fixtures/job_analyze_blend.valid.json
+          python bridge/main.py device-status
+
+      - name: Build one-file Windows executable
+        run: |
+          python -m pip install --disable-pip-version-check pyinstaller
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --add-data "blender/analyze_scene.py;blender" bridge/main.py
+
+      - name: Run packaged executable self-test
+        run: |
+          .\dist\UKIE_AI_BRIDGE.exe self-test
+          .\dist\UKIE_AI_BRIDGE.exe validate-job fixtures\job_analyze_blend.valid.json
+          .\dist\UKIE_AI_BRIDGE.exe device-status
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: UKIE_AI_BRIDGE-P0-windows
+          path: ukie-ai-bridge/dist/UKIE_AI_BRIDGE.exe
+          if-no-files-found: error
+          retention-days: 14
