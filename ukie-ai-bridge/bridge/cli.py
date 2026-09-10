@@ -3,7 +3,8 @@
 The packaged entrypoint keeps the established diagnostic command surface while
 routing artifact-producing local-analyze jobs through the atomic exact-once state
 store and the preview-producing analysis runner. It also exposes a self-contained
-physical Blender canary plus offline fail-closed evidence verification.
+physical Blender canary, offline evidence verification, and a non-mutating release
+promotion evaluator.
 """
 
 from __future__ import annotations
@@ -32,6 +33,7 @@ try:
     from bridge.blender_canary import run_blender_canary
     from bridge.canary_verifier import CanaryVerificationError, verify_canary_bundle
     from bridge.job_controller import execute_once
+    from bridge.release_gate import ReleasePromotionError, evaluate_release_promotion
     from bridge.retry_contract import RetryContractError, validate_retry_contract
     from bridge.state_store import BridgeStateStore, StateConflictError
     from bridge.validator import JobValidationError, load_and_validate
@@ -43,6 +45,7 @@ except ModuleNotFoundError:
     from blender_canary import run_blender_canary
     from canary_verifier import CanaryVerificationError, verify_canary_bundle
     from job_controller import execute_once
+    from release_gate import ReleasePromotionError, evaluate_release_promotion
     from retry_contract import RetryContractError, validate_retry_contract
     from state_store import BridgeStateStore, StateConflictError
     from validator import JobValidationError, load_and_validate
@@ -50,14 +53,14 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.7.1-p0.5.1"
+BRIDGE_VERSION = "0.8.0-p0.6"
 
 
 def _load_object(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as handle:
         value = json.load(handle)
     if not isinstance(value, dict):
-        raise RetryContractError("JSON root must be an object")
+        raise ValueError(f"JSON root must be an object: {path}")
     return value
 
 
@@ -108,6 +111,25 @@ def cmd_verify_canary_bundle(argv: list[str]) -> int:
     result["bridge_version"] = BRIDGE_VERSION
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("status") == "CANARY_EVIDENCE_VALID" else 2
+
+
+def cmd_validate_release_promotion(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE validate-release-promotion")
+    parser.add_argument("--release", required=True)
+    parser.add_argument("--canary", required=True)
+    parser.add_argument("--target", choices=["CANARY_PASS", "STABLE"], required=True)
+    parser.add_argument("--soak")
+    args = parser.parse_args(argv)
+    result = evaluate_release_promotion(
+        _load_object(Path(args.release)),
+        _load_object(Path(args.canary)),
+        target=args.target,
+        soak=_load_object(Path(args.soak)) if args.soak else None,
+        allow_synthetic_test_fixture=False,
+    )
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result.get("eligible") else 2
 
 
 def cmd_local_analyze_once(args: argparse.Namespace) -> int:
@@ -166,6 +188,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_blender_canary(argv[1:])
         if argv and argv[0] == "verify-canary-bundle":
             return cmd_verify_canary_bundle(argv[1:])
+        if argv and argv[0] == "validate-release-promotion":
+            return cmd_validate_release_promotion(argv[1:])
         return run_passthrough(argv)
     except (
         JobValidationError,
@@ -174,8 +198,10 @@ def main(argv: list[str] | None = None) -> int:
         RetryContractError,
         StateConflictError,
         CanaryVerificationError,
+        ReleasePromotionError,
         FileNotFoundError,
         RuntimeError,
+        ValueError,
     ) as exc:
         print(json.dumps({
             "status": "ERROR",
