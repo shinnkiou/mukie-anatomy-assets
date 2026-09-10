@@ -4,7 +4,8 @@ The packaged entrypoint keeps the established diagnostic command surface while
 routing artifact-producing local-analyze jobs through the atomic exact-once state
 store and the preview-producing analysis runner. It exposes physical canary,
 release-bound acceptance, offline verification, capability-scoped GPU probing,
-release promotion evaluation, and P0.10 safe sync-folder handoff.
+release promotion evaluation, P0.10 safe sync-folder handoff, and P0.11 cloud
+intake classification/verification without performing cloud-side promotion.
 """
 
 from __future__ import annotations
@@ -33,6 +34,7 @@ try:
     from bridge.analyze_runner import run_local_analyze as run_preview_analyze
     from bridge.blender_canary import run_blender_canary
     from bridge.canary_verifier import CanaryVerificationError, verify_canary_bundle
+    from bridge.cloud_intake import CloudIntakeError, classify_discovery, verify_cloud_intake
     from bridge.gpu_probe import GPUProbeError, run_gpu_probe, verify_gpu_report
     from bridge.handoff import HandoffError, configure_handoff, run_acceptance_and_handoff
     from bridge.job_controller import execute_once
@@ -49,6 +51,7 @@ except ModuleNotFoundError:
     from analyze_runner import run_local_analyze as run_preview_analyze
     from blender_canary import run_blender_canary
     from canary_verifier import CanaryVerificationError, verify_canary_bundle
+    from cloud_intake import CloudIntakeError, classify_discovery, verify_cloud_intake
     from gpu_probe import GPUProbeError, run_gpu_probe, verify_gpu_report
     from handoff import HandoffError, configure_handoff, run_acceptance_and_handoff
     from job_controller import execute_once
@@ -61,7 +64,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.12.0-p0.10"
+BRIDGE_VERSION = "0.13.0-p0.11"
 CURRENT_CAPABILITIES = [
     "device_status",
     "analyze_blend",
@@ -87,6 +90,8 @@ CURRENT_CAPABILITIES = [
     "sync_folder_handoff_v1",
     "atomic_handoff_copy",
     "handoff_sha_sidecar",
+    "cloud_discovery_classifier_v1",
+    "cloud_intake_verifier_v1",
 ]
 
 
@@ -95,6 +100,14 @@ def _load_object(path: Path) -> dict:
         value = json.load(handle)
     if not isinstance(value, dict):
         raise ValueError(f"JSON root must be an object: {path}")
+    return value
+
+
+def _load_array(path: Path) -> list:
+    with path.open("r", encoding="utf-8") as handle:
+        value = json.load(handle)
+    if not isinstance(value, list):
+        raise ValueError(f"JSON root must be an array: {path}")
     return value
 
 
@@ -125,6 +138,9 @@ def cmd_current_self_test() -> int:
             "handoff_claims_cloud_presence": False,
             "handoff_claims_drive_readback": False,
             "handoff_overwrites_different_content": False,
+            "cloud_discovery_executes_files": False,
+            "cloud_intake_promotes_release": False,
+            "local_cli_can_claim_drive_provider_proof": False,
         },
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -281,6 +297,38 @@ def cmd_acceptance_and_handoff(argv: list[str]) -> int:
     return 0 if acceptance.get("local_core_ready") is True else 2
 
 
+def cmd_classify_discovery(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE classify-discovery")
+    parser.add_argument("--metadata", required=True)
+    args = parser.parse_args(argv)
+    result = classify_discovery(_load_array(Path(args.metadata)))
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_verify_cloud_intake(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE verify-cloud-intake")
+    parser.add_argument("--bundle", required=True)
+    parser.add_argument("--sha-sidecar", required=True)
+    parser.add_argument("--handoff", required=True)
+    parser.add_argument("--expected-release-key")
+    args = parser.parse_args(argv)
+    # The local CLI deliberately cannot assert that bytes came from Google Drive.
+    # Cloud provider proof is bound only by the control plane after connector fetch.
+    result = verify_cloud_intake(
+        Path(args.bundle),
+        Path(args.sha_sidecar),
+        Path(args.handoff),
+        provider_metadata=None,
+        expected_release_key=args.expected_release_key,
+        allow_synthetic_test_fixture=False,
+    )
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result.get("status") == "CLOUD_INTAKE_LOCAL_VALID" else 2
+
+
 def cmd_validate_release_promotion(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE validate-release-promotion")
     parser.add_argument("--release", required=True)
@@ -364,6 +412,10 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_configure_handoff(argv[1:])
         if argv and argv[0] == "acceptance-and-handoff":
             return cmd_acceptance_and_handoff(argv[1:])
+        if argv and argv[0] == "classify-discovery":
+            return cmd_classify_discovery(argv[1:])
+        if argv and argv[0] == "verify-cloud-intake":
+            return cmd_verify_cloud_intake(argv[1:])
         if argv and argv[0] == "validate-release-promotion":
             return cmd_validate_release_promotion(argv[1:])
         return run_passthrough(argv)
@@ -377,6 +429,7 @@ def main(argv: list[str] | None = None) -> int:
         GPUProbeError,
         AcceptanceVerificationError,
         HandoffError,
+        CloudIntakeError,
         ReleasePromotionError,
         FileNotFoundError,
         RuntimeError,
