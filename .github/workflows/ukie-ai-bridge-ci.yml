@@ -101,7 +101,6 @@ jobs:
           python bridge/cli.py classify-discovery --metadata ci-preflight\cloud-metadata.json
           python -c "from pathlib import Path; from bridge.cloud_intake import verify_cloud_intake; root=Path(r'ci-preflight\cloud-triplet'); z=next(root.glob('*.zip')); r=verify_cloud_intake(z, Path(str(z)+'.sha256'), Path(str(z)+'.handoff.json'), provider_metadata={'provider':'GOOGLE_DRIVE','file_ids':{'zip':'drive-z','sha256':'drive-s','handoff':'drive-h'},'fetched_at':'2026-09-10T00:00:03Z'}, allow_synthetic_test_fixture=True); assert r['status']=='DRIVE_READBACK_VERIFIED'; assert r['physical_provenance'] is False; assert r['ready_for_ai'] is False; assert r['promotion_performed'] is False; print('PASS synthetic cloud intake test-only provider path')"
           $z = Get-ChildItem ci-preflight\cloud-triplet\*.zip | Select-Object -First 1
-          .\..\ukie-ai-bridge\bridge\cli.py | Out-Null
           python bridge/cli.py verify-cloud-intake --bundle $z.FullName --sha-sidecar ($z.FullName + '.sha256') --handoff ($z.FullName + '.handoff.json')
           $cloudExit = $LASTEXITCODE
           if ($cloudExit -ne 2) { throw "production cloud-intake CLI unexpectedly accepted synthetic physical evidence; exit=$cloudExit" }
