@@ -50,6 +50,7 @@ def recovery_key(base_name: str) -> str:
 def _triplet_identity(row: dict[str, Any]) -> dict[str, Any]:
     triplet = row.get("triplet") if isinstance(row.get("triplet"), dict) else {}
     values: dict[str, dict[str, Any]] = {}
+    identity: dict[str, dict[str, str]] = {}
     for kind in ("zip", "sha256", "handoff"):
         item = triplet.get(kind) if isinstance(triplet.get(kind), dict) else {}
         file_id = item.get("file_id")
@@ -61,7 +62,8 @@ def _triplet_identity(row: dict[str, Any]) -> dict[str, Any]:
             "name": name,
             "size": item.get("size") if isinstance(item.get("size"), int) else None,
         }
-    return {"files": values, "fingerprint": _canonical_sha(values)}
+        identity[kind] = {"file_id": file_id, "name": name}
+    return {"files": values, "fingerprint": _canonical_sha(identity)}
 
 
 def _find_row(discovery: dict[str, Any], base_name: str) -> tuple[str, dict[str, Any] | None]:
@@ -142,8 +144,6 @@ def reconcile_candidate(
     """Reconcile one acceptance basename to a deterministic non-promoting state."""
     state = _base_state(base_name, previous)
 
-    # A verified-evidence replacement block is intentionally sticky. Automated
-    # scans cannot clear it; the stored state must first be explicitly reviewed.
     blocked_reason = str(state.get("blocked_reason") or "")
     if state.get("status") == BLOCKED and blocked_reason.startswith("VERIFIED_EVIDENCE_"):
         candidate = dict(state)
@@ -152,8 +152,6 @@ def reconcile_candidate(
 
     observed_status, row = _find_row(discovery, base_name)
 
-    # Verified evidence is sticky. If it disappears temporarily, retain proof and
-    # wait for a later scan rather than erasing previously verified provenance.
     if observed_status == "ABSENT":
         if state.get("status") == FINAL_VERIFIED:
             candidate = dict(state)
@@ -205,8 +203,6 @@ def reconcile_candidate(
                 "replacement_triplet": observed_triplet,
             })
             return _finish(state, candidate, "BLOCK_VERIFIED_FILE_ID_CHANGE")
-        # Re-observing the same verified triplet never requires re-downloading it
-        # unless a new fully provider-verified intake is explicitly supplied.
         if intake is None or (isinstance(intake, dict) and intake.get("status") != "DRIVE_READBACK_VERIFIED"):
             candidate = dict(state)
             candidate["next_action"] = "KEEP_VERIFIED_NO_REFETCH_REQUIRED"
