@@ -7,7 +7,12 @@ import hashlib
 import json
 from pathlib import Path
 
-from fixtures.build_synthetic_acceptance_bundle import build_bundle
+try:
+    from fixtures.build_synthetic_acceptance_bundle import build_bundle
+except ModuleNotFoundError:
+    # Direct execution (`python fixtures/build_synthetic_cloud_triplet.py`) puts
+    # the fixtures directory, not the repository root, first on sys.path.
+    from build_synthetic_acceptance_bundle import build_bundle
 
 
 RELEASE_KEY = "BRIDGE_P09_RUN_99999999999"
