@@ -4,8 +4,8 @@ The packaged entrypoint keeps the established diagnostic command surface while
 routing artifact-producing local-analyze jobs through the atomic exact-once state
 store and the preview-producing analysis runner. It also exposes a self-contained
 physical Blender canary, offline evidence verification, non-mutating release
-promotion evaluation, a capability-scoped GPU render-route probe, and one-command
-physical acceptance orchestration.
+promotion evaluation, a capability-scoped GPU render-route probe, one-command
+physical acceptance orchestration, and fail-closed acceptance bundle verification.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ _configure_stdio()
 
 try:
     from bridge import main as bridge_main
+    from bridge.acceptance_verifier import AcceptanceVerificationError, verify_acceptance_bundle
     from bridge.analyze_runner import run_local_analyze as run_preview_analyze
     from bridge.blender_canary import run_blender_canary
     from bridge.canary_verifier import CanaryVerificationError, verify_canary_bundle
@@ -44,6 +45,7 @@ try:
     from bridge.artifact_validation import ArtifactValidationError
 except ModuleNotFoundError:
     import main as bridge_main
+    from acceptance_verifier import AcceptanceVerificationError, verify_acceptance_bundle
     from analyze_runner import run_local_analyze as run_preview_analyze
     from blender_canary import run_blender_canary
     from canary_verifier import CanaryVerificationError, verify_canary_bundle
@@ -58,7 +60,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.10.0-p0.8"
+BRIDGE_VERSION = "0.11.0-p0.9"
 CURRENT_CAPABILITIES = [
     "device_status",
     "analyze_blend",
@@ -78,6 +80,9 @@ CURRENT_CAPABILITIES = [
     "windows_display_adapter_inventory",
     "gpu_render_route_probe_v1",
     "physical_acceptance_v1",
+    "one_click_acceptance_launcher",
+    "acceptance_evidence_verifier_v1",
+    "release_bound_physical_acceptance",
 ]
 
 
@@ -104,12 +109,14 @@ def cmd_current_self_test() -> int:
             "arbitrary_exe": False,
             "source_blend_overwrite": False,
             "synthetic_canary_release_promotion": False,
+            "synthetic_acceptance_physical_verification": False,
             "release_gate_mutation": False,
             "stable_requires_separate_soak": True,
             "gpu_probe_saves_preferences": False,
             "gpu_probe_claims_external_utilization": False,
             "physical_acceptance_uploads": False,
             "physical_acceptance_promotes_release": False,
+            "acceptance_verifier_executes_evidence": False,
         },
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -122,7 +129,7 @@ def cmd_current_device_status() -> int:
     result["bridge_core_version"] = bridge_main.BRIDGE_VERSION
     result["capabilities"] = list(dict.fromkeys([*(result.get("capabilities") or []), *CURRENT_CAPABILITIES]))
     result["ready_for_ai"] = False
-    result["readiness_gate"] = "PHYSICAL_CANARY_DRIVE_READBACK_AND_RELEASE_PROMOTION_REQUIRED"
+    result["readiness_gate"] = "PHYSICAL_ACCEPTANCE_DRIVE_READBACK_AND_RELEASE_PROMOTION_REQUIRED"
     result["physical_canary_verified"] = False
     result["gpu_render_ready"] = False
     print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -206,16 +213,36 @@ def cmd_physical_acceptance(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE physical-acceptance")
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--state-root")
+    parser.add_argument("--release-info")
     args = parser.parse_args(argv)
+    release_info = _load_object(Path(args.release_info)) if args.release_info else None
     result = run_physical_acceptance(
         Path(args.workspace),
         Path(args.state_root) if args.state_root else None,
+        release_info,
     )
     result["bridge_version"] = BRIDGE_VERSION
     print(json.dumps(result, ensure_ascii=False, indent=2))
     # GPU is capability-scoped. A core canary PASS returns success even when the
     # GPU lane is blocked, while the report preserves that blocked capability.
     return 0 if result.get("local_core_ready") is True else 2
+
+
+def cmd_verify_acceptance_bundle(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE verify-acceptance-bundle")
+    parser.add_argument("bundle")
+    parser.add_argument("--expected-sha256")
+    parser.add_argument("--expected-release-key")
+    args = parser.parse_args(argv)
+    result = verify_acceptance_bundle(
+        Path(args.bundle),
+        args.expected_sha256,
+        args.expected_release_key,
+        allow_synthetic_test_fixture=False,
+    )
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result.get("status") == "ACCEPTANCE_EVIDENCE_VALID" else 2
 
 
 def cmd_validate_release_promotion(argv: list[str]) -> int:
@@ -303,6 +330,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_verify_gpu_report(argv[1:])
         if argv and argv[0] == "physical-acceptance":
             return cmd_physical_acceptance(argv[1:])
+        if argv and argv[0] == "verify-acceptance-bundle":
+            return cmd_verify_acceptance_bundle(argv[1:])
         if argv and argv[0] == "validate-release-promotion":
             return cmd_validate_release_promotion(argv[1:])
         return run_passthrough(argv)
@@ -314,6 +343,7 @@ def main(argv: list[str] | None = None) -> int:
         StateConflictError,
         CanaryVerificationError,
         GPUProbeError,
+        AcceptanceVerificationError,
         ReleasePromotionError,
         FileNotFoundError,
         RuntimeError,
