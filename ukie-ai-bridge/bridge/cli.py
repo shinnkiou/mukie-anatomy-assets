@@ -50,7 +50,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.7.0-p0.5"
+BRIDGE_VERSION = "0.7.1-p0.5.1"
 
 
 def _load_object(path: Path) -> dict:
