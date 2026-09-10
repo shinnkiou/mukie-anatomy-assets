@@ -9,8 +9,9 @@ Key safety rules:
 - incomplete sync waits rather than fails;
 - duplicate/ambiguous triplets block automatic intake;
 - repeated identical observations are idempotent;
-- once DRIVE_VERIFIED, a changed Drive file-id triplet or content SHA is treated
-  as evidence replacement and blocks automatic reuse;
+- once DRIVE_VERIFIED, temporary disappearance/incompleteness does not erase proof;
+- once DRIVE_VERIFIED, a changed Drive file-id triplet or content SHA becomes a
+  sticky evidence-replacement block that requires explicit human resolution;
 - READY_FOR_AI and release promotion are never asserted here.
 """
 
@@ -60,10 +61,7 @@ def _triplet_identity(row: dict[str, Any]) -> dict[str, Any]:
             "name": name,
             "size": item.get("size") if isinstance(item.get("size"), int) else None,
         }
-    return {
-        "files": values,
-        "fingerprint": _canonical_sha(values),
-    }
+    return {"files": values, "fingerprint": _canonical_sha(values)}
 
 
 def _find_row(discovery: dict[str, Any], base_name: str) -> tuple[str, dict[str, Any] | None]:
@@ -143,6 +141,15 @@ def reconcile_candidate(
 ) -> dict[str, Any]:
     """Reconcile one acceptance basename to a deterministic non-promoting state."""
     state = _base_state(base_name, previous)
+
+    # A verified-evidence replacement block is intentionally sticky. Automated
+    # scans cannot clear it; the stored state must first be explicitly reviewed.
+    blocked_reason = str(state.get("blocked_reason") or "")
+    if state.get("status") == BLOCKED and blocked_reason.startswith("VERIFIED_EVIDENCE_"):
+        candidate = dict(state)
+        candidate["next_action"] = "REQUIRE_HUMAN_EVIDENCE_REPLACEMENT_REVIEW"
+        return _finish(state, candidate, "KEEP_STICKY_VERIFIED_EVIDENCE_BLOCK")
+
     observed_status, row = _find_row(discovery, base_name)
 
     # Verified evidence is sticky. If it disappears temporarily, retain proof and
@@ -154,12 +161,7 @@ def reconcile_candidate(
             candidate["blocked_reason"] = None
             return _finish(state, candidate, "VERIFIED_EVIDENCE_TEMPORARILY_ABSENT")
         candidate = dict(state)
-        candidate.update({
-            "status": WAITING,
-            "triplet": None if state.get("status") != FINAL_VERIFIED else state.get("triplet"),
-            "blocked_reason": None,
-            "next_action": "WAIT_FOR_SYNC",
-        })
+        candidate.update({"status": WAITING, "triplet": None, "blocked_reason": None, "next_action": "WAIT_FOR_SYNC"})
         return _finish(state, candidate, "WAIT_FOR_SYNC")
 
     if observed_status == "AMBIGUOUS":
@@ -173,7 +175,6 @@ def reconcile_candidate(
         return _finish(state, candidate, "BLOCK_AMBIGUOUS")
 
     if observed_status == "INCOMPLETE":
-        # Do not downgrade immutable verified proof due to transient sync ordering.
         if state.get("status") == FINAL_VERIFIED:
             candidate = dict(state)
             candidate["next_action"] = "KEEP_VERIFIED_WAIT_FOR_TRIPLET_REAPPEARANCE"
@@ -204,6 +205,13 @@ def reconcile_candidate(
                 "replacement_triplet": observed_triplet,
             })
             return _finish(state, candidate, "BLOCK_VERIFIED_FILE_ID_CHANGE")
+        # Re-observing the same verified triplet never requires re-downloading it
+        # unless a new fully provider-verified intake is explicitly supplied.
+        if intake is None or (isinstance(intake, dict) and intake.get("status") != "DRIVE_READBACK_VERIFIED"):
+            candidate = dict(state)
+            candidate["next_action"] = "KEEP_VERIFIED_NO_REFETCH_REQUIRED"
+            candidate["blocked_reason"] = None
+            return _finish(state, candidate, "KEEP_VERIFIED_SAME_TRIPLET")
 
     if intake is None:
         candidate = dict(state)
