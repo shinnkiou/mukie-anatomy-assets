@@ -20,18 +20,22 @@ if not exist "%RELEASE%" (
   exit /b 2
 )
 
-echo UKIE AI BRIDGE - FIRST PHYSICAL ACCEPTANCE
+echo UKIE AI BRIDGE - FIRST PHYSICAL ACCEPTANCE + SAFE HANDOFF
 echo Workspace: %WORK%
 echo Release info: %RELEASE%
 echo.
-"%BRIDGE%" physical-acceptance --workspace "%WORK%" --release-info "%RELEASE%"
+echo On the first run, select a Google Drive for Desktop sync folder.
+echo The Bridge creates a UKIE_AI_BRIDGE_INBOX folder inside it.
+echo A local sync-folder copy is NOT treated as Google Drive readback verification.
+echo.
+"%BRIDGE%" acceptance-and-handoff --workspace "%WORK%" --release-info "%RELEASE%"
 set "RC=%ERRORLEVEL%"
 echo.
 if "%RC%"=="0" (
-  echo CORE ACCEPTANCE FINISHED.
-  echo The result is still NOT READY FOR AI until Drive readback and release promotion checks pass.
+  echo CORE ACCEPTANCE AND LOCAL HANDOFF FINISHED.
+  echo The result is still NOT READY FOR AI until cloud discovery, raw Drive readback and release promotion checks pass.
 ) else (
-  echo ACCEPTANCE REQUIRES REVIEW. Exit code: %RC%
+  echo ACCEPTANCE OR HANDOFF REQUIRES REVIEW. Exit code: %RC%
 )
 echo Evidence workspace: %WORK%
 echo.
