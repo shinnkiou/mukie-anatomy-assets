@@ -15,11 +15,16 @@ import platform
 import shutil
 import subprocess
 import sys
-import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-from bridge.validator import JobValidationError, load_and_validate, sha256_file
+try:
+    from bridge.validator import JobValidationError, load_and_validate, sha256_file
+except ModuleNotFoundError:
+    # Direct execution (`python bridge/main.py`) puts bridge/ on sys.path instead
+    # of the project root. Keep this narrow fallback so source and packaged EXE
+    # entrypoints exercise the same fail-closed validator.
+    from validator import JobValidationError, load_and_validate, sha256_file
 
 BRIDGE_VERSION = "0.1.0-p0"
 PROTOCOL_VERSION = "ukie_job_v1"
