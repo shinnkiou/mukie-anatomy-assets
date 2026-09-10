@@ -7,13 +7,31 @@ import hashlib
 import json
 import pathlib
 import struct
+import zlib
 import zipfile
 
 
-def fake_png(width=512, height=512):
-    header = b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", width, height)
-    header += b"\x08\x06\x00\x00\x00" + b"\x00\x00\x00\x00"
-    return header + (b"P" * 1200)
+def _png_chunk(kind: bytes, payload: bytes) -> bytes:
+    crc = zlib.crc32(kind)
+    crc = zlib.crc32(payload, crc) & 0xFFFFFFFF
+    return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", crc)
+
+
+def fake_png(width=128, height=128):
+    raw = bytearray()
+    for y in range(height):
+        raw.append(0)
+        for x in range(width):
+            raw.extend(((x * 17 + y * 3) & 255, (x * 5 + y * 19) & 255, (x ^ y) & 255, 255))
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
+    comment = b"UKIE_SYNTHETIC_CI_ONLY\x00" + bytes((i * 73) & 255 for i in range(1400))
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + _png_chunk(b"IHDR", ihdr)
+        + _png_chunk(b"tEXt", comment)
+        + _png_chunk(b"IDAT", zlib.compress(bytes(raw), 9))
+        + _png_chunk(b"IEND", b"")
+    )
 
 
 def main() -> int:
