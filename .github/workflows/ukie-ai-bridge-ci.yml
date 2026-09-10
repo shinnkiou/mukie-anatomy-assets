@@ -1,0 +1,29 @@
+name: UKIE AI Bridge P0 CI
+
+on:
+  push:
+    branches:
+      - ukie-ai-bridge-foundation
+    paths:
+      - 'ukie-ai-bridge/**'
+      - '.github/workflows/ukie-ai-bridge-ci.yml'
+  pull_request:
+    paths:
+      - 'ukie-ai-bridge/**'
+      - '.github/workflows/ukie-ai-bridge-ci.yml'
+
+jobs:
+  windows-foundation-test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ukie-ai-bridge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile Python sources
+        run: python -m py_compile bridge/validator.py blender/analyze_scene.py
+      - name: Run protocol tests
+        run: python -m unittest discover -s tests -v
