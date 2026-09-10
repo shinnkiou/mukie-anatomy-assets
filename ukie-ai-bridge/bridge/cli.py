@@ -2,7 +2,8 @@
 
 The packaged entrypoint keeps the established diagnostic command surface while
 routing artifact-producing local-analyze jobs through the atomic exact-once state
-store and the P0.4 preview-producing analysis runner.
+store and the preview-producing analysis runner. It also exposes a self-contained
+physical Blender canary that uses only a generated disposable fixture.
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ _configure_stdio()
 try:
     from bridge import main as bridge_main
     from bridge.analyze_runner import run_local_analyze as run_preview_analyze
+    from bridge.blender_canary import run_blender_canary
     from bridge.job_controller import execute_once
     from bridge.retry_contract import RetryContractError, validate_retry_contract
     from bridge.state_store import BridgeStateStore, StateConflictError
@@ -37,6 +39,7 @@ try:
 except ModuleNotFoundError:
     import main as bridge_main
     from analyze_runner import run_local_analyze as run_preview_analyze
+    from blender_canary import run_blender_canary
     from job_controller import execute_once
     from retry_contract import RetryContractError, validate_retry_contract
     from state_store import BridgeStateStore, StateConflictError
@@ -45,7 +48,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.5.0-p0.4"
+BRIDGE_VERSION = "0.6.0-p0.4"
 
 
 def _load_object(path: Path) -> dict:
@@ -78,6 +81,20 @@ def cmd_state_snapshot(argv: list[str]) -> int:
     store = BridgeStateStore(args.state_root)
     print(json.dumps(store.snapshot(), ensure_ascii=False, indent=2))
     return 0
+
+
+def cmd_blender_canary(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE blender-canary")
+    parser.add_argument("--workspace", required=True)
+    parser.add_argument("--state-root")
+    args = parser.parse_args(argv)
+    result = run_blender_canary(
+        Path(args.workspace),
+        Path(args.state_root) if args.state_root else None,
+    )
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result.get("status") == "CANARY_LOCAL_PASS" else 2
 
 
 def cmd_local_analyze_once(args: argparse.Namespace) -> int:
@@ -132,6 +149,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_validate_retry(argv[1:])
         if argv and argv[0] == "state-snapshot":
             return cmd_state_snapshot(argv[1:])
+        if argv and argv[0] == "blender-canary":
+            return cmd_blender_canary(argv[1:])
         return run_passthrough(argv)
     except (
         JobValidationError,
