@@ -1,8 +1,9 @@
-"""UKIE AI BRIDGE P0 executable entrypoint.
+"""UKIE AI BRIDGE P0.1 executable entrypoint.
 
-This prototype is intentionally narrow. It exposes local diagnostics and a manual
-local Blender ANALYZE_ONLY test. It does NOT accept arbitrary shell commands,
-PowerShell, registry changes, or whole-PC file operations.
+This prototype stays intentionally narrow. It exposes local diagnostics, bounded
+tool discovery, frozen Tool Scout approval validation, and a manual local Blender
+ANALYZE_ONLY test. It does NOT accept arbitrary shell commands, PowerShell,
+registry changes, arbitrary executables, or whole-PC file operations.
 """
 
 from __future__ import annotations
@@ -20,14 +21,27 @@ from pathlib import Path
 
 try:
     from bridge.validator import JobValidationError, load_and_validate, sha256_file
+    from bridge.install_manifest import (
+        InstallManifestError,
+        validate_approval_manifest,
+        validate_resolved_manifest,
+    )
+    from bridge.toolchain import discover_toolchain
 except ModuleNotFoundError:
     # Direct execution (`python bridge/main.py`) puts bridge/ on sys.path instead
     # of the project root. Keep this narrow fallback so source and packaged EXE
-    # entrypoints exercise the same fail-closed validator.
+    # entrypoints exercise the same fail-closed modules.
     from validator import JobValidationError, load_and_validate, sha256_file
+    from install_manifest import (
+        InstallManifestError,
+        validate_approval_manifest,
+        validate_resolved_manifest,
+    )
+    from toolchain import discover_toolchain
 
-BRIDGE_VERSION = "0.1.0-p0"
+BRIDGE_VERSION = "0.2.0-p0.1"
 PROTOCOL_VERSION = "ukie_job_v1"
+BROWSER_PROTOCOL_VERSION = "ukie_browser_v1"
 BP3D_BLENDER_PIN = "4.2.23"
 
 
@@ -143,6 +157,7 @@ def device_status() -> dict:
         "generated_at": utc_now(),
         "bridge_version": BRIDGE_VERSION,
         "protocol_version": PROTOCOL_VERSION,
+        "browser_protocol_version": BROWSER_PROTOCOL_VERSION,
         "platform": {
             "system": platform.system(),
             "release": platform.release(),
@@ -156,9 +171,20 @@ def device_status() -> dict:
         "blender": blender,
         "gpu": {
             "status": "P1_NOT_IMPLEMENTED",
-            "note": "P0 does not claim GPU_READY until Windows + Blender + render verification exists.",
+            "note": "P0.1 does not claim GPU_READY until Windows + Blender + render verification exists.",
         },
-        "capabilities": ["device_status", "analyze_blend", "upload_results"],
+        "capabilities": [
+            "device_status",
+            "analyze_blend",
+            "upload_results",
+            "tool_discovery",
+            "validate_install_approval",
+            "validate_install_resolution",
+        ],
+        "installation_execution": {
+            "status": "NOT_IMPLEMENTED",
+            "note": "P0.1 validates user-frozen manifests but does not run installers yet.",
+        },
         "ready_for_ai": bool(blender.get("found")),
     }
 
@@ -274,13 +300,29 @@ def run_local_analyze(job_json: Path, local_input: Path, workspace: Path) -> dic
     return manifest
 
 
+def _load_json(path: str | Path) -> dict:
+    with open(path, "r", encoding="utf-8") as handle:
+        value = json.load(handle)
+    if not isinstance(value, dict):
+        raise InstallManifestError("JSON root must be an object")
+    return value
+
+
 def cmd_self_test(_: argparse.Namespace) -> int:
     result = {
         "status": "PASS",
         "bridge_version": BRIDGE_VERSION,
         "protocol_version": PROTOCOL_VERSION,
+        "browser_protocol_version": BROWSER_PROTOCOL_VERSION,
         "frozen": bool(getattr(sys, "frozen", False)),
         "generated_at": utc_now(),
+        "safety": {
+            "arbitrary_shell": False,
+            "arbitrary_powershell": False,
+            "arbitrary_exe": False,
+            "install_execution": False,
+            "frozen_install_approval_validation": True,
+        },
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
@@ -291,9 +333,40 @@ def cmd_device_status(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_tool_discovery(args: argparse.Namespace) -> int:
+    result = discover_toolchain(include_hash=bool(args.hash))
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
 def cmd_validate_job(args: argparse.Namespace) -> int:
     job = load_and_validate(args.job)
     print(json.dumps(job.__dict__, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_validate_install_manifest(args: argparse.Namespace) -> int:
+    manifest = _load_json(args.manifest)
+    validated = validate_approval_manifest(manifest)
+    print(json.dumps({
+        "status": "VALID",
+        "batch_key": validated.batch_key,
+        "approved_at": validated.approved_at,
+        "tool_keys": list(validated.tool_keys),
+        "manifest_sha256": validated.manifest_sha256,
+        "requires_uac": validated.requires_uac,
+        "requires_driver": validated.requires_driver,
+        "installation_started": False,
+    }, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_validate_resolved_manifest(args: argparse.Namespace) -> int:
+    approval = _load_json(args.approval)
+    resolved = _load_json(args.resolved)
+    result = validate_resolved_manifest(resolved, approval)
+    result["installation_started"] = False
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -313,9 +386,22 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("device-status")
     p.set_defaults(func=cmd_device_status)
 
+    p = sub.add_parser("tool-discovery")
+    p.add_argument("--hash", action="store_true", help="Also hash discovered executable files")
+    p.set_defaults(func=cmd_tool_discovery)
+
     p = sub.add_parser("validate-job")
     p.add_argument("job")
     p.set_defaults(func=cmd_validate_job)
+
+    p = sub.add_parser("validate-install-manifest")
+    p.add_argument("manifest")
+    p.set_defaults(func=cmd_validate_install_manifest)
+
+    p = sub.add_parser("validate-resolved-manifest")
+    p.add_argument("--approval", required=True)
+    p.add_argument("--resolved", required=True)
+    p.set_defaults(func=cmd_validate_resolved_manifest)
 
     p = sub.add_parser("local-analyze")
     p.add_argument("--job", required=True)
@@ -330,7 +416,7 @@ def main() -> int:
     args = build_parser().parse_args()
     try:
         return int(args.func(args))
-    except (JobValidationError, FileNotFoundError, RuntimeError) as exc:
+    except (JobValidationError, InstallManifestError, FileNotFoundError, RuntimeError) as exc:
         print(json.dumps({"status": "ERROR", "error": str(exc), "bridge_version": BRIDGE_VERSION}, ensure_ascii=False), file=sys.stderr)
         return 2
 
