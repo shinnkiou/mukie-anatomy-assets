@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Compile Python sources
-        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/main.py bridge/cli.py blender/analyze_scene.py
+        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/main.py bridge/cli.py blender/analyze_scene.py
 
       - name: Run protocol and historical regression tests
         run: python -m unittest discover -s tests -v
@@ -51,7 +51,7 @@ jobs:
       - name: Build one-file Windows executable
         run: |
           python -m pip install --disable-pip-version-check pyinstaller
-          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --add-data "blender/analyze_scene.py;blender" bridge/cli.py
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --add-data "blender/analyze_scene.py;blender" bridge/cli.py
 
       - name: Run packaged executable self-test
         run: |
