@@ -26,16 +26,21 @@ class HandoffTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = pathlib.Path(temp)
             config_path = root / "config" / "handoff.json"
-            result = handoff.configure_handoff(root / "sync", config_path=config_path, interactive=False) if False else None
-            # destination must already exist: this catches accidental arbitrary path creation.
-            (root / "sync").mkdir()
-            result = handoff.configure_handoff(root / "sync", config_path=config_path, interactive=False)
+            sync = root / "sync"
+            sync.mkdir()
+            result = handoff.configure_handoff(sync, config_path=config_path, interactive=False)
             self.assertEqual(result["schema_version"], handoff.CONFIG_SCHEMA)
             self.assertTrue(pathlib.Path(result["inbox"]).is_dir())
             self.assertEqual(pathlib.Path(result["inbox"]).name, handoff.INBOX_NAME)
             loaded = handoff.load_handoff_config(config_path)
             self.assertEqual(loaded["inbox"], result["inbox"])
             self.assertFalse(loaded["drive_readback_proven"])
+
+    def test_missing_explicit_destination_is_not_silently_created(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            with self.assertRaises(handoff.HandoffError):
+                handoff.configure_handoff(root / "does-not-exist", config_path=root / "handoff.json", interactive=False)
 
     def test_handoff_is_sha_verified_and_never_claims_cloud_readback(self):
         with tempfile.TemporaryDirectory() as temp:
