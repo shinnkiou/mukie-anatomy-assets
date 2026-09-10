@@ -1,9 +1,14 @@
-"""UKIE AI BRIDGE P0 read-only Blender scene analyzer.
+"""UKIE AI BRIDGE read-only Blender scene analyzer + ephemeral previews.
 
 Run with:
-  blender.exe -b input.blend --python analyze_scene.py -- --output <scene_before.json>
+  blender.exe -b input.blend --python analyze_scene.py -- \
+    --output <scene_before.json> \
+    --preview-front <preview_front.png> \
+    --preview-side <preview_side.png>
 
-This script does not save the .blend file and does not mutate scene data.
+The script never saves the .blend file. Preview camera/lights exist only in the
+in-memory disposable working copy and are removed before exit. The scene report
+is captured before preview helper objects are created.
 """
 
 import argparse
@@ -15,6 +20,7 @@ import sys
 from datetime import datetime, timezone
 
 import bpy
+from mathutils import Vector
 
 
 def sha256_text(value: str) -> str:
@@ -26,6 +32,8 @@ def parse_args():
     argv = argv[argv.index("--") + 1 :] if "--" in argv else []
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True)
+    parser.add_argument("--preview-front")
+    parser.add_argument("--preview-side")
     return parser.parse_args(argv)
 
 
@@ -89,11 +97,130 @@ def object_record(obj):
     return data
 
 
+def scene_bounds(scene):
+    points = []
+    for obj in scene.objects:
+        if obj.hide_render or obj.type in {"CAMERA", "LIGHT", "SPEAKER"}:
+            continue
+        try:
+            for corner in obj.bound_box:
+                points.append(obj.matrix_world @ Vector(corner))
+        except (AttributeError, TypeError, ValueError):
+            pass
+
+    if not points:
+        return Vector((0.0, 0.0, 0.0)), Vector((2.0, 2.0, 2.0))
+
+    mins = Vector((min(p.x for p in points), min(p.y for p in points), min(p.z for p in points)))
+    maxs = Vector((max(p.x for p in points), max(p.y for p in points), max(p.z for p in points)))
+    center = (mins + maxs) * 0.5
+    size = maxs - mins
+    size.x = max(size.x, 0.1)
+    size.y = max(size.y, 0.1)
+    size.z = max(size.z, 0.1)
+    return center, size
+
+
+def look_at(obj, target):
+    direction = target - obj.location
+    obj.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+
+
+def _new_area_light(scene, name, location, energy, size, target):
+    data = bpy.data.lights.new(name=name, type="AREA")
+    data.energy = energy
+    data.shape = "DISK"
+    data.size = size
+    obj = bpy.data.objects.new(name, data)
+    scene.collection.objects.link(obj)
+    obj.location = location
+    look_at(obj, target)
+    return obj, data
+
+
+def render_preview(scene, path, view, center, size):
+    """Render an orthographic QA image without saving scene changes."""
+    output = os.path.abspath(path)
+    os.makedirs(os.path.dirname(output), exist_ok=True)
+
+    original = {
+        "camera": scene.camera,
+        "engine": scene.render.engine,
+        "resolution_x": scene.render.resolution_x,
+        "resolution_y": scene.render.resolution_y,
+        "resolution_percentage": scene.render.resolution_percentage,
+        "filepath": scene.render.filepath,
+        "film_transparent": scene.render.film_transparent,
+    }
+
+    camera_data = bpy.data.cameras.new(name="UKIE_QA_CAMERA_DATA")
+    camera = bpy.data.objects.new("UKIE_QA_CAMERA", camera_data)
+    scene.collection.objects.link(camera)
+    camera_data.type = "ORTHO"
+
+    span = max(size.x, size.y, size.z, 0.5)
+    camera_data.ortho_scale = max(size.z * 1.18, span * 1.18, 0.75)
+    distance = max(span * 3.0, 3.0)
+    if view == "FRONT":
+        camera.location = center + Vector((0.0, -distance, 0.0))
+    elif view == "SIDE":
+        camera.location = center + Vector((distance, 0.0, 0.0))
+    else:
+        raise ValueError("unsupported preview view")
+    look_at(camera, center)
+
+    lights = []
+    light_datas = []
+    for name, location, energy in (
+        ("UKIE_QA_KEY", center + Vector((-distance * 0.65, -distance * 0.7, distance * 0.8)), 1100.0),
+        ("UKIE_QA_FILL", center + Vector((distance * 0.65, -distance * 0.35, distance * 0.25)), 650.0),
+        ("UKIE_QA_RIM", center + Vector((0.0, distance * 0.7, distance * 0.55)), 850.0),
+    ):
+        obj, data = _new_area_light(scene, name, location, energy, max(span, 1.0), center)
+        lights.append(obj)
+        light_datas.append(data)
+
+    try:
+        # Blender 4.2 production pin provides EEVEE Next. Rendering occurs only
+        # on the disposable working copy and no save operator is called.
+        scene.render.engine = "BLENDER_EEVEE_NEXT"
+        scene.camera = camera
+        scene.render.resolution_x = 512
+        scene.render.resolution_y = 512
+        scene.render.resolution_percentage = 100
+        scene.render.film_transparent = False
+        scene.render.image_settings.file_format = "PNG"
+        scene.render.filepath = output
+        bpy.ops.render.render(write_still=True)
+    finally:
+        scene.camera = original["camera"]
+        scene.render.engine = original["engine"]
+        scene.render.resolution_x = original["resolution_x"]
+        scene.render.resolution_y = original["resolution_y"]
+        scene.render.resolution_percentage = original["resolution_percentage"]
+        scene.render.filepath = original["filepath"]
+        scene.render.film_transparent = original["film_transparent"]
+
+        for obj in lights:
+            bpy.data.objects.remove(obj, do_unlink=True)
+        for data in light_datas:
+            if data.users == 0:
+                bpy.data.lights.remove(data)
+        bpy.data.objects.remove(camera, do_unlink=True)
+        if camera_data.users == 0:
+            bpy.data.cameras.remove(camera_data)
+
+    if not os.path.isfile(output) or os.path.getsize(output) < 1024:
+        raise RuntimeError("preview render did not produce a valid PNG")
+    return {"path": output, "byte_size": os.path.getsize(output), "view": view}
+
+
 def main():
     args = parse_args()
     scene = bpy.context.scene
     filepath = bpy.data.filepath
 
+    # Capture evidence before adding any temporary QA objects.
     report = {
         "schema_version": "ukie_scene_report_v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -109,11 +236,7 @@ def main():
         "collections": [c.name for c in bpy.data.collections],
         "materials": [m.name for m in bpy.data.materials],
         "images": [
-            {
-                "name": i.name,
-                "filepath": i.filepath,
-                "packed": bool(i.packed_file),
-            }
+            {"name": i.name, "filepath": i.filepath, "packed": bool(i.packed_file)}
             for i in bpy.data.images
         ],
         "libraries": [
@@ -130,7 +253,17 @@ def main():
         json.dump(report, f, ensure_ascii=False, indent=2, sort_keys=True)
         f.write("\n")
 
-    print(f"UKIE_ANALYZE_OK output={output} objects={len(report['objects'])}")
+    center, size = scene_bounds(scene)
+    previews = []
+    if args.preview_front:
+        previews.append(render_preview(scene, args.preview_front, "FRONT", center, size))
+    if args.preview_side:
+        previews.append(render_preview(scene, args.preview_side, "SIDE", center, size))
+
+    print(
+        "UKIE_ANALYZE_OK "
+        f"output={output} objects={len(report['objects'])} previews={len(previews)}"
+    )
 
 
 if __name__ == "__main__":
