@@ -1,7 +1,9 @@
-"""Fail-closed validator for UKIE AI BRIDGE P0 jobs.
+"""Fail-closed validator for UKIE AI BRIDGE jobs.
 
 This module intentionally does NOT execute shell commands or arbitrary programs.
-It validates the small allowlisted protocol before any future execution adapter sees it.
+It validates a small allowlisted protocol before any execution adapter sees it.
+Tool installation uses a separate frozen approval-manifest validator after the
+manifest artifact itself has passed this job-envelope validation.
 """
 
 from __future__ import annotations
@@ -13,8 +15,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-ALLOWED_ACTIONS = {"device_status", "analyze_blend", "upload_results"}
-ALLOWED_PROJECTS = {"BP3D", "CSMC", "BRIDGE_TEST"}
+ALLOWED_ACTIONS = {
+    "device_status",
+    "analyze_blend",
+    "upload_results",
+    "install_batch",
+}
+ALLOWED_PROJECTS = {"BP3D", "CSMC", "BRIDGE_TEST", "VIRTUAL_BROWSER"}
 JOB_ID_RE = re.compile(r"^[A-Z0-9_\-]{4,80}$")
 SHA256_RE = re.compile(r"^[a-fA-F0-9]{64}$")
 DEFAULT_TIMEOUT = 300
@@ -74,8 +81,13 @@ def validate_job(payload: dict[str, Any]) -> ValidatedJob:
     if not isinstance(original_filename, str) or not original_filename:
         raise JobValidationError("missing original_filename")
 
+    if action == "analyze_blend" and not original_filename.lower().endswith(".blend"):
+        raise JobValidationError("analyze_blend requires a .blend artifact")
+    if action == "install_batch" and not original_filename.lower().endswith(".json"):
+        raise JobValidationError("install_batch requires a frozen JSON approval manifest")
+
     # Explicitly reject fields that would turn the protocol into arbitrary code execution.
-    forbidden = {"shell", "powershell", "exe", "command", "registry", "delete_path"}
+    forbidden = {"shell", "powershell", "exe", "command", "registry", "delete_path", "arguments", "argv"}
     if forbidden.intersection(payload.keys()):
         raise JobValidationError("forbidden execution field present")
 
