@@ -3,19 +3,28 @@ setlocal
 chcp 65001 >nul
 
 set "BRIDGE=%~dp0UKIE_AI_BRIDGE.exe"
+set "RELEASE=%~dp0RELEASE_INFO.json"
 set "WORK=%LOCALAPPDATA%\UKIE_AI_BRIDGE\acceptance"
 
 if not exist "%BRIDGE%" (
   echo ERROR: UKIE_AI_BRIDGE.exe was not found next to this launcher.
-  echo Put RUN_FIRST_ACCEPTANCE.cmd and UKIE_AI_BRIDGE.exe in the same folder.
+  echo Keep all release files in the same folder.
+  pause
+  exit /b 2
+)
+
+if not exist "%RELEASE%" (
+  echo ERROR: RELEASE_INFO.json was not found next to this launcher.
+  echo Release binding is mandatory for physical acceptance.
   pause
   exit /b 2
 )
 
 echo UKIE AI BRIDGE - FIRST PHYSICAL ACCEPTANCE
 echo Workspace: %WORK%
+echo Release info: %RELEASE%
 echo.
-"%BRIDGE%" physical-acceptance --workspace "%WORK%"
+"%BRIDGE%" physical-acceptance --workspace "%WORK%" --release-info "%RELEASE%"
 set "RC=%ERRORLEVEL%"
 echo.
 if "%RC%"=="0" (
