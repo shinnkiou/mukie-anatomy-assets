@@ -1,8 +1,8 @@
 """Offline verification for UKIE AI BRIDGE physical Blender canary bundles.
 
 A canary ZIP is untrusted evidence until this module validates its archive shape,
-source hash, exact-once receipt, semantic scene report, job manifest and real PNG
-headers. No archive member is extracted or executed.
+source hash, exact-once receipt, semantic scene report, job manifest and complete
+PNG structure. No archive member is extracted or executed.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ import hashlib
 import json
 import re
 import struct
+import zlib
 import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -21,8 +22,10 @@ MAX_FILES = 128
 MAX_TOTAL_UNCOMPRESSED = 768 * 1024 * 1024
 MAX_SINGLE_UNCOMPRESSED = 384 * 1024 * 1024
 MAX_COMPRESSION_RATIO = 250.0
+MAX_PNG_CHUNK = 64 * 1024 * 1024
 HEX64 = re.compile(r"^[0-9a-fA-F]{64}$")
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+PNG_CHANNELS = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}
 
 
 class CanaryVerificationError(ValueError):
@@ -61,14 +64,87 @@ def _read_json(zf: zipfile.ZipFile, name: str) -> dict[str, Any]:
 
 
 def _png_info(data: bytes, name: str) -> dict[str, int]:
-    if len(data) < 33 or data[:8] != PNG_SIGNATURE:
-        raise CanaryVerificationError(f"{name} is not a valid PNG header")
-    if data[12:16] != b"IHDR":
-        raise CanaryVerificationError(f"{name} is missing PNG IHDR")
-    width, height = struct.unpack(">II", data[16:24])
-    if width < 64 or height < 64:
-        raise CanaryVerificationError(f"{name} dimensions are implausibly small")
-    return {"width": int(width), "height": int(height), "byte_size": len(data)}
+    """Validate a complete non-interlaced PNG including chunk CRCs and IDAT."""
+    if len(data) < 1024 or data[:8] != PNG_SIGNATURE:
+        raise CanaryVerificationError(f"{name} is not a sufficiently sized PNG")
+
+    pos = 8
+    chunk_index = 0
+    width = height = bit_depth = color_type = interlace = None
+    idat_parts: list[bytes] = []
+    saw_iend = False
+
+    while pos < len(data):
+        if pos + 12 > len(data):
+            raise CanaryVerificationError(f"{name} has a truncated PNG chunk")
+        length = struct.unpack(">I", data[pos:pos + 4])[0]
+        if length > MAX_PNG_CHUNK:
+            raise CanaryVerificationError(f"{name} contains an oversized PNG chunk")
+        chunk_type = data[pos + 4:pos + 8]
+        data_start = pos + 8
+        data_end = data_start + length
+        crc_end = data_end + 4
+        if crc_end > len(data):
+            raise CanaryVerificationError(f"{name} has a truncated PNG chunk payload")
+        payload = data[data_start:data_end]
+        stored_crc = struct.unpack(">I", data[data_end:crc_end])[0]
+        calculated_crc = zlib.crc32(chunk_type)
+        calculated_crc = zlib.crc32(payload, calculated_crc) & 0xFFFFFFFF
+        if stored_crc != calculated_crc:
+            raise CanaryVerificationError(f"{name} PNG CRC mismatch in {chunk_type!r}")
+
+        if chunk_index == 0:
+            if chunk_type != b"IHDR" or length != 13:
+                raise CanaryVerificationError(f"{name} must begin with a 13-byte IHDR")
+            width, height, bit_depth, color_type, compression, filtering, interlace = struct.unpack(">IIBBBBB", payload)
+            if width < 64 or height < 64:
+                raise CanaryVerificationError(f"{name} dimensions are implausibly small")
+            if compression != 0 or filtering != 0 or interlace != 0:
+                raise CanaryVerificationError(f"{name} uses an unsupported PNG encoding mode")
+            if color_type not in PNG_CHANNELS or bit_depth not in {8, 16}:
+                raise CanaryVerificationError(f"{name} uses an unsupported PNG color layout")
+        elif chunk_type == b"IHDR":
+            raise CanaryVerificationError(f"{name} contains multiple IHDR chunks")
+
+        if chunk_type == b"IDAT":
+            idat_parts.append(payload)
+        elif chunk_type == b"IEND":
+            if length != 0:
+                raise CanaryVerificationError(f"{name} has an invalid IEND")
+            saw_iend = True
+            pos = crc_end
+            if pos != len(data):
+                raise CanaryVerificationError(f"{name} contains trailing bytes after IEND")
+            break
+
+        pos = crc_end
+        chunk_index += 1
+
+    if not saw_iend or not idat_parts or width is None or height is None:
+        raise CanaryVerificationError(f"{name} is missing required PNG chunks")
+
+    try:
+        raw = zlib.decompress(b"".join(idat_parts))
+    except zlib.error as exc:
+        raise CanaryVerificationError(f"{name} IDAT stream cannot be decompressed") from exc
+
+    channels = PNG_CHANNELS[int(color_type)]
+    scanline_bytes = (int(width) * channels * int(bit_depth) + 7) // 8
+    stride = 1 + scanline_bytes
+    expected = int(height) * stride
+    if len(raw) != expected:
+        raise CanaryVerificationError(f"{name} decompressed raster size does not match IHDR")
+    for offset in range(0, len(raw), stride):
+        if raw[offset] > 4:
+            raise CanaryVerificationError(f"{name} contains an invalid PNG scanline filter")
+
+    return {
+        "width": int(width),
+        "height": int(height),
+        "byte_size": len(data),
+        "bit_depth": int(bit_depth),
+        "color_type": int(color_type),
+    }
 
 
 def _validate_archive_shape(zf: zipfile.ZipFile) -> dict[str, Any]:
@@ -198,7 +274,7 @@ def verify_canary_bundle(bundle: str | Path, expected_sha256: str | None = None)
         side = _png_info(zf.read(side_name), side_name)
 
         return {
-            "schema_version": "ukie_canary_evidence_verification_v1",
+            "schema_version": "ukie_canary_evidence_verification_v2",
             "status": "CANARY_EVIDENCE_VALID",
             "canary_id": canary_id,
             "job_id": job_id,
