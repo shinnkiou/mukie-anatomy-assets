@@ -3,7 +3,7 @@
 The packaged entrypoint keeps the established diagnostic command surface while
 routing artifact-producing local-analyze jobs through the atomic exact-once state
 store and the preview-producing analysis runner. It also exposes a self-contained
-physical Blender canary that uses only a generated disposable fixture.
+physical Blender canary plus offline fail-closed evidence verification.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ try:
     from bridge import main as bridge_main
     from bridge.analyze_runner import run_local_analyze as run_preview_analyze
     from bridge.blender_canary import run_blender_canary
+    from bridge.canary_verifier import CanaryVerificationError, verify_canary_bundle
     from bridge.job_controller import execute_once
     from bridge.retry_contract import RetryContractError, validate_retry_contract
     from bridge.state_store import BridgeStateStore, StateConflictError
@@ -40,6 +41,7 @@ except ModuleNotFoundError:
     import main as bridge_main
     from analyze_runner import run_local_analyze as run_preview_analyze
     from blender_canary import run_blender_canary
+    from canary_verifier import CanaryVerificationError, verify_canary_bundle
     from job_controller import execute_once
     from retry_contract import RetryContractError, validate_retry_contract
     from state_store import BridgeStateStore, StateConflictError
@@ -48,7 +50,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.6.0-p0.4"
+BRIDGE_VERSION = "0.7.0-p0.5"
 
 
 def _load_object(path: Path) -> dict:
@@ -95,6 +97,17 @@ def cmd_blender_canary(argv: list[str]) -> int:
     result["bridge_version"] = BRIDGE_VERSION
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("status") == "CANARY_LOCAL_PASS" else 2
+
+
+def cmd_verify_canary_bundle(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="UKIE_AI_BRIDGE verify-canary-bundle")
+    parser.add_argument("bundle")
+    parser.add_argument("--expected-sha256")
+    args = parser.parse_args(argv)
+    result = verify_canary_bundle(Path(args.bundle), args.expected_sha256)
+    result["bridge_version"] = BRIDGE_VERSION
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result.get("status") == "CANARY_EVIDENCE_VALID" else 2
 
 
 def cmd_local_analyze_once(args: argparse.Namespace) -> int:
@@ -151,6 +164,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_state_snapshot(argv[1:])
         if argv and argv[0] == "blender-canary":
             return cmd_blender_canary(argv[1:])
+        if argv and argv[0] == "verify-canary-bundle":
+            return cmd_verify_canary_bundle(argv[1:])
         return run_passthrough(argv)
     except (
         JobValidationError,
@@ -158,6 +173,7 @@ def main(argv: list[str] | None = None) -> int:
         ArtifactValidationError,
         RetryContractError,
         StateConflictError,
+        CanaryVerificationError,
         FileNotFoundError,
         RuntimeError,
     ) as exc:
