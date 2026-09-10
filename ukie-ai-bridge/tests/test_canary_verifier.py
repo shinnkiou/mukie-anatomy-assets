@@ -5,6 +5,7 @@ import struct
 import sys
 import tempfile
 import unittest
+import zlib
 import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -13,13 +14,30 @@ sys.path.insert(0, str(ROOT))
 from bridge.canary_verifier import CanaryVerificationError, verify_canary_bundle
 
 
-def fake_png(width=512, height=512):
-    header = b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", width, height)
-    header += b"\x08\x06\x00\x00\x00" + b"\x00\x00\x00\x00"
-    return header + (b"P" * 1200)
+def _png_chunk(kind: bytes, payload: bytes) -> bytes:
+    crc = zlib.crc32(kind)
+    crc = zlib.crc32(payload, crc) & 0xFFFFFFFF
+    return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", crc)
 
 
-def write_bundle(path: pathlib.Path, *, topology=(8, 6), source_tamper=False, traversal=False):
+def fake_png(width=128, height=128):
+    raw = bytearray()
+    for y in range(height):
+        raw.append(0)
+        for x in range(width):
+            raw.extend(((x * 17 + y * 3) & 255, (x * 5 + y * 19) & 255, (x ^ y) & 255, 255))
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
+    comment = b"UKIE_TEST\x00" + bytes((i * 73) & 255 for i in range(1400))
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + _png_chunk(b"IHDR", ihdr)
+        + _png_chunk(b"tEXt", comment)
+        + _png_chunk(b"IDAT", zlib.compress(bytes(raw), 9))
+        + _png_chunk(b"IEND", b"")
+    )
+
+
+def write_bundle(path: pathlib.Path, *, topology=(8, 6), source_tamper=False, traversal=False, png_tamper=False):
     canary_id = "BLENDER_CANARY_TEST"
     job_id = "CANARY_JOB_TEST"
     root = pathlib.PurePosixPath(canary_id)
@@ -61,13 +79,16 @@ def write_bundle(path: pathlib.Path, *, topology=(8, 6), source_tamper=False, tr
         "source": {"source_unchanged": True},
         "artifact_validation": {"status": "PASS"},
     }
+    front = bytearray(fake_png())
+    if png_tamper:
+        front[-8] ^= 0x01
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         zf.writestr(str(root / "canary_manifest.json"), json.dumps(manifest))
         zf.writestr(str(root / "canary_source.blend"), source + (b"TAMPER" if source_tamper else b""))
         jr = root / "jobs" / job_id
         zf.writestr(str(jr / "manifest.json"), json.dumps(job_manifest))
         zf.writestr(str(jr / "scene_before.json"), json.dumps(scene))
-        zf.writestr(str(jr / "preview_front.png"), fake_png())
+        zf.writestr(str(jr / "preview_front.png"), bytes(front))
         zf.writestr(str(jr / "preview_side.png"), fake_png())
         if traversal:
             zf.writestr("../escape.txt", "bad")
@@ -84,6 +105,7 @@ class CanaryVerifierTests(unittest.TestCase):
             self.assertTrue(result["drive_readback_proven"])
             self.assertEqual(result["semantic"]["vertices"], 8)
             self.assertEqual(result["semantic"]["polygons"], 6)
+            self.assertGreaterEqual(result["previews"]["front"]["byte_size"], 1024)
 
     def test_path_traversal_is_rejected_without_extracting(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -112,6 +134,13 @@ class CanaryVerifierTests(unittest.TestCase):
             write_bundle(path)
             with self.assertRaises(CanaryVerificationError):
                 verify_canary_bundle(path, "0" * 64)
+
+    def test_png_crc_tamper_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = pathlib.Path(temp) / "canary.zip"
+            write_bundle(path, png_tamper=True)
+            with self.assertRaises(CanaryVerificationError):
+                verify_canary_bundle(path)
 
 
 if __name__ == "__main__":
