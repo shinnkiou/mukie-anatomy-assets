@@ -1,8 +1,8 @@
 """Packaged UKIE AI BRIDGE entrypoint.
 
-This wrapper keeps the established P0.2 command surface from bridge.main, but
-intercepts artifact-producing local-analyze jobs so the packaged EXE uses the
-atomic exact-once state store. It also exposes validation for explicit retries.
+The packaged entrypoint keeps the established diagnostic command surface while
+routing artifact-producing local-analyze jobs through the atomic exact-once state
+store and the P0.4 preview-producing analysis runner.
 """
 
 from __future__ import annotations
@@ -14,13 +14,7 @@ from pathlib import Path
 
 
 def _configure_stdio() -> None:
-    """Make structured JSON output Unicode-safe on Windows consoles/CI.
-
-    Historical CMD corruption and the P0.3 CP1252 CI regression show that the
-    surrounding console code page must never decide whether Unicode provenance
-    (for example an original Japanese filename) can be emitted. Internal staging
-    names remain ASCII, while JSON/log provenance is UTF-8.
-    """
+    """Make structured JSON output Unicode-safe on Windows consoles/CI."""
     for stream in (sys.stdout, sys.stderr):
         if stream is not None and hasattr(stream, "reconfigure"):
             try:
@@ -33,6 +27,7 @@ _configure_stdio()
 
 try:
     from bridge import main as bridge_main
+    from bridge.analyze_runner import run_local_analyze as run_preview_analyze
     from bridge.job_controller import execute_once
     from bridge.retry_contract import RetryContractError, validate_retry_contract
     from bridge.state_store import BridgeStateStore, StateConflictError
@@ -41,6 +36,7 @@ try:
     from bridge.artifact_validation import ArtifactValidationError
 except ModuleNotFoundError:
     import main as bridge_main
+    from analyze_runner import run_local_analyze as run_preview_analyze
     from job_controller import execute_once
     from retry_contract import RetryContractError, validate_retry_contract
     from state_store import BridgeStateStore, StateConflictError
@@ -49,7 +45,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.4.1-p0.3"
+BRIDGE_VERSION = "0.5.0-p0.4"
 
 
 def _load_object(path: Path) -> dict:
@@ -94,10 +90,11 @@ def cmd_local_analyze_once(args: argparse.Namespace) -> int:
     outcome = execute_once(
         job,
         store,
-        lambda: bridge_main.run_local_analyze(job_path, input_path, workspace),
+        lambda: run_preview_analyze(job_path, input_path, workspace),
     )
     outcome["bridge_version"] = BRIDGE_VERSION
     outcome["exact_once"] = True
+    outcome["visual_qa_artifacts_required"] = ["preview_front.png", "preview_side.png"]
     print(json.dumps(outcome, ensure_ascii=False, indent=2))
 
     if outcome.get("executed"):
@@ -107,15 +104,11 @@ def cmd_local_analyze_once(args: argparse.Namespace) -> int:
     status = receipt.get("status")
     if status in {"LOCAL_SAVED", "HASHED", "UPLOADING", "UPLOADED", "READBACK_VERIFYING", "VERIFIED", "COMPLETED"}:
         return 0
-    # RUNNING and terminal failures require observation or an explicit retry, not silent success.
     return 2
 
 
 def run_passthrough(argv: list[str]) -> int:
     parser = bridge_main.build_parser()
-    # Extend only the packaged local-analyze parser with an optional durable-state root.
-    # argparse does not expose it directly, so state-root is removed here and applied
-    # after the established parser has validated the rest of the command.
     state_root = None
     if argv and argv[0] == "local-analyze" and "--state-root" in argv:
         idx = argv.index("--state-root")
