@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Compile Python sources
-        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py
+        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py fixtures/build_synthetic_canary_bundle.py
 
       - name: Run protocol and historical regression tests
         run: python -m unittest discover -s tests -v
@@ -48,12 +48,20 @@ jobs:
           Set-Content -Path ci-preflight\input.blend -Value ("B" * 256) -NoNewline -Encoding ascii
           python bridge/cli.py preflight --workspace ci-preflight\workspace --input ci-preflight\input.blend --script ci-preflight\safe.py --python-role BLENDER_INTERNAL --output ci-preflight\preflight.json
 
+      - name: Build and verify synthetic canary evidence
+        shell: pwsh
+        run: |
+          python fixtures/build_synthetic_canary_bundle.py --output ci-preflight\synthetic_canary.zip
+          $sha = (Get-FileHash ci-preflight\synthetic_canary.zip -Algorithm SHA256).Hash.ToLower()
+          python bridge/cli.py verify-canary-bundle ci-preflight\synthetic_canary.zip --expected-sha256 $sha
+
       - name: Build one-file Windows executable
         run: |
           python -m pip install --disable-pip-version-check pyinstaller
-          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" bridge/cli.py
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" bridge/cli.py
 
       - name: Run packaged executable self-test
+        shell: pwsh
         run: |
           .\dist\UKIE_AI_BRIDGE.exe self-test
           .\dist\UKIE_AI_BRIDGE.exe validate-job fixtures\job_analyze_blend.valid.json
@@ -64,6 +72,8 @@ jobs:
           .\dist\UKIE_AI_BRIDGE.exe classify-debugger-line "first chance exception E06D7363"
           .\dist\UKIE_AI_BRIDGE.exe preflight --workspace ci-preflight\workspace2 --input ci-preflight\input.blend --script ci-preflight\safe.py --python-role BLENDER_INTERNAL
           .\dist\UKIE_AI_BRIDGE.exe state-snapshot --state-root ci-preflight\state
+          $sha = (Get-FileHash ci-preflight\synthetic_canary.zip -Algorithm SHA256).Hash.ToLower()
+          .\dist\UKIE_AI_BRIDGE.exe verify-canary-bundle ci-preflight\synthetic_canary.zip --expected-sha256 $sha
 
       - name: Upload Windows executable and preflight evidence
         uses: actions/upload-artifact@v4
