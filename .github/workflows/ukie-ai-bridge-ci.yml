@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Compile Python sources
-        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/gpu_probe.py bridge/release_gate.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py blender/gpu_probe.py fixtures/build_synthetic_canary_bundle.py
+        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/gpu_probe.py bridge/physical_acceptance.py bridge/release_gate.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py blender/gpu_probe.py fixtures/build_synthetic_canary_bundle.py
 
       - name: Run protocol and historical regression tests
         run: python -m unittest discover -s tests -v
@@ -39,6 +39,18 @@ jobs:
           python bridge/cli.py tool-discovery
           python bridge/cli.py validate-install-manifest fixtures/install_approval.valid.json
           python bridge/cli.py classify-debugger-line "first chance exception E06D7363"
+
+      - name: Validate one-click launcher bytes
+        shell: pwsh
+        run: |
+          $bytes = [System.IO.File]::ReadAllBytes("windows\RUN_FIRST_ACCEPTANCE.cmd")
+          if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) { throw "CMD must not contain UTF-8 BOM" }
+          $nonAscii = $bytes | Where-Object { $_ -gt 0x7F }
+          if ($nonAscii.Count -gt 0) { throw "CMD must be ASCII-only" }
+          $text = [System.Text.Encoding]::ASCII.GetString($bytes)
+          if (-not $text.Contains("physical-acceptance")) { throw "launcher is not bound to physical-acceptance" }
+          if (-not $text.Contains("UKIE_AI_BRIDGE.exe")) { throw "launcher does not target packaged bridge" }
+          Write-Host "PASS ASCII/no-BOM one-click launcher"
 
       - name: Run source preflight fixture
         shell: pwsh
@@ -73,7 +85,7 @@ jobs:
       - name: Build one-file Windows executable
         run: |
           python -m pip install --disable-pip-version-check pyinstaller
-          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.release_gate --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli.py
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.physical_acceptance --hidden-import bridge.release_gate --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli.py
 
       - name: Run packaged executable self-test
         shell: pwsh
@@ -96,12 +108,26 @@ jobs:
           Write-Host "EXPECTED_BLOCK packaged EXE synthetic canary cannot promote release"
           $global:LASTEXITCODE = 0
 
-      - name: Upload Windows executable and preflight evidence
+      - name: Stage one-click Windows acceptance folder
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item dist\UKIE_AI_BRIDGE.exe release\UKIE_AI_BRIDGE.exe
+          Copy-Item windows\RUN_FIRST_ACCEPTANCE.cmd release\RUN_FIRST_ACCEPTANCE.cmd
+          Set-Content -Path release\README_FIRST.txt -Encoding ascii -Value @(
+            "UKIE AI BRIDGE P0.8 physical acceptance",
+            "1. Keep all files in this folder together.",
+            "2. Double-click RUN_FIRST_ACCEPTANCE.cmd.",
+            "3. The run uses only a generated disposable Blender fixture.",
+            "4. Local PASS is not READY FOR AI until Drive readback and release gates pass.",
+            "5. User source .blend files are not required for this acceptance run."
+          )
+          Get-ChildItem release
+
+      - name: Upload one-click Windows acceptance package
         uses: actions/upload-artifact@v4
         with:
           name: UKIE_AI_BRIDGE-P0-windows
-          path: |
-            ukie-ai-bridge/dist/UKIE_AI_BRIDGE.exe
-            ukie-ai-bridge/ci-preflight/preflight.json
+          path: ukie-ai-bridge/release/*
           if-no-files-found: error
           retention-days: 14
