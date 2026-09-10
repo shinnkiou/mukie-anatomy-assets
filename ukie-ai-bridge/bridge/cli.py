@@ -53,7 +53,24 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.8.0-p0.6"
+BRIDGE_VERSION = "0.8.1-p0.6"
+CURRENT_CAPABILITIES = [
+    "device_status",
+    "analyze_blend",
+    "preflight",
+    "artifact_contract_validation",
+    "known_failure_classification",
+    "auth_health",
+    "state_store_v2",
+    "exact_once_local_analyze",
+    "explicit_retry_contract",
+    "utf8_stdio_guard",
+    "preview_front",
+    "preview_side",
+    "blender_canary",
+    "canary_evidence_verifier_v2",
+    "release_promotion_gate_v1",
+]
 
 
 def _load_object(path: Path) -> dict:
@@ -62,6 +79,44 @@ def _load_object(path: Path) -> dict:
     if not isinstance(value, dict):
         raise ValueError(f"JSON root must be an object: {path}")
     return value
+
+
+def cmd_current_self_test() -> int:
+    result = {
+        "status": "PASS",
+        "bridge_version": BRIDGE_VERSION,
+        "bridge_core_version": bridge_main.BRIDGE_VERSION,
+        "protocol_version": bridge_main.PROTOCOL_VERSION,
+        "browser_protocol_version": bridge_main.BROWSER_PROTOCOL_VERSION,
+        "bp3d_blender_pin": bridge_main.BP3D_BLENDER_PIN,
+        "capabilities": CURRENT_CAPABILITIES,
+        "safety": {
+            "arbitrary_shell": False,
+            "arbitrary_powershell": False,
+            "arbitrary_exe": False,
+            "source_blend_overwrite": False,
+            "synthetic_canary_release_promotion": False,
+            "release_gate_mutation": False,
+            "stable_requires_separate_soak": True,
+        },
+    }
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_current_device_status() -> int:
+    result = bridge_main.device_status()
+    result["bridge_version"] = BRIDGE_VERSION
+    result["bridge_core_version"] = bridge_main.BRIDGE_VERSION
+    result["capabilities"] = list(dict.fromkeys([*(result.get("capabilities") or []), *CURRENT_CAPABILITIES]))
+    # Presence of Blender is a prerequisite, not authorization to accept AI jobs.
+    # The local executable cannot prove the cloud-side Drive readback/promotion gate,
+    # so it must remain fail-closed until the control plane registers a verified canary.
+    result["ready_for_ai"] = False
+    result["readiness_gate"] = "PHYSICAL_CANARY_DRIVE_READBACK_AND_RELEASE_PROMOTION_REQUIRED"
+    result["physical_canary_verified"] = False
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
 
 
 def cmd_validate_retry(argv: list[str]) -> int:
@@ -180,6 +235,10 @@ def main(argv: list[str] | None = None) -> int:
     _configure_stdio()
     argv = list(sys.argv[1:] if argv is None else argv)
     try:
+        if argv == ["self-test"]:
+            return cmd_current_self_test()
+        if argv == ["device-status"]:
+            return cmd_current_device_status()
         if argv and argv[0] == "validate-retry":
             return cmd_validate_retry(argv[1:])
         if argv and argv[0] == "state-snapshot":
