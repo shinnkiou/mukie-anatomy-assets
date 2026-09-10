@@ -11,11 +11,13 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
-from .validator import ValidatedJob
+try:
+    from .validator import ValidatedJob
+except ImportError:
+    from validator import ValidatedJob
 
 STATE_SCHEMA = "ukie_bridge_state_v1"
 
