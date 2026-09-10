@@ -12,6 +12,25 @@ import json
 import sys
 from pathlib import Path
 
+
+def _configure_stdio() -> None:
+    """Make structured JSON output Unicode-safe on Windows consoles/CI.
+
+    Historical CMD corruption and the P0.3 CP1252 CI regression show that the
+    surrounding console code page must never decide whether Unicode provenance
+    (for example an original Japanese filename) can be emitted. Internal staging
+    names remain ASCII, while JSON/log provenance is UTF-8.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        if stream is not None and hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (AttributeError, ValueError, OSError):
+                pass
+
+
+_configure_stdio()
+
 try:
     from bridge import main as bridge_main
     from bridge.job_controller import execute_once
@@ -30,7 +49,7 @@ except ModuleNotFoundError:
     from artifact_validation import ArtifactValidationError
 
 
-BRIDGE_VERSION = "0.4.0-p0.3"
+BRIDGE_VERSION = "0.4.1-p0.3"
 
 
 def _load_object(path: Path) -> dict:
@@ -113,6 +132,7 @@ def run_passthrough(argv: list[str]) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _configure_stdio()
     argv = list(sys.argv[1:] if argv is None else argv)
     try:
         if argv and argv[0] == "validate-retry":
