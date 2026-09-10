@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Compile Python sources
-        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/gpu_probe.py bridge/physical_acceptance.py bridge/acceptance_verifier.py bridge/handoff.py bridge/release_gate.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py blender/gpu_probe.py fixtures/build_synthetic_canary_bundle.py fixtures/build_synthetic_acceptance_bundle.py
+        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/gpu_probe.py bridge/physical_acceptance.py bridge/acceptance_verifier.py bridge/handoff.py bridge/cloud_intake.py bridge/release_gate.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py blender/gpu_probe.py fixtures/build_synthetic_canary_bundle.py fixtures/build_synthetic_acceptance_bundle.py fixtures/build_synthetic_cloud_triplet.py
 
       - name: Run protocol and historical regression tests
         run: python -m unittest discover -s tests -v
@@ -48,7 +48,7 @@ jobs:
           $nonAscii = $bytes | Where-Object { $_ -gt 0x7F }
           if ($nonAscii.Count -gt 0) { throw "CMD must be ASCII-only" }
           $text = [System.Text.Encoding]::ASCII.GetString($bytes)
-          if (-not $text.Contains("acceptance-and-handoff")) { throw "launcher is not bound to P0.10 acceptance-and-handoff" }
+          if (-not $text.Contains("acceptance-and-handoff")) { throw "launcher is not bound to acceptance-and-handoff" }
           if (-not $text.Contains("UKIE_AI_BRIDGE.exe")) { throw "launcher does not target packaged bridge" }
           if (-not $text.Contains("RELEASE_INFO.json")) { throw "launcher does not require release binding metadata" }
           if (-not $text.Contains("--release-info")) { throw "launcher does not pass release metadata" }
@@ -93,6 +93,21 @@ jobs:
           Write-Host "EXPECTED_BLOCK production CLI rejects synthetic physical acceptance"
           $global:LASTEXITCODE = 0
 
+      - name: Exercise P0.11 cloud discovery and intake without granting production synthetic proof
+        shell: pwsh
+        run: |
+          python fixtures/build_synthetic_cloud_triplet.py --output-dir ci-preflight\cloud-triplet
+          python -c "import json; from pathlib import Path; root=Path(r'ci-preflight\cloud-triplet'); rows=[{'id':'ci-'+str(i),'name':p.name,'size':p.stat().st_size} for i,p in enumerate(sorted(root.iterdir()))]; Path(r'ci-preflight\cloud-metadata.json').write_text(json.dumps(rows), encoding='utf-8')"
+          python bridge/cli.py classify-discovery --metadata ci-preflight\cloud-metadata.json
+          python -c "from pathlib import Path; from bridge.cloud_intake import verify_cloud_intake; root=Path(r'ci-preflight\cloud-triplet'); z=next(root.glob('*.zip')); r=verify_cloud_intake(z, Path(str(z)+'.sha256'), Path(str(z)+'.handoff.json'), provider_metadata={'provider':'GOOGLE_DRIVE','file_ids':{'zip':'drive-z','sha256':'drive-s','handoff':'drive-h'},'fetched_at':'2026-09-10T00:00:03Z'}, allow_synthetic_test_fixture=True); assert r['status']=='DRIVE_READBACK_VERIFIED'; assert r['physical_provenance'] is False; assert r['ready_for_ai'] is False; assert r['promotion_performed'] is False; print('PASS synthetic cloud intake test-only provider path')"
+          $z = Get-ChildItem ci-preflight\cloud-triplet\*.zip | Select-Object -First 1
+          .\..\ukie-ai-bridge\bridge\cli.py | Out-Null
+          python bridge/cli.py verify-cloud-intake --bundle $z.FullName --sha-sidecar ($z.FullName + '.sha256') --handoff ($z.FullName + '.handoff.json')
+          $cloudExit = $LASTEXITCODE
+          if ($cloudExit -ne 2) { throw "production cloud-intake CLI unexpectedly accepted synthetic physical evidence; exit=$cloudExit" }
+          Write-Host "EXPECTED_BLOCK production cloud-intake CLI rejects synthetic physical evidence"
+          $global:LASTEXITCODE = 0
+
       - name: Prove source release gate rejects synthetic canary promotion
         shell: pwsh
         run: |
@@ -105,7 +120,7 @@ jobs:
       - name: Build one-file Windows executable
         run: |
           python -m pip install --disable-pip-version-check pyinstaller
-          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.physical_acceptance --hidden-import bridge.acceptance_verifier --hidden-import bridge.handoff --hidden-import bridge.release_gate --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli.py
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.physical_acceptance --hidden-import bridge.acceptance_verifier --hidden-import bridge.handoff --hidden-import bridge.cloud_intake --hidden-import bridge.release_gate --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli.py
 
       - name: Run packaged executable self-test
         shell: pwsh
@@ -121,6 +136,7 @@ jobs:
           .\dist\UKIE_AI_BRIDGE.exe state-snapshot --state-root ci-preflight\state
           New-Item -ItemType Directory -Force ci-preflight\sync-root-exe | Out-Null
           .\dist\UKIE_AI_BRIDGE.exe configure-handoff --destination ci-preflight\sync-root-exe --config ci-preflight\handoff-exe.json
+          .\dist\UKIE_AI_BRIDGE.exe classify-discovery --metadata ci-preflight\cloud-metadata.json
           $sha = (Get-FileHash ci-preflight\synthetic_canary.zip -Algorithm SHA256).Hash.ToLower()
           .\dist\UKIE_AI_BRIDGE.exe verify-canary-bundle ci-preflight\synthetic_canary.zip --expected-sha256 $sha
           .\dist\UKIE_AI_BRIDGE.exe verify-gpu-report --report fixtures\gpu_probe.synthetic.valid.json --render ci-preflight\synthetic_gpu.png
@@ -129,13 +145,19 @@ jobs:
           if ($acceptanceExit -ne 2) { throw "packaged production acceptance verifier unexpectedly accepted synthetic evidence; exit=$acceptanceExit" }
           Write-Host "EXPECTED_BLOCK packaged EXE rejects synthetic physical acceptance"
           $global:LASTEXITCODE = 0
+          $z = Get-ChildItem ci-preflight\cloud-triplet\*.zip | Select-Object -First 1
+          .\dist\UKIE_AI_BRIDGE.exe verify-cloud-intake --bundle $z.FullName --sha-sidecar ($z.FullName + '.sha256') --handoff ($z.FullName + '.handoff.json')
+          $cloudExit = $LASTEXITCODE
+          if ($cloudExit -ne 2) { throw "packaged cloud-intake unexpectedly accepted synthetic physical evidence; exit=$cloudExit" }
+          Write-Host "EXPECTED_BLOCK packaged EXE cloud-intake rejects synthetic physical evidence"
+          $global:LASTEXITCODE = 0
           .\dist\UKIE_AI_BRIDGE.exe validate-release-promotion --release fixtures\release_promotion.synthetic_release.json --canary fixtures\release_promotion.synthetic_canary.json --target CANARY_PASS
           $gateExit = $LASTEXITCODE
           if ($gateExit -ne 2) { throw "packaged production release gate unexpectedly accepted synthetic canary; exit=$gateExit" }
           Write-Host "EXPECTED_BLOCK packaged EXE synthetic canary cannot promote release"
           $global:LASTEXITCODE = 0
 
-      - name: Stage release-bound one-click Windows acceptance and handoff folder
+      - name: Stage P0.11 release-bound one-click package
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force release | Out-Null
@@ -143,8 +165,8 @@ jobs:
           Copy-Item windows\RUN_FIRST_ACCEPTANCE.cmd release\RUN_FIRST_ACCEPTANCE.cmd
           $releaseInfo = [ordered]@{
             schema_version = "ukie_bridge_release_info_v1"
-            release_key = "BRIDGE_P010_RUN_${{ github.run_id }}"
-            bridge_version = "0.12.0-p0.10"
+            release_key = "BRIDGE_P011_RUN_${{ github.run_id }}"
+            bridge_version = "0.13.0-p0.11"
             commit_sha = "${{ github.event.pull_request.head.sha || github.sha }}"
             workflow_run_id = [int64]${{ github.run_id }}
             bp3d_blender_pin = "4.2.23"
@@ -152,20 +174,21 @@ jobs:
           } | ConvertTo-Json
           Set-Content -Path release\RELEASE_INFO.json -Encoding utf8NoBOM -Value $releaseInfo
           Set-Content -Path release\README_FIRST.txt -Encoding ascii -Value @(
-            "UKIE AI BRIDGE P0.10 release-bound physical acceptance + safe handoff",
+            "UKIE AI BRIDGE P0.11 release-bound physical acceptance + safe handoff + cloud intake contract",
             "1. Keep all four files in this folder together.",
             "2. Double-click RUN_FIRST_ACCEPTANCE.cmd.",
             "3. On the first run select a Google Drive for Desktop sync folder.",
             "4. The Bridge creates UKIE_AI_BRIDGE_INBOX and stores the selection locally for later runs.",
             "5. Acceptance ZIP is copied using partial -> fsync -> SHA verify -> atomic rename.",
             "6. SHA256 and handoff JSON sidecars are written beside the ZIP.",
-            "7. Local sync-folder copy is NOT Google Drive cloud readback proof.",
-            "8. READY FOR AI remains false until ChatGPT/Drive raw readback and release gates pass.",
-            "9. User source .blend files are not required for this acceptance run."
+            "7. P0.11 cloud intake expects the exact ZIP + SHA256 + handoff JSON triplet after cloud sync.",
+            "8. Local CLI cannot claim Google Drive provider proof or promote a release.",
+            "9. READY FOR AI remains false until physical evidence, Drive raw readback and release gates pass.",
+            "10. User source .blend files are not required for this acceptance run."
           )
           Get-ChildItem release
 
-      - name: Upload release-bound one-click Windows acceptance package
+      - name: Upload P0.11 Windows package
         uses: actions/upload-artifact@v4
         with:
           name: UKIE_AI_BRIDGE-P0-windows
