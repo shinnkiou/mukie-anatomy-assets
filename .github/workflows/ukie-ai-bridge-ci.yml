@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Compile Python sources
-        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/gpu_probe.py bridge/physical_acceptance.py bridge/acceptance_verifier.py bridge/release_gate.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py blender/gpu_probe.py fixtures/build_synthetic_canary_bundle.py fixtures/build_synthetic_acceptance_bundle.py
+        run: python -m py_compile bridge/validator.py bridge/install_manifest.py bridge/toolchain.py bridge/state_store.py bridge/job_controller.py bridge/retry_contract.py bridge/known_failures.py bridge/preflight.py bridge/artifact_validation.py bridge/auth_health.py bridge/experiment_manifest.py bridge/analyze_runner.py bridge/blender_canary.py bridge/canary_verifier.py bridge/gpu_probe.py bridge/physical_acceptance.py bridge/acceptance_verifier.py bridge/handoff.py bridge/release_gate.py bridge/main.py bridge/cli.py blender/analyze_scene.py blender/create_canary.py blender/gpu_probe.py fixtures/build_synthetic_canary_bundle.py fixtures/build_synthetic_acceptance_bundle.py
 
       - name: Run protocol and historical regression tests
         run: python -m unittest discover -s tests -v
@@ -48,11 +48,11 @@ jobs:
           $nonAscii = $bytes | Where-Object { $_ -gt 0x7F }
           if ($nonAscii.Count -gt 0) { throw "CMD must be ASCII-only" }
           $text = [System.Text.Encoding]::ASCII.GetString($bytes)
-          if (-not $text.Contains("physical-acceptance")) { throw "launcher is not bound to physical-acceptance" }
+          if (-not $text.Contains("acceptance-and-handoff")) { throw "launcher is not bound to P0.10 acceptance-and-handoff" }
           if (-not $text.Contains("UKIE_AI_BRIDGE.exe")) { throw "launcher does not target packaged bridge" }
           if (-not $text.Contains("RELEASE_INFO.json")) { throw "launcher does not require release binding metadata" }
-          if (-not $text.Contains("--release-info")) { throw "launcher does not pass release metadata to acceptance" }
-          Write-Host "PASS ASCII/no-BOM release-bound one-click launcher"
+          if (-not $text.Contains("--release-info")) { throw "launcher does not pass release metadata" }
+          Write-Host "PASS ASCII/no-BOM release-bound handoff launcher"
 
       - name: Run source preflight fixture
         shell: pwsh
@@ -61,6 +61,13 @@ jobs:
           Set-Content -Path ci-preflight\safe.py -Value "import json`nprint(json.dumps({'ok': True}))" -Encoding utf8NoBOM
           Set-Content -Path ci-preflight\input.blend -Value ("B" * 256) -NoNewline -Encoding ascii
           python bridge/cli.py preflight --workspace ci-preflight\workspace --input ci-preflight\input.blend --script ci-preflight\safe.py --python-role BLENDER_INTERNAL --output ci-preflight\preflight.json
+
+      - name: Verify explicit handoff configuration without UI
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force ci-preflight\sync-root | Out-Null
+          python bridge/cli.py configure-handoff --destination ci-preflight\sync-root --config ci-preflight\handoff.json
+          python -c "import json; from pathlib import Path; p=Path(r'ci-preflight\handoff.json'); v=json.loads(p.read_text(encoding='utf-8')); assert v['schema_version']=='ukie_handoff_config_v1'; assert v['drive_readback_proven'] is False; assert v['ready_for_ai'] is False; assert Path(v['inbox']).name=='UKIE_AI_BRIDGE_INBOX'; print('PASS local handoff config contract')"
 
       - name: Build and verify synthetic canary evidence
         shell: pwsh
@@ -98,7 +105,7 @@ jobs:
       - name: Build one-file Windows executable
         run: |
           python -m pip install --disable-pip-version-check pyinstaller
-          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.physical_acceptance --hidden-import bridge.acceptance_verifier --hidden-import bridge.release_gate --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli.py
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.physical_acceptance --hidden-import bridge.acceptance_verifier --hidden-import bridge.handoff --hidden-import bridge.release_gate --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli.py
 
       - name: Run packaged executable self-test
         shell: pwsh
@@ -112,6 +119,8 @@ jobs:
           .\dist\UKIE_AI_BRIDGE.exe classify-debugger-line "first chance exception E06D7363"
           .\dist\UKIE_AI_BRIDGE.exe preflight --workspace ci-preflight\workspace2 --input ci-preflight\input.blend --script ci-preflight\safe.py --python-role BLENDER_INTERNAL
           .\dist\UKIE_AI_BRIDGE.exe state-snapshot --state-root ci-preflight\state
+          New-Item -ItemType Directory -Force ci-preflight\sync-root-exe | Out-Null
+          .\dist\UKIE_AI_BRIDGE.exe configure-handoff --destination ci-preflight\sync-root-exe --config ci-preflight\handoff-exe.json
           $sha = (Get-FileHash ci-preflight\synthetic_canary.zip -Algorithm SHA256).Hash.ToLower()
           .\dist\UKIE_AI_BRIDGE.exe verify-canary-bundle ci-preflight\synthetic_canary.zip --expected-sha256 $sha
           .\dist\UKIE_AI_BRIDGE.exe verify-gpu-report --report fixtures\gpu_probe.synthetic.valid.json --render ci-preflight\synthetic_gpu.png
@@ -126,7 +135,7 @@ jobs:
           Write-Host "EXPECTED_BLOCK packaged EXE synthetic canary cannot promote release"
           $global:LASTEXITCODE = 0
 
-      - name: Stage release-bound one-click Windows acceptance folder
+      - name: Stage release-bound one-click Windows acceptance and handoff folder
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force release | Out-Null
@@ -134,8 +143,8 @@ jobs:
           Copy-Item windows\RUN_FIRST_ACCEPTANCE.cmd release\RUN_FIRST_ACCEPTANCE.cmd
           $releaseInfo = [ordered]@{
             schema_version = "ukie_bridge_release_info_v1"
-            release_key = "BRIDGE_P09_RUN_${{ github.run_id }}"
-            bridge_version = "0.11.0-p0.9"
+            release_key = "BRIDGE_P010_RUN_${{ github.run_id }}"
+            bridge_version = "0.12.0-p0.10"
             commit_sha = "${{ github.event.pull_request.head.sha || github.sha }}"
             workflow_run_id = [int64]${{ github.run_id }}
             bp3d_blender_pin = "4.2.23"
@@ -143,13 +152,16 @@ jobs:
           } | ConvertTo-Json
           Set-Content -Path release\RELEASE_INFO.json -Encoding utf8NoBOM -Value $releaseInfo
           Set-Content -Path release\README_FIRST.txt -Encoding ascii -Value @(
-            "UKIE AI BRIDGE P0.9 release-bound physical acceptance",
+            "UKIE AI BRIDGE P0.10 release-bound physical acceptance + safe handoff",
             "1. Keep all four files in this folder together.",
             "2. Double-click RUN_FIRST_ACCEPTANCE.cmd.",
-            "3. RELEASE_INFO.json binds the physical result to this exact CI release.",
-            "4. The run uses only a generated disposable Blender fixture.",
-            "5. Local PASS is not READY FOR AI until Drive readback, offline acceptance verification and release gates pass.",
-            "6. User source .blend files are not required for this acceptance run."
+            "3. On the first run select a Google Drive for Desktop sync folder.",
+            "4. The Bridge creates UKIE_AI_BRIDGE_INBOX and stores the selection locally for later runs.",
+            "5. Acceptance ZIP is copied using partial -> fsync -> SHA verify -> atomic rename.",
+            "6. SHA256 and handoff JSON sidecars are written beside the ZIP.",
+            "7. Local sync-folder copy is NOT Google Drive cloud readback proof.",
+            "8. READY FOR AI remains false until ChatGPT/Drive raw readback and release gates pass.",
+            "9. User source .blend files are not required for this acceptance run."
           )
           Get-ChildItem release
 
