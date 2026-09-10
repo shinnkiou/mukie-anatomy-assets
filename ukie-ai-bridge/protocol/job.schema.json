@@ -10,9 +10,9 @@
     "job_id": {"type": "string", "pattern": "^[A-Z0-9_\\-]{4,80}$"},
     "attempt_id": {"type": "string", "pattern": "^[A-Z0-9_\\-]{1,80}$"},
     "action": {
-      "enum": ["device_status", "analyze_blend", "upload_results"]
+      "enum": ["device_status", "analyze_blend", "upload_results", "install_batch"]
     },
-    "project": {"type": "string", "enum": ["BP3D", "CSMC", "BRIDGE_TEST"]},
+    "project": {"type": "string", "enum": ["BP3D", "CSMC", "BRIDGE_TEST", "VIRTUAL_BROWSER"]},
     "device_id": {"type": ["string", "null"]},
     "requested_at": {"type": "string", "format": "date-time"},
     "timeout_seconds": {"type": "integer", "minimum": 10, "maximum": 1800, "default": 300},
