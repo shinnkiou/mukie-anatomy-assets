@@ -26,8 +26,12 @@ class CliExactOnceTests(unittest.TestCase):
                 "status": "LOCAL_SAVED",
                 "job_id": "BRIDGE_TEST_000001",
                 "artifact_validation": {"status": "PASS"},
+                "artifacts": {
+                    "preview_front": "preview_front.png",
+                    "preview_side": "preview_side.png",
+                },
             }
-            with mock.patch.object(cli.bridge_main, "run_local_analyze", return_value=fake_result) as executor:
+            with mock.patch.object(cli, "run_preview_analyze", return_value=fake_result) as executor:
                 first = cli.cmd_local_analyze_once(args)
                 second = cli.cmd_local_analyze_once(args)
 
