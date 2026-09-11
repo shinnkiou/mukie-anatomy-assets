@@ -24,8 +24,18 @@ echo UKIE AI BRIDGE P0.14 - AUTO HANDOFF ACCEPTANCE
 echo Workspace: %WORK%
 echo Release info: %RELEASE%
 echo.
-echo The Bridge will automatically look for a Google Drive for desktop location.
-echo If no safe Drive candidate is found, evidence is kept in a local outbox and the run continues.
+echo Step 1: Refresh handoff destination automatically.
+echo No folder picker is required.
+"%BRIDGE%" configure-handoff
+set "CFG_RC=%ERRORLEVEL%"
+if not "%CFG_RC%"=="0" (
+  echo ERROR: Automatic handoff configuration failed. Exit code: %CFG_RC%
+  pause
+  exit /b %CFG_RC%
+)
+echo.
+echo Step 2: Run physical acceptance.
+echo If no safe Drive candidate was found, evidence is kept in a local outbox and the run continues.
 echo A local copy never counts as Google Drive readback verification.
 echo.
 "%BRIDGE%" acceptance-and-handoff --workspace "%WORK%" --release-info "%RELEASE%"
