@@ -1,18 +1,21 @@
-"""P0.15 wrapper: exact Blender pin selection + verified portable bootstrap."""
+"""P0.15 wrapper: exact Blender pin selection + verified portable bootstrap.
+
+Inherits the P0.14 no-picker auto-handoff flow and overlays only Blender discovery
+and bootstrap behavior. This keeps cloud recovery and local-outbox fallback intact.
+"""
 
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 
 try:
-    from bridge import cli_p012 as base_cli
+    from bridge import cli_p014 as inherited_cli
     from bridge import main as bridge_main
     from bridge.blender_bootstrap import BlenderBootstrapError, bootstrap_pinned_blender
     from bridge.blender_selector import discover_blenders, select_pinned_blender
 except ModuleNotFoundError:
-    import cli_p012 as base_cli
+    import cli_p014 as inherited_cli
     import main as bridge_main
     from blender_bootstrap import BlenderBootstrapError, bootstrap_pinned_blender
     from blender_selector import discover_blenders, select_pinned_blender
@@ -20,13 +23,16 @@ except ModuleNotFoundError:
 BRIDGE_VERSION = "0.15.0-p0.15"
 CAPABILITIES = ["exact_blender_pin_selection_v1", "verified_portable_blender_bootstrap_v1"]
 
+# All older modules reference this same main module object, so patching the detector
+# here makes device status, canary, analyze and GPU routes use the exact pin.
 bridge_main.detect_blender = select_pinned_blender
-base_cli.BRIDGE_VERSION = BRIDGE_VERSION
-base_cli.base_cli.BRIDGE_VERSION = BRIDGE_VERSION
-base_cli.base_cli.bridge_main.detect_blender = select_pinned_blender
+inherited_cli.BRIDGE_VERSION = BRIDGE_VERSION
+inherited_cli.inherited_cli.BRIDGE_VERSION = BRIDGE_VERSION
+inherited_cli.inherited_cli.base_cli.BRIDGE_VERSION = BRIDGE_VERSION
+inherited_cli.inherited_cli.base_cli.bridge_main.detect_blender = select_pinned_blender
 for capability in CAPABILITIES:
-    if capability not in base_cli.base_cli.CURRENT_CAPABILITIES:
-        base_cli.base_cli.CURRENT_CAPABILITIES.append(capability)
+    if capability not in inherited_cli.inherited_cli.base_cli.CURRENT_CAPABILITIES:
+        inherited_cli.inherited_cli.base_cli.CURRENT_CAPABILITIES.append(capability)
 
 
 def cmd_blender_discovery() -> int:
@@ -48,8 +54,9 @@ def cmd_self_test() -> int:
         "status": "PASS",
         "bridge_version": BRIDGE_VERSION,
         "bp3d_blender_pin": bridge_main.BP3D_BLENDER_PIN,
-        "capabilities": CAPABILITIES + list(base_cli.base_cli.CURRENT_CAPABILITIES),
+        "capabilities": CAPABILITIES + list(inherited_cli.inherited_cli.base_cli.CURRENT_CAPABILITIES),
         "p015_safety": {
+            "inherits_p014_auto_handoff": True,
             "existing_blender_uninstalled": False,
             "existing_blender_modified": False,
             "download_domain": "download.blender.org",
@@ -74,7 +81,7 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_blender_discovery()
         if argv == ["bootstrap-blender"]:
             return cmd_bootstrap_blender()
-        return base_cli.main(argv)
+        return inherited_cli.main(argv)
     except (BlenderBootstrapError, RuntimeError, ValueError, FileNotFoundError) as exc:
         print(json.dumps({
             "status": "ERROR",
