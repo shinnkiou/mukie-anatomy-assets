@@ -1,0 +1,102 @@
+name: UKIE AI Bridge P0.14 Auto Handoff CI
+
+on:
+  push:
+    branches:
+      - ukie-ai-bridge-foundation
+    paths:
+      - 'ukie-ai-bridge/bridge/drive_discovery.py'
+      - 'ukie-ai-bridge/bridge/handoff_auto.py'
+      - 'ukie-ai-bridge/bridge/cli_p014.py'
+      - 'ukie-ai-bridge/tests/test_handoff_auto.py'
+      - 'ukie-ai-bridge/windows/RUN_FIRST_ACCEPTANCE_P014.cmd'
+      - '.github/workflows/ukie-ai-bridge-p014-ci.yml'
+  pull_request:
+    paths:
+      - 'ukie-ai-bridge/bridge/drive_discovery.py'
+      - 'ukie-ai-bridge/bridge/handoff_auto.py'
+      - 'ukie-ai-bridge/bridge/cli_p014.py'
+      - 'ukie-ai-bridge/tests/test_handoff_auto.py'
+      - 'ukie-ai-bridge/windows/RUN_FIRST_ACCEPTANCE_P014.cmd'
+      - '.github/workflows/ukie-ai-bridge-p014-ci.yml'
+
+jobs:
+  windows-auto-handoff-test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ukie-ai-bridge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile Python sources
+        run: python -m compileall -q bridge blender fixtures tests
+
+      - name: Run full historical and P0.14 regression suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Exercise P0.14 source self-test and bounded Drive discovery
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force ci-p014\fake-drive | Out-Null
+          $env:UKIE_DRIVE_SYNC_ROOT = (Resolve-Path ci-p014\fake-drive).Path
+          python bridge/cli_p014.py self-test
+          python bridge/cli_p014.py configure-handoff --config ci-p014\handoff.json | Tee-Object -FilePath ci-p014\configure-source.json
+          python -c "import json; d=json.load(open(r'ci-p014\handoff.json',encoding='utf-8')); assert d['target_kind']=='DRIVE_SYNC_CANDIDATE'; assert d['drive_sync_candidate'] is True; assert d['drive_readback_proven'] is False; assert d['ready_for_ai'] is False; print('PASS source auto Drive candidate without cloud overclaim')"
+
+      - name: Build P0.14 one-file Windows executable
+        run: |
+          python -m pip install --disable-pip-version-check pyinstaller
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.physical_acceptance --hidden-import bridge.acceptance_verifier --hidden-import bridge.handoff --hidden-import bridge.drive_discovery --hidden-import bridge.handoff_auto --hidden-import bridge.cloud_intake --hidden-import bridge.cloud_recovery --hidden-import bridge.release_gate --hidden-import bridge.cli --hidden-import bridge.cli_p012 --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli_p014.py
+
+      - name: Exercise packaged P0.14 safety and auto handoff surface
+        shell: pwsh
+        run: |
+          .\dist\UKIE_AI_BRIDGE.exe self-test | Tee-Object -FilePath ci-p014\self-test-exe.json
+          .\dist\UKIE_AI_BRIDGE.exe validate-job fixtures\job_analyze_blend.valid.json
+          .\dist\UKIE_AI_BRIDGE.exe device-status
+          New-Item -ItemType Directory -Force ci-p014\fake-drive-exe | Out-Null
+          $env:UKIE_DRIVE_SYNC_ROOT = (Resolve-Path ci-p014\fake-drive-exe).Path
+          .\dist\UKIE_AI_BRIDGE.exe configure-handoff --config ci-p014\handoff-exe.json | Tee-Object -FilePath ci-p014\configure-exe.json
+          python -c "import json; s=json.load(open(r'ci-p014\self-test-exe.json',encoding='utf-8')); d=json.load(open(r'ci-p014\handoff-exe.json',encoding='utf-8')); assert s['bridge_version']=='0.14.0-p0.14'; assert s['p014_safety']['folder_picker_required'] is False; assert s['p014_safety']['local_outbox_claims_drive_readback'] is False; assert d['target_kind']=='DRIVE_SYNC_CANDIDATE'; assert d['drive_readback_proven'] is False; print('PASS packaged P0.14 no-picker auto handoff')"
+
+      - name: Stage P0.14 one-click Windows package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release-p014 | Out-Null
+          Copy-Item dist\UKIE_AI_BRIDGE.exe release-p014\UKIE_AI_BRIDGE.exe
+          Copy-Item windows\RUN_FIRST_ACCEPTANCE_P014.cmd release-p014\RUN_FIRST_ACCEPTANCE.cmd
+          $releaseInfo = [ordered]@{
+            schema_version = "ukie_bridge_release_info_v1"
+            release_key = "BRIDGE_P014_RUN_${{ github.run_id }}"
+            bridge_version = "0.14.0-p0.14"
+            commit_sha = "${{ github.event.pull_request.head.sha || github.sha }}"
+            workflow_run_id = [int64]${{ github.run_id }}
+            bp3d_blender_pin = "4.2.23"
+            channel = "FOUNDATION"
+          } | ConvertTo-Json
+          Set-Content -Path release-p014\RELEASE_INFO.json -Encoding utf8NoBOM -Value $releaseInfo
+          Set-Content -Path release-p014\README_FIRST.txt -Encoding ascii -Value @(
+            "UKIE AI BRIDGE P0.14 automatic handoff foundation",
+            "1. Double-click RUN_FIRST_ACCEPTANCE.cmd.",
+            "2. No Google Drive folder picker is required on the normal path.",
+            "3. The Bridge checks only bounded common Drive for desktop locations and an optional UKIE_DRIVE_SYNC_ROOT override.",
+            "4. If Drive is not safely identified, evidence is preserved in a local outbox and the physical run can continue.",
+            "5. Local outbox evidence never claims Drive sync or Drive readback.",
+            "6. Drive readback remains a control-plane proof using Google Drive metadata and raw bytes.",
+            "7. P0.12 idempotent cloud recovery and earlier Blender/GPU safety gates remain inherited.",
+            "8. BP3D production Blender remains pinned to 4.2.23.",
+            "9. READY FOR AI and release promotion remain false until later gates pass."
+          )
+          Get-ChildItem release-p014
+
+      - name: Upload P0.14 Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: UKIE_AI_BRIDGE-P0.14-windows
+          path: ukie-ai-bridge/release-p014/*
+          if-no-files-found: error
+          retention-days: 14
