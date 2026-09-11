@@ -17,7 +17,10 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-from .blender_selector import PIN, portable_root, select_pinned_blender
+try:
+    from .blender_selector import PIN, portable_root, select_pinned_blender
+except ImportError:
+    from blender_selector import PIN, portable_root, select_pinned_blender
 
 BASE = "https://download.blender.org/release/Blender4.2"
 ZIP_NAME = f"blender-{PIN}-windows-x64.zip"
