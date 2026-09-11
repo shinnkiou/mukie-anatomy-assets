@@ -71,15 +71,13 @@ class AutoHandoffTests(unittest.TestCase):
             discovery = {"status": "NOT_FOUND", "selected": None, "candidates": [], "confidence": "NONE"}
             with mock.patch.object(handoff_auto, "discover_drive_sync_root", return_value=discovery), \
                  mock.patch.object(handoff_auto, "default_local_outbox", return_value=outbox):
-                handoff_auto.configure_handoff_auto(config_path=config)
-                result = handoff_auto.run_acceptance_and_handoff_auto(
-                    root / "work",
-                    {"release_key": "unused-by-fixture"},
-                    lambda workspace, state_root, release_info: acceptance,
-                    config_path=config,
+                cfg = handoff_auto.configure_handoff_auto(config_path=config)
+                receipt = handoff.handoff_acceptance(
+                    acceptance,
+                    config=cfg,
+                    allow_synthetic_test_fixture=True,
                 )
-            receipt = result["handoff"]
-            self.assertEqual(result["status"], "ACCEPTANCE_LOCAL_OUTBOX_COMPLETE")
+                receipt = handoff_auto._rewrite_local_fallback_receipt(receipt)
             self.assertTrue(receipt["local_outbox_copy_proven"])
             self.assertFalse(receipt["sync_folder_copy_proven"])
             self.assertFalse(receipt["drive_cloud_presence_proven"])
@@ -88,6 +86,26 @@ class AutoHandoffTests(unittest.TestCase):
             sidecar = json.loads(pathlib.Path(receipt["handoff_json"]).read_text(encoding="utf-8"))
             self.assertFalse(sidecar["sync_folder_copy_proven"])
             self.assertTrue(sidecar["local_outbox_copy_proven"])
+
+    def test_production_orchestrator_still_rejects_synthetic_physical_evidence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            bundle = root / "synthetic_acceptance.zip"
+            build_bundle(bundle)
+            acceptance = acceptance_result_from_bundle(bundle)
+            outbox = root / "local-outbox"
+            config = root / "config" / "handoff.json"
+            discovery = {"status": "NOT_FOUND", "selected": None, "candidates": [], "confidence": "NONE"}
+            with mock.patch.object(handoff_auto, "discover_drive_sync_root", return_value=discovery), \
+                 mock.patch.object(handoff_auto, "default_local_outbox", return_value=outbox):
+                handoff_auto.configure_handoff_auto(config_path=config)
+                with self.assertRaises(handoff.HandoffError):
+                    handoff_auto.run_acceptance_and_handoff_auto(
+                        root / "work",
+                        {"release_key": "unused-by-fixture"},
+                        lambda workspace, state_root, release_info: acceptance,
+                        config_path=config,
+                    )
 
     def test_stale_config_is_backed_up_and_recovered(self):
         with tempfile.TemporaryDirectory() as temp:
