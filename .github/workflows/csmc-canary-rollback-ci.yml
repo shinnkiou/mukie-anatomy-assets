@@ -39,7 +39,7 @@ jobs:
           $src = Get-Content -Raw .\REMOVE_CSMC_CANARY_TASK.ps1
           foreach ($needle in @(
             "UKIE_CSMC_CANARY",
-            "UKIE_AI_BRIDGE\\csmc-canary",
+            "UKIE_AI_BRIDGE\csmc-canary",
             "/Delete /TN",
             "production_worker_changed = `$false",
             "production_pairing_changed = `$false",
@@ -53,7 +53,7 @@ jobs:
           $codeOnly = $codeLines -join "`n"
           foreach ($needle in @(
             'Remove-Item $env:LOCALAPPDATA',
-            'Remove-Item C:\\',
+            'Remove-Item C:\',
             '/RU SYSTEM',
             '/RL HIGHEST',
             'reg.exe',
@@ -73,7 +73,7 @@ jobs:
           [ordered]@{
             schema_version = 'ukie_csmc_canary_rollback_v1'
             task_name = 'UKIE_CSMC_CANARY'
-            fixed_root = '%LOCALAPPDATA%\\UKIE_AI_BRIDGE\\csmc-canary'
+            fixed_root = '%LOCALAPPDATA%\UKIE_AI_BRIDGE\csmc-canary'
             rollback_script_sha256 = $sha
             production_worker_changed = $false
             production_pairing_changed = $false
