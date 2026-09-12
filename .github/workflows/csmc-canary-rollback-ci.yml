@@ -1,0 +1,89 @@
+name: CSMC Canary Rollback CI
+
+on:
+  push:
+    branches:
+      - csmc-worker-observer-automation-20260912
+    paths:
+      - 'ukie-ai-bridge/REMOVE_CSMC_CANARY_TASK.ps1'
+      - '.github/workflows/csmc-canary-rollback-ci.yml'
+  pull_request:
+    paths:
+      - 'ukie-ai-bridge/REMOVE_CSMC_CANARY_TASK.ps1'
+      - '.github/workflows/csmc-canary-rollback-ci.yml'
+
+jobs:
+  rollback-contract:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ukie-ai-bridge
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse fixed rollback PowerShell
+        shell: pwsh
+        run: |
+          $src = Get-Content -Raw .\REMOVE_CSMC_CANARY_TASK.ps1
+          $tokens = $null
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseInput($src, [ref]$tokens, [ref]$errors)
+          if ($errors.Count -ne 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            throw 'Rollback PowerShell parse failed'
+          }
+
+      - name: Verify rollback is fixed-scope and production-safe
+        shell: pwsh
+        run: |
+          $src = Get-Content -Raw .\REMOVE_CSMC_CANARY_TASK.ps1
+          foreach ($needle in @(
+            "UKIE_CSMC_CANARY",
+            "UKIE_AI_BRIDGE\\csmc-canary",
+            "/Delete /TN",
+            "production_worker_changed = `$false",
+            "production_pairing_changed = `$false",
+            "registry_changed = `$false",
+            "service_changed = `$false",
+            "admin_required = `$false"
+          )) {
+            if (-not $src.Contains($needle)) { throw "required rollback marker missing: $needle" }
+          }
+          $codeLines = $src -split "`r?`n" | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') }
+          $codeOnly = $codeLines -join "`n"
+          foreach ($needle in @(
+            'Remove-Item $env:LOCALAPPDATA',
+            'Remove-Item C:\\',
+            '/RU SYSTEM',
+            '/RL HIGHEST',
+            'reg.exe',
+            'New-Service',
+            'Stop-Service',
+            'sc.exe'
+          )) {
+            if ($codeOnly.Contains($needle)) { throw "forbidden rollback capability present: $needle" }
+          }
+
+      - name: Stage rollback artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force rollback-artifact | Out-Null
+          Copy-Item .\REMOVE_CSMC_CANARY_TASK.ps1 .\rollback-artifact\REMOVE_CSMC_CANARY_TASK.ps1
+          $sha = (Get-FileHash -Algorithm SHA256 .\rollback-artifact\REMOVE_CSMC_CANARY_TASK.ps1).Hash.ToLowerInvariant()
+          [ordered]@{
+            schema_version = 'ukie_csmc_canary_rollback_v1'
+            task_name = 'UKIE_CSMC_CANARY'
+            fixed_root = '%LOCALAPPDATA%\\UKIE_AI_BRIDGE\\csmc-canary'
+            rollback_script_sha256 = $sha
+            production_worker_changed = $false
+            production_pairing_changed = $false
+            admin_required = $false
+          } | ConvertTo-Json | Set-Content -Encoding utf8NoBOM .\rollback-artifact\ROLLBACK_INFO.json
+
+      - name: Upload rollback artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UKIE_AI_BRIDGE-CSMC-canary-rollback
+          path: ukie-ai-bridge/rollback-artifact/*
+          if-no-files-found: error
+          retention-days: 14
