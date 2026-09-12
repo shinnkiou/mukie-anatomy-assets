@@ -1,0 +1,37 @@
+name: CSMC Worker Observer Automation CI
+
+on:
+  push:
+    branches:
+      - csmc-worker-observer-automation-20260912
+    paths:
+      - 'ukie-ai-bridge/bridge/csmc_observer_action.py'
+      - 'ukie-ai-bridge/bridge/worker_transport_csmc.py'
+      - 'ukie-ai-bridge/tests/test_csmc_observer_action.py'
+      - 'ukie-ai-bridge/tests/test_worker_csmc_observer.py'
+      - '.github/workflows/csmc-worker-observer-ci.yml'
+  pull_request:
+    paths:
+      - 'ukie-ai-bridge/bridge/csmc_observer_action.py'
+      - 'ukie-ai-bridge/bridge/worker_transport_csmc.py'
+      - 'ukie-ai-bridge/tests/test_csmc_observer_action.py'
+      - 'ukie-ai-bridge/tests/test_worker_csmc_observer.py'
+      - '.github/workflows/csmc-worker-observer-ci.yml'
+
+jobs:
+  contract-tests:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ukie-ai-bridge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile narrow Worker extension
+        run: python -m compileall -q bridge tests
+      - name: Run CSMC observer action contract tests
+        run: python -m unittest tests.test_csmc_observer_action tests.test_worker_csmc_observer -v
+      - name: Run existing P0.18 Worker transport regression
+        run: python -m unittest tests.test_worker_p018 -v
