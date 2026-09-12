@@ -76,6 +76,7 @@ def cmd_self_test() -> int:
         "arbitrary_exe_disabled": "exe" not in allowed,
         "cloud_filesystem_paths_disabled": True,
         "fixed_observer_action": True,
+        "single_poll_cli_enabled": True,
         "production_worker_unchanged": True,
     }
     ok = all(checks.values())
@@ -90,13 +91,26 @@ def cmd_self_test() -> int:
     return 0 if ok else 2
 
 
-def bootstrap_worker() -> int:
-    # This intentionally never creates a pairing. The canary can run only on a
-    # machine already approved by the production P0.18.2 pairing flow.
+def _require_existing_pairing() -> dict[str, Any]:
     pair = worker_transport.begin_pairing(open_browser=False)
     _print(pair)
     if pair.get("status") != "ALREADY_PAIRED":
         raise worker_transport.WorkerTransportError("CSMC canary requires an existing approved worker pairing")
+    return pair
+
+
+def cmd_once() -> int:
+    """Perform exactly one isolated canary heartbeat/claim/execute cycle."""
+    _require_existing_pairing()
+    result = worker_transport.run_once()
+    _print(result)
+    return 0
+
+
+def bootstrap_worker() -> int:
+    # This intentionally never creates a pairing. The canary can run only on a
+    # machine already approved by the production P0.18.2 pairing flow.
+    _require_existing_pairing()
 
     first_cycle = worker_transport.run_once()
     _print(first_cycle)
@@ -117,9 +131,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if argv == ["self-test"]:
             return cmd_self_test()
+        if argv == ["once"]:
+            return cmd_once()
         if not argv:
             return bootstrap_worker()
-        _print({"status": "ERROR", "error": "unsupported experimental CLI command", "allowed_cli": ["self-test"]})
+        _print({"status": "ERROR", "error": "unsupported experimental CLI command", "allowed_cli": ["self-test", "once"]})
         return 2
     except KeyboardInterrupt:
         _print({"status": "STOPPED", "reason": "keyboard_interrupt", "bridge_version": BRIDGE_VERSION})
