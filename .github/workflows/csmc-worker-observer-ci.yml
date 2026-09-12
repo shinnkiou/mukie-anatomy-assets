@@ -5,15 +5,19 @@ on:
     branches:
       - csmc-worker-observer-automation-20260912
     paths:
+      - 'ukie-ai-bridge/BP3D_ModelerObserver_P4_1.ps1'
       - 'ukie-ai-bridge/bridge/csmc_observer_action.py'
       - 'ukie-ai-bridge/bridge/worker_transport_csmc.py'
+      - 'ukie-ai-bridge/bridge/cli_p0182_csmc.py'
       - 'ukie-ai-bridge/tests/test_csmc_observer_action.py'
       - 'ukie-ai-bridge/tests/test_worker_csmc_observer.py'
       - '.github/workflows/csmc-worker-observer-ci.yml'
   pull_request:
     paths:
+      - 'ukie-ai-bridge/BP3D_ModelerObserver_P4_1.ps1'
       - 'ukie-ai-bridge/bridge/csmc_observer_action.py'
       - 'ukie-ai-bridge/bridge/worker_transport_csmc.py'
+      - 'ukie-ai-bridge/bridge/cli_p0182_csmc.py'
       - 'ukie-ai-bridge/tests/test_csmc_observer_action.py'
       - 'ukie-ai-bridge/tests/test_worker_csmc_observer.py'
       - '.github/workflows/csmc-worker-observer-ci.yml'
@@ -29,9 +33,123 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Compile narrow Worker extension
         run: python -m compileall -q bridge tests
+
       - name: Run CSMC observer action contract tests
         run: python -m unittest tests.test_csmc_observer_action tests.test_worker_csmc_observer -v
+
       - name: Run existing P0.18 Worker transport regression
         run: python -m unittest tests.test_worker_p018 -v
+
+      - name: Parse fixed P4.1 PowerShell sidecar
+        shell: pwsh
+        run: |
+          $src = Get-Content -Raw .\BP3D_ModelerObserver_P4_1.ps1
+          $tokens = $null
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseInput($src, [ref]$tokens, [ref]$errors)
+          if ($errors.Count -ne 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            throw 'P4.1 sidecar PowerShell parse failed'
+          }
+
+      - name: Verify fixed P4.1 sidecar safety contract
+        shell: pwsh
+        run: |
+          $src = Get-Content -Raw .\BP3D_ModelerObserver_P4_1.ps1
+          $required = @(
+            'ReadProcessMemory',
+            'MEM_PRIVATE',
+            'CLIP_STUDIO_3D_DATA2',
+            'Compress-Archive',
+            'automatic_network_upload=$false',
+            'explorer_launch=$false',
+            'worker_fixed_sidecar=$true'
+          )
+          $forbidden = @(
+            'WriteProcessMemory',
+            'VirtualProtectEx',
+            'CreateRemoteThread',
+            'Invoke-WebRequest',
+            'Invoke-RestMethod',
+            'System.Net.WebClient',
+            'SendKeys',
+            'keybd_event',
+            'mouse_event',
+            'explorer.exe'
+          )
+          foreach ($needle in $required) {
+            if (-not $src.Contains($needle)) { throw "required safety contract missing: $needle" }
+          }
+          foreach ($needle in $forbidden) {
+            if ($src.Contains($needle)) { throw "forbidden capability present: $needle" }
+          }
+
+      - name: Generate exact experimental release identity
+        shell: pwsh
+        run: |
+          Set-Content -Path bridge\embedded_release_csmc.py -Encoding ascii -Value @(
+            'RELEASE_KEY = "CSMC_WORKER_CANARY_RUN_${{ github.run_id }}"',
+            'BRIDGE_VERSION = "0.18.2-p0.18.2-csmc-canary1"',
+            'COMMIT_SHA = "${{ github.event.pull_request.head.sha || github.sha }}"',
+            'WORKFLOW_RUN_ID = ${{ github.run_id }}'
+          )
+          Get-Content bridge\embedded_release_csmc.py
+
+      - name: Run experimental Worker self-test
+        run: python bridge/cli_p0182_csmc.py self-test
+
+      - name: Build experimental one-file CSMC Worker
+        run: |
+          python -m pip install --disable-pip-version-check pyinstaller
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE_CSMC_CANARY --paths . --hidden-import bridge.main --hidden-import bridge.worker_credentials --hidden-import bridge.worker_transport --hidden-import bridge.worker_transport_csmc --hidden-import bridge.csmc_observer_action --hidden-import bridge.embedded_release_csmc bridge/cli_p0182_csmc.py
+
+      - name: Exercise packaged experimental safety surface
+        shell: pwsh
+        run: |
+          .\dist\UKIE_AI_BRIDGE_CSMC_CANARY.exe self-test
+          if ($LASTEXITCODE -ne 0) { throw 'packaged CSMC canary self-test failed' }
+
+      - name: Stage experimental package without production deployment
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release-csmc-canary | Out-Null
+          Copy-Item .\dist\UKIE_AI_BRIDGE_CSMC_CANARY.exe .\release-csmc-canary\UKIE_AI_BRIDGE_CSMC_CANARY.exe
+          Copy-Item .\BP3D_ModelerObserver_P4_1.ps1 .\release-csmc-canary\BP3D_ModelerObserver_P4_1.ps1
+          $releaseInfo = [ordered]@{
+            schema_version = 'ukie_csmc_worker_canary_release_v1'
+            release_key = 'CSMC_WORKER_CANARY_RUN_${{ github.run_id }}'
+            bridge_version = '0.18.2-p0.18.2-csmc-canary1'
+            commit_sha = '${{ github.event.pull_request.head.sha || github.sha }}'
+            workflow_run_id = [int64]${{ github.run_id }}
+            channel = 'CSMC_CANARY'
+            worker_allowlist = @('device_status','csmc_observer_capture')
+            sidecar = 'BP3D_ModelerObserver_P4_1.ps1'
+            production_worker_unchanged = $true
+            production_edge_unchanged = $true
+            arbitrary_shell_disabled = $true
+            cloud_filesystem_paths_disabled = $true
+            artifact_transfer = 'LOCAL_FIXED_ROOT_ONLY'
+          } | ConvertTo-Json
+          Set-Content -Path .\release-csmc-canary\RELEASE_INFO.json -Encoding utf8NoBOM -Value $releaseInfo
+          Set-Content -Path .\release-csmc-canary\README_FIRST.txt -Encoding utf8NoBOM -Value @(
+            'EXPERIMENTAL CSMC CANARY ONLY - NOT PRODUCTION',
+            'This package adds exactly csmc_observer_capture beside device_status.',
+            'MODELER must already be running with the authorized model loaded.',
+            'The fixed P4.1 sidecar performs read-only attach/scan/package.',
+            'No B/Q keyboard input is required.',
+            'No cloud-supplied command, executable path, model path, or output path is accepted.',
+            'Private runtime ZIP bytes remain local; only bounded metadata may cross the control plane.',
+            'Production Worker, Edge allowlist, claim RPC, and STABLE state are unchanged by this build.'
+          )
+          Get-ChildItem .\release-csmc-canary
+
+      - name: Upload experimental package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UKIE_AI_BRIDGE-CSMC-canary-windows
+          path: ukie-ai-bridge/release-csmc-canary/*
+          if-no-files-found: error
+          retention-days: 14
