@@ -1,0 +1,49 @@
+{
+  "schema_version": "ukie_install_approval_v1",
+  "batch_key": "INSTALL_BATCH_TEST_0001",
+  "approved_at": "2026-09-10T12:00:00Z",
+  "approved_by": "human",
+  "approval_mode": "ONE_CLICK_ALL",
+  "tools": [
+    {
+      "tool_key": "blender_bp3d_4_2_23",
+      "name": "Blender 4.2.23",
+      "source_type": "official_portable",
+      "official_url": "https://www.blender.org/",
+      "publisher": "Blender Foundation",
+      "recommended_version": "4.2.23",
+      "version_policy": "PINNED_BP3D",
+      "requires_admin": false,
+      "requires_driver": false,
+      "requires_login": false,
+      "risk": "LOW"
+    },
+    {
+      "tool_key": "sevenzip",
+      "name": "7-Zip",
+      "source_type": "winget",
+      "package_id": "7zip.7zip",
+      "official_url": "https://www.7-zip.org/",
+      "publisher": "Igor Pavlov",
+      "recommended_version": "RESOLVE_LATEST_STABLE",
+      "version_policy": "DETECT_FIRST",
+      "requires_admin": false,
+      "requires_driver": false,
+      "requires_login": false,
+      "risk": "LOW"
+    },
+    {
+      "tool_key": "renderdoc",
+      "name": "RenderDoc",
+      "source_type": "official_installer",
+      "official_url": "https://renderdoc.org/",
+      "publisher": "RenderDoc Project",
+      "recommended_version": "RESOLVE_CURRENT_STABLE",
+      "version_policy": "ON_DEMAND",
+      "requires_admin": true,
+      "requires_driver": false,
+      "requires_login": false,
+      "risk": "HIGH"
+    }
+  ]
+}

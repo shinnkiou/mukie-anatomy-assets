@@ -1,0 +1,29 @@
+{
+  "canary_id": "BLENDER_CANARY_CI_SYNTHETIC",
+  "release_key": "BRIDGE_CI_SYNTHETIC_RELEASE",
+  "bridge_version": "0.8.0-p0.6",
+  "status": "VERIFIED",
+  "device_key": "CI_SYNTHETIC_DEVICE",
+  "blender_version": "Blender 4.2.23 LTS / SYNTHETIC_CI_ONLY",
+  "bundle_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "drive_file_id": "CI_SYNTHETIC_DRIVE_FILE",
+  "drive_readback_proven": true,
+  "source_unchanged": true,
+  "evidence_verification": {
+    "schema_version": "ukie_canary_evidence_verification_v2",
+    "status": "CANARY_EVIDENCE_VALID"
+  },
+  "exact_once_verification": {
+    "decision": "LOCAL_SAVED",
+    "executed": true
+  },
+  "semantic_verification": {
+    "status": "PASS",
+    "vertices": 8,
+    "polygons": 6
+  },
+  "metadata": {
+    "physical_windows_blender_test": false,
+    "synthetic_ci_only": true
+  }
+}
