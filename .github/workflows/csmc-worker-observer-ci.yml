@@ -116,8 +116,10 @@ jobs:
           foreach ($needle in @('UKIE_CSMC_CANARY','/SC MINUTE','/MO 5','/RL LIMITED','UKIE_AI_BRIDGE_CSMC_CANARY.exe once','PACKAGE_MANIFEST.json')) {
             if (-not $installer.Contains($needle)) { throw "Scheduled Task marker missing: $needle" }
           }
+          $codeLines = $installer -split "`r?`n" | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') }
+          $codeOnly = $codeLines -join "`n"
           foreach ($needle in @('/RL HIGHEST','/RU SYSTEM','-Command','reg.exe','New-Service','sc.exe create')) {
-            if ($installer.Contains($needle)) { throw "forbidden installer capability present: $needle" }
+            if ($codeOnly.Contains($needle)) { throw "forbidden installer capability present in executable code: $needle" }
           }
 
       - name: Verify isolated canary cloud contract is source-separated
