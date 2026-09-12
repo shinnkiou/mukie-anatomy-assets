@@ -75,10 +75,10 @@ def cmd_bootstrap_self_test() -> int:
         "allowlist_device_status_only": worker_transport.ALLOWED_ACTIONS == {"device_status"},
         "embedded_release_present_when_packaged": (not frozen) or embedded_ok,
         "no_arg_bootstrap_enabled": True,
-        "arbitrary_shell": False,
-        "arbitrary_powershell": False,
-        "arbitrary_exe": False,
-        "cloud_filesystem_paths": False,
+        "arbitrary_shell_disabled": True,
+        "arbitrary_powershell_disabled": True,
+        "arbitrary_exe_disabled": True,
+        "cloud_filesystem_paths_disabled": True,
     }
     ok = all(checks.values())
     _print({
