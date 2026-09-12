@@ -1,8 +1,8 @@
 """Fail-closed Worker extension for one narrow CSMC observer action.
 
-This module deliberately keeps the production P0.18 transport untouched. The
-experimental CSMC worker reuses the existing paired device credential, but sends
-heartbeat/claim/complete only to the isolated CSMC canary Edge Function.
+The experimental CSMC worker reuses an already-approved P0.18.2 device
+credential, but sends heartbeat/claim/complete only to the isolated CSMC canary
+Edge Function. It cannot create a new pairing through the canary endpoint.
 
 No cloud-supplied command, executable, path, keyboard sequence, mouse action, or
 filesystem root is accepted.
@@ -32,23 +32,58 @@ CSMC_CANARY_EDGE_URL = "https://vbuokbwglauibabinaqs.supabase.co/functions/v1/uk
 if CSMC_CANARY_EDGE_URL == PRODUCTION_EDGE_URL:
     raise RuntimeError("CSMC canary transport must not equal the production worker transport")
 
-# The canary process imports its own module graph. Repoint only that process-local
-# base transport instance; the production executable/source is not changed.
+# The canary executable has its own process-local module graph. Repoint only
+# that process-local transport. Production source/executable configuration is
+# unchanged.
 base.EDGE_URL = CSMC_CANARY_EDGE_URL
 
-# Forward the P0.18 credential/request surface used by the experimental CLI.
-# Existing paired credentials are reused. If no approved credential exists, the
-# canary must fail closed rather than being used as a new pairing endpoint.
-begin_pairing = base.begin_pairing
-refresh_pairing = base.refresh_pairing
-heartbeat = base.heartbeat
-claim = base.claim
 load_release_info = base.load_release_info
 _complete = base._complete
 
 
 def set_worker_version(version: str) -> None:
     base.WORKER_VERSION = version
+
+
+def _existing_credential() -> dict[str, Any]:
+    credential = base.load_credential()
+    if not credential or not credential.get("device_key") or not credential.get("device_token"):
+        raise WorkerTransportError(
+            "CSMC canary requires an existing approved P0.18.2 worker pairing; "
+            "pair with the production worker first"
+        )
+    return credential
+
+
+def begin_pairing(*, open_browser: bool = False) -> dict[str, Any]:
+    """Compatibility entrypoint: never creates a pairing on the canary endpoint."""
+    del open_browser
+    credential = _existing_credential()
+    return {"status": "ALREADY_PAIRED", "device_key": credential["device_key"], "canary_pairing_created": False}
+
+
+def refresh_pairing() -> dict[str, Any]:
+    credential = _existing_credential()
+    return {"status": "PAIRED", "device_key": credential["device_key"], "canary_pairing_created": False}
+
+
+def heartbeat() -> dict[str, Any]:
+    """Authenticate against the canary endpoint without sending device inventory."""
+    credential = _existing_credential()
+    return base._request(
+        {"action": "heartbeat"},
+        device_key=credential["device_key"],
+        device_token=credential["device_token"],
+    )
+
+
+def claim() -> dict[str, Any]:
+    credential = _existing_credential()
+    return base._request(
+        {"action": "claim"},
+        device_key=credential["device_key"],
+        device_token=credential["device_token"],
+    )
 
 
 def execute_claimed_job(
@@ -81,9 +116,9 @@ def execute_claimed_job(
             )
         return _complete(job, outcome="PASS", result=result)
 
-    # device_status remains locally available only for the inherited self-test /
-    # compatibility path. The isolated CSMC queue itself can claim only the fixed
-    # csmc_observer_capture action.
+    # device_status stays in the local inherited safety surface only for
+    # compatibility/self-test. The isolated queue can claim only
+    # csmc_observer_capture.
     return base.execute_claimed_job(job, status_provider=status_provider)
 
 
