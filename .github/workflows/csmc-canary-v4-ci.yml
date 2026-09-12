@@ -51,7 +51,8 @@ jobs:
           $worker=Get-Content -Raw .\bridge\worker_transport_csmc.py
           $edge=Get-Content -Raw .\supabase\functions\ukie-worker-transport-csmc-canary\index.ts
           $migration=Get-Content -Raw .\supabase\migrations\20260912154500_csmc_canary_actions_v4.sql
-          foreach($needle in @('csmc_observer_capture','csmc_observer_diagnose_v1','csmc_artifact_upload','CSMC_CANARY_EDGE_URL')){if(-not$worker.Contains($needle)){throw "worker marker missing: $needle"};if(-not$edge.Contains($needle)){throw "edge marker missing: $needle"};if(-not$migration.Contains($needle)){throw "migration marker missing: $needle"}}
+          foreach($needle in @('CAPTURE_ACTION','DIAG_ACTION','UPLOAD_ACTION','CSMC_CANARY_EDGE_URL')){if(-not$worker.Contains($needle)){throw "worker alias marker missing: $needle"}}
+          foreach($needle in @('csmc_observer_capture','csmc_observer_diagnose_v1','csmc_artifact_upload')){if(-not$edge.Contains($needle)){throw "edge action marker missing: $needle"};if(-not$migration.Contains($needle)){throw "migration action marker missing: $needle"}}
           if($migration.Contains('alter table public.ukie_bridge_jobs')){throw 'production job table mutation forbidden'}
           if($edge.Contains('ukie_claim_next_device_status_job')){throw 'production claim RPC forbidden'}
 
@@ -59,7 +60,7 @@ jobs:
         shell: pwsh
         run: |
           @'
-          import io, json, os, tempfile, urllib.request
+          import json, os, tempfile, urllib.request
           from pathlib import Path
           from bridge import csmc_artifact_upload_action as m
           class Resp:
