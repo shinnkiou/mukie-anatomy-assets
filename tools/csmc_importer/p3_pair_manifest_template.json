@@ -1,0 +1,72 @@
+{
+  "schema": "csmc_p3_pair_manifest_v1",
+  "experiment_id": "P3_TYPE_NNN",
+  "hypothesis": "",
+  "application": {
+    "name": "CLIP STUDIO PAINT or MODELER",
+    "version": ""
+  },
+  "stages": {
+    "A0": {
+      "role": "baseline",
+      "operation": "baseline save",
+      "file_name": "",
+      "size": null,
+      "sha256": ""
+    },
+    "C0": {
+      "role": "no_change_control",
+      "operation": "save again with no intentional semantic change",
+      "file_name": "",
+      "size": null,
+      "sha256": ""
+    },
+    "B0": {
+      "role": "one_variable_change",
+      "operation": "",
+      "file_name": "",
+      "size": null,
+      "sha256": ""
+    },
+    "R0": {
+      "role": "return_to_baseline",
+      "operation": "return the changed variable to baseline and save",
+      "file_name": "",
+      "size": null,
+      "sha256": ""
+    }
+  },
+  "probe": {
+    "evidence_probe_version": "csmc_3d_evidence_probe_v0.2",
+    "external_routes": {
+      "Canvas3DModelLoader.ModelData": null,
+      "Manager3DOd.SceneData": null,
+      "ModelData3D.Layer3DModelData": null,
+      "Canvas3DModelBank.BankData": null
+    },
+    "focus_table_liveness": {},
+    "diffs": {
+      "A0_vs_C0": null,
+      "C0_vs_B0": null,
+      "A0_vs_R0": null
+    }
+  },
+  "controls": {
+    "identity_routing_stable": null,
+    "sql_controls_stable": null,
+    "camera_control_stable_when_required": null,
+    "no_change_noise_measured": null,
+    "return_semantically_matches_baseline": null
+  },
+  "verdict": {
+    "interpretable": null,
+    "contamination_reason": "",
+    "observed_surface": "UNKNOWN",
+    "claim_level": "OBSERVATION_ONLY",
+    "next_action": ""
+  },
+  "privacy": {
+    "purchased_bytes_publicly_uploaded": false,
+    "public_report_contains_metadata_hashes_only": true
+  }
+}
