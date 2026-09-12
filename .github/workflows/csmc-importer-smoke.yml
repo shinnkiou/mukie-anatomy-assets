@@ -26,12 +26,14 @@ jobs:
             tools/csmc_importer/csmc_3d_evidence_probe.py \
             tools/csmc_importer/runtime_blob_compare.py \
             tools/csmc_importer/csmc_p4_anchor_probe.py \
+            tools/csmc_importer/modeler_capture_header_probe.py \
             tools/csmc_importer/test_probe_synthetic.py \
             tools/csmc_importer/test_clip_3d_diff_synthetic.py \
             tools/csmc_importer/test_csmc_3d_integration_probe_synthetic.py \
             tools/csmc_importer/test_csmc_3d_evidence_probe_synthetic.py \
             tools/csmc_importer/test_runtime_blob_compare_synthetic.py \
-            tools/csmc_importer/test_csmc_p4_anchor_probe_synthetic.py
+            tools/csmc_importer/test_csmc_p4_anchor_probe_synthetic.py \
+            tools/csmc_importer/test_modeler_capture_header_probe_synthetic.py
       - name: CSMC/CS3C schema smoke
         working-directory: tools/csmc_importer
         run: python test_probe_synthetic.py
@@ -50,3 +52,6 @@ jobs:
       - name: Synthetic P4 CELSYS structural anchor smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_p4_anchor_probe_synthetic.py
+      - name: Synthetic historical runtime header validation smoke
+        working-directory: tools/csmc_importer
+        run: python test_modeler_capture_header_probe_synthetic.py
