@@ -1,8 +1,11 @@
 """Fail-closed Worker extension for one narrow CSMC observer action.
 
-This module deliberately leaves the P0.18 transport/auth/lease contract intact and
-adds only `csmc_observer_capture`. No cloud-supplied command, executable, path,
-keyboard sequence, mouse action, or filesystem root is accepted.
+This module deliberately keeps the production P0.18 transport untouched. The
+experimental CSMC worker reuses the existing paired device credential, but sends
+heartbeat/claim/complete only to the isolated CSMC canary Edge Function.
+
+No cloud-supplied command, executable, path, keyboard sequence, mouse action, or
+filesystem root is accepted.
 """
 
 from __future__ import annotations
@@ -24,7 +27,18 @@ HEARTBEAT_SECONDS = base.HEARTBEAT_SECONDS
 ALLOWED_ACTIONS = frozenset(set(base.ALLOWED_ACTIONS) | {ACTION_NAME})
 WorkerTransportError = base.WorkerTransportError
 
-# Forward the P0.18 transport surface used by the CLI.
+PRODUCTION_EDGE_URL = base.EDGE_URL
+CSMC_CANARY_EDGE_URL = "https://vbuokbwglauibabinaqs.supabase.co/functions/v1/ukie-worker-transport-csmc-canary"
+if CSMC_CANARY_EDGE_URL == PRODUCTION_EDGE_URL:
+    raise RuntimeError("CSMC canary transport must not equal the production worker transport")
+
+# The canary process imports its own module graph. Repoint only that process-local
+# base transport instance; the production executable/source is not changed.
+base.EDGE_URL = CSMC_CANARY_EDGE_URL
+
+# Forward the P0.18 credential/request surface used by the experimental CLI.
+# Existing paired credentials are reused. If no approved credential exists, the
+# canary must fail closed rather than being used as a new pairing endpoint.
 begin_pairing = base.begin_pairing
 refresh_pairing = base.refresh_pairing
 heartbeat = base.heartbeat
@@ -67,6 +81,9 @@ def execute_claimed_job(
             )
         return _complete(job, outcome="PASS", result=result)
 
+    # device_status remains locally available only for the inherited self-test /
+    # compatibility path. The isolated CSMC queue itself can claim only the fixed
+    # csmc_observer_capture action.
     return base.execute_claimed_job(job, status_provider=status_provider)
 
 
