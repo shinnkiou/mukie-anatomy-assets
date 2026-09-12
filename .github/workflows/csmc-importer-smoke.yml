@@ -33,7 +33,8 @@ jobs:
             tools/csmc_importer/test_csmc_3d_evidence_probe_synthetic.py \
             tools/csmc_importer/test_runtime_blob_compare_synthetic.py \
             tools/csmc_importer/test_csmc_p4_anchor_probe_synthetic.py \
-            tools/csmc_importer/test_modeler_capture_header_probe_synthetic.py
+            tools/csmc_importer/test_modeler_capture_header_probe_synthetic.py \
+            tools/csmc_importer/test_modeler_observer_p4_contract.py
       - name: CSMC/CS3C schema smoke
         working-directory: tools/csmc_importer
         run: python test_probe_synthetic.py
@@ -55,3 +56,6 @@ jobs:
       - name: Synthetic historical runtime header validation smoke
         working-directory: tools/csmc_importer
         run: python test_modeler_capture_header_probe_synthetic.py
+      - name: Fail-closed P4 Modeler observer contract smoke
+        working-directory: tools/csmc_importer
+        run: python test_modeler_observer_p4_contract.py
