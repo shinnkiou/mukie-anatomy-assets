@@ -11,6 +11,8 @@ on:
       - 'ukie-ai-bridge/bridge/cli_p0182_csmc.py'
       - 'ukie-ai-bridge/tests/test_csmc_observer_action.py'
       - 'ukie-ai-bridge/tests/test_worker_csmc_observer.py'
+      - 'ukie-ai-bridge/supabase/migrations/20260912112600_csmc_observer_canary_queue.sql'
+      - 'ukie-ai-bridge/supabase/functions/ukie-worker-transport-csmc-canary/index.ts'
       - '.github/workflows/csmc-worker-observer-ci.yml'
   pull_request:
     paths:
@@ -20,6 +22,8 @@ on:
       - 'ukie-ai-bridge/bridge/cli_p0182_csmc.py'
       - 'ukie-ai-bridge/tests/test_csmc_observer_action.py'
       - 'ukie-ai-bridge/tests/test_worker_csmc_observer.py'
+      - 'ukie-ai-bridge/supabase/migrations/20260912112600_csmc_observer_canary_queue.sql'
+      - 'ukie-ai-bridge/supabase/functions/ukie-worker-transport-csmc-canary/index.ts'
       - '.github/workflows/csmc-worker-observer-ci.yml'
 
 jobs:
@@ -40,7 +44,7 @@ jobs:
       - name: Run CSMC observer action contract tests
         run: python -m unittest tests.test_csmc_observer_action tests.test_worker_csmc_observer -v
 
-      - name: Run existing P0.18 Worker transport regression
+      - name: Run existing P0.18 Worker transport regression in clean process
         run: python -m unittest tests.test_worker_p018 -v
 
       - name: Parse fixed P4.1 PowerShell sidecar
@@ -87,12 +91,30 @@ jobs:
             if ($src.Contains($needle)) { throw "forbidden capability present: $needle" }
           }
 
+      - name: Verify isolated canary cloud contract is source-separated
+        shell: pwsh
+        run: |
+          $worker = Get-Content -Raw .\bridge\worker_transport_csmc.py
+          $edge = Get-Content -Raw .\supabase\functions\ukie-worker-transport-csmc-canary\index.ts
+          $migration = Get-Content -Raw .\supabase\migrations\20260912112600_csmc_observer_canary_queue.sql
+          foreach ($needle in @('ukie-worker-transport-csmc-canary','CSMC_CANARY_EDGE_URL','requires an existing approved')) {
+            if (-not $worker.Contains($needle)) { throw "worker isolation marker missing: $needle" }
+          }
+          foreach ($needle in @('ukie_csmc_observer_jobs','csmc_observer_capture','production_worker_state_mutated: false')) {
+            if (-not $edge.Contains($needle)) { throw "edge isolation marker missing: $needle" }
+          }
+          foreach ($needle in @('ukie_csmc_observer_jobs','enable row level security','revoke all','ukie_claim_next_csmc_observer_job')) {
+            if (-not $migration.Contains($needle)) { throw "migration safety marker missing: $needle" }
+          }
+          if ($migration.Contains("alter table public.ukie_bridge_jobs")) { throw 'production job table mutation forbidden' }
+          if ($edge.Contains('rpc/ukie_claim_next_device_status_job')) { throw 'production claim RPC use forbidden' }
+
       - name: Generate exact experimental release identity
         shell: pwsh
         run: |
           Set-Content -Path bridge\embedded_release_csmc.py -Encoding ascii -Value @(
             'RELEASE_KEY = "CSMC_WORKER_CANARY_RUN_${{ github.run_id }}"',
-            'BRIDGE_VERSION = "0.18.2-p0.18.2-csmc-canary1"',
+            'BRIDGE_VERSION = "0.18.2-p0.18.2-csmc-canary2"',
             'COMMIT_SHA = "${{ github.event.pull_request.head.sha || github.sha }}"',
             'WORKFLOW_RUN_ID = ${{ github.run_id }}'
           )
@@ -119,30 +141,39 @@ jobs:
           Copy-Item .\dist\UKIE_AI_BRIDGE_CSMC_CANARY.exe .\release-csmc-canary\UKIE_AI_BRIDGE_CSMC_CANARY.exe
           Copy-Item .\BP3D_ModelerObserver_P4_1.ps1 .\release-csmc-canary\BP3D_ModelerObserver_P4_1.ps1
           $releaseInfo = [ordered]@{
-            schema_version = 'ukie_csmc_worker_canary_release_v1'
+            schema_version = 'ukie_csmc_worker_canary_release_v2'
             release_key = 'CSMC_WORKER_CANARY_RUN_${{ github.run_id }}'
-            bridge_version = '0.18.2-p0.18.2-csmc-canary1'
+            bridge_version = '0.18.2-p0.18.2-csmc-canary2'
             commit_sha = '${{ github.event.pull_request.head.sha || github.sha }}'
             workflow_run_id = [int64]${{ github.run_id }}
             channel = 'CSMC_CANARY'
             worker_allowlist = @('device_status','csmc_observer_capture')
+            canary_transport = 'https://vbuokbwglauibabinaqs.supabase.co/functions/v1/ukie-worker-transport-csmc-canary'
+            canary_queue = 'ukie_csmc_observer_jobs'
             sidecar = 'BP3D_ModelerObserver_P4_1.ps1'
+            existing_pairing_required = $true
+            canary_pairing_creation_disabled = $true
             production_worker_unchanged = $true
             production_edge_unchanged = $true
+            production_job_table_unchanged = $true
+            production_claim_rpc_unchanged = $true
             arbitrary_shell_disabled = $true
             cloud_filesystem_paths_disabled = $true
             artifact_transfer = 'LOCAL_FIXED_ROOT_ONLY'
           } | ConvertTo-Json
           Set-Content -Path .\release-csmc-canary\RELEASE_INFO.json -Encoding utf8NoBOM -Value $releaseInfo
           Set-Content -Path .\release-csmc-canary\README_FIRST.txt -Encoding utf8NoBOM -Value @(
-            'EXPERIMENTAL CSMC CANARY ONLY - NOT PRODUCTION',
-            'This package adds exactly csmc_observer_capture beside device_status.',
+            'EXPERIMENTAL ISOLATED CSMC CANARY ONLY - NOT PRODUCTION',
+            'This package requires the existing approved P0.18.2 worker credential.',
+            'It never creates a new pairing and never connects to the production worker queue.',
+            'Its cloud transport is the separate ukie-worker-transport-csmc-canary endpoint.',
+            'The canary queue accepts only csmc_observer_capture.',
             'MODELER must already be running with the authorized model loaded.',
             'The fixed P4.1 sidecar performs read-only attach/scan/package.',
             'No B/Q keyboard input is required.',
             'No cloud-supplied command, executable path, model path, or output path is accepted.',
             'Private runtime ZIP bytes remain local; only bounded metadata may cross the control plane.',
-            'Production Worker, Edge allowlist, claim RPC, and STABLE state are unchanged by this build.'
+            'Production Worker, Edge allowlist, production job table/claim RPC, and STABLE state are unchanged.'
           )
           Get-ChildItem .\release-csmc-canary
 
