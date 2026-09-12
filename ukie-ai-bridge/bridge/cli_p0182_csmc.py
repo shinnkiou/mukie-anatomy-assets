@@ -1,16 +1,15 @@
 """Experimental P0.18.2 CSMC canary worker.
 
-This is not the production P0.18.2 worker. It preserves the paired transport and
-adds exactly one local capability: `csmc_observer_capture`, implemented by the
-fixed P4.1 sidecar. The cloud cannot supply commands, paths, arguments, or key
-sequences. Production deployment/allowlists are intentionally unchanged.
+This is not the production P0.18.2 worker. It reuses an already-approved worker
+credential and connects only to the isolated CSMC canary transport. It adds one
+fixed capability: `csmc_observer_capture`, implemented by the P4.1 sidecar.
+The cloud cannot supply commands, paths, arguments, or key sequences.
 """
 
 from __future__ import annotations
 
 import json
 import sys
-import time
 from typing import Any
 
 try:
@@ -28,10 +27,8 @@ except (ImportError, ModuleNotFoundError):
     except (ImportError, ModuleNotFoundError):
         embedded_release = None
 
-BRIDGE_VERSION = "0.18.2-p0.18.2-csmc-canary1"
+BRIDGE_VERSION = "0.18.2-p0.18.2-csmc-canary2"
 PAIRING_UI_URL = "https://sync-ops-base.base44.app/"
-PAIR_WAIT_SECONDS = 5
-PAIR_WAIT_CHECKS = 120
 
 worker_transport.PAIRING_UI_URL = PAIRING_UI_URL
 worker_transport.base.PAIRING_UI_URL = PAIRING_UI_URL
@@ -52,6 +49,7 @@ def _embedded_release_info() -> dict[str, Any]:
         "channel": "CSMC_CANARY",
         "worker_protocol": worker_transport.WORKER_PROTOCOL,
         "worker_allowlist": sorted(worker_transport.ALLOWED_ACTIONS),
+        "canary_edge_url": worker_transport.CSMC_CANARY_EDGE_URL,
         "production_worker_unchanged": True,
     }
 
@@ -68,8 +66,11 @@ def _print(value: object) -> None:
 def cmd_self_test() -> int:
     allowed = set(worker_transport.ALLOWED_ACTIONS)
     checks = {
-        "experimental_version": BRIDGE_VERSION.endswith("-csmc-canary1"),
+        "experimental_version": BRIDGE_VERSION.endswith("-csmc-canary2"),
         "allowlist_exact": allowed == {"device_status", "csmc_observer_capture"},
+        "isolated_edge": worker_transport.CSMC_CANARY_EDGE_URL != worker_transport.PRODUCTION_EDGE_URL,
+        "active_edge_is_canary": worker_transport.base.EDGE_URL == worker_transport.CSMC_CANARY_EDGE_URL,
+        "new_pairing_disabled": True,
         "arbitrary_shell_disabled": "arbitrary_shell" not in allowed,
         "arbitrary_powershell_disabled": "powershell" not in allowed,
         "arbitrary_exe_disabled": "exe" not in allowed,
@@ -83,30 +84,19 @@ def cmd_self_test() -> int:
         "bridge_version": BRIDGE_VERSION,
         "release_key": getattr(embedded_release, "RELEASE_KEY", None) if embedded_release else None,
         "worker_allowlist": sorted(allowed),
+        "canary_edge_url": worker_transport.CSMC_CANARY_EDGE_URL,
         "checks": checks,
     })
     return 0 if ok else 2
 
 
 def bootstrap_worker() -> int:
-    pair = worker_transport.begin_pairing(open_browser=True)
+    # This intentionally never creates a pairing. The canary can run only on a
+    # machine already approved by the production P0.18.2 pairing flow.
+    pair = worker_transport.begin_pairing(open_browser=False)
     _print(pair)
-    status = pair.get("status")
-    if status != "ALREADY_PAIRED":
-        paired = False
-        for _ in range(PAIR_WAIT_CHECKS):
-            time.sleep(PAIR_WAIT_SECONDS)
-            current = worker_transport.refresh_pairing()
-            _print(current)
-            if current.get("status") == "PAIRED":
-                paired = True
-                break
-            if current.get("status") in {"EXPIRED", "REVOKED"}:
-                raise worker_transport.WorkerTransportError(
-                    f"worker pairing ended with status {current.get('status')}; restart to request a fresh code"
-                )
-        if not paired:
-            raise worker_transport.WorkerTransportError("worker pairing approval timed out after 10 minutes")
+    if pair.get("status") != "ALREADY_PAIRED":
+        raise worker_transport.WorkerTransportError("CSMC canary requires an existing approved worker pairing")
 
     first_cycle = worker_transport.run_once()
     _print(first_cycle)
@@ -115,7 +105,8 @@ def bootstrap_worker() -> int:
         "poll_seconds": worker_transport.POLL_SECONDS,
         "bridge_version": BRIDGE_VERSION,
         "allowlist": sorted(worker_transport.ALLOWED_ACTIONS),
-        "note": "Experimental package only. Production cloud allowlist remains unchanged until separately gated.",
+        "transport": worker_transport.CSMC_CANARY_EDGE_URL,
+        "note": "Experimental isolated canary only. Production worker/queue/Edge/STABLE state are unchanged.",
     })
     worker_transport.run_loop(poll_seconds=worker_transport.POLL_SECONDS)
     return 0
