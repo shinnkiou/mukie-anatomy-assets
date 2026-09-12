@@ -2,8 +2,9 @@
 
 It can read only a fixed LOCALAPPDATA artifact directory, selects only strict
 CSMC capture ZIP names, hashes them locally, and sends bytes only to one fixed
-Supabase ingress endpoint. The worker never receives a path, URL, folder ID, or
-command from the cloud and never deletes the local original.
+Base44 backend function backed by the already-connected Google Drive connector.
+The worker never receives a path, URL, folder ID, or command from the cloud and
+never deletes the local original.
 """
 from __future__ import annotations
 
@@ -22,11 +23,13 @@ except ImportError:
     import worker_transport as base
 
 ACTION_NAME = "csmc_artifact_upload"
-FIXED_INGRESS_URL = "https://vbuokbwglauibabinaqs.supabase.co/functions/v1/ukie-csmc-artifact-ingress"
+FIXED_INGRESS_URL = "https://base44.app/api/apps/6aa2743da37b11162682c01f/functions/csmc-artifact-upload"
+FIXED_BASE44_APP_ID = "6aa2743da37b11162682c01f"
 FIXED_DRIVE_FOLDER_ID = "1EN2R6DrjsyObR2YpVFFxf1K3wFkMdzwv"
 ARTIFACT_SUBDIR = Path("UKIE_AI_BRIDGE") / "csmc-canary" / "artifacts"
 NAME_RE = re.compile(r"^CAPTURE_\d{8}_\d{6}_P4(?:_1(?:_DIAG)?)?\.zip$")
 MAX_BYTES = 128 * 1024 * 1024
+
 
 class CsmcArtifactUploadError(RuntimeError):
     def __init__(self, code: str, message: str):
@@ -85,7 +88,9 @@ def run_upload() -> dict[str, Any]:
         raise CsmcArtifactUploadError("CSMC_UPLOAD_LOCAL_VERIFY_FAILED", "artifact changed during fixed-root read")
     headers = {
         "Content-Type": "application/zip",
-        "User-Agent": "UKIE-AI-BRIDGE-CSMC-ARTIFACT/1",
+        "User-Agent": "UKIE-AI-BRIDGE-CSMC-ARTIFACT/2",
+        "X-App-Id": FIXED_BASE44_APP_ID,
+        "Base44-Functions-Version": "preview",
         "X-UKIE-Device-Key": str(cred["device_key"]),
         "X-UKIE-Device-Token": str(cred["device_token"]),
         "X-CSMC-Filename": path.name,
@@ -114,7 +119,7 @@ def run_upload() -> dict[str, Any]:
     if str(result.get("folder_id") or "") != FIXED_DRIVE_FOLDER_ID:
         raise CsmcArtifactUploadError("CSMC_UPLOAD_DESTINATION_MISMATCH", "ingress did not confirm fixed Drive folder")
     return {
-        "schema_version": "csmc_artifact_upload_result_v1",
+        "schema_version": "csmc_artifact_upload_result_v2",
         "action": ACTION_NAME,
         "status": "UPLOADED_READBACK_VERIFIED",
         "local_filename": path.name,
@@ -127,4 +132,5 @@ def run_upload() -> dict[str, Any]:
         "local_original_retained": True,
         "arbitrary_url_enabled": False,
         "arbitrary_path_enabled": False,
+        "credential_source": "BASE44_GOOGLE_DRIVE_CONNECTOR",
     }
