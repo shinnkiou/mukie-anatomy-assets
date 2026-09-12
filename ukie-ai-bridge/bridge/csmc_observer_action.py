@@ -6,14 +6,18 @@ import json
 import os
 import subprocess
 import sys
+import time
+import zipfile
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 ACTION_NAME = "csmc_observer_capture"
 TARGET_EXE = "CLIPStudioModeler.exe"
-SIDECAR_BASENAME = "CSMC_MODELER_OBSERVER_ONESHOT.exe"
-RESULT_PREFIX = "UKIE_CSMC_OBSERVER_RESULT="
-MAX_STDOUT_CHARS = 64 * 1024
+SIDECAR_BASENAME = "BP3D_ModelerObserver_P4_1.ps1"
+POWERSHELL_EXE = "powershell.exe"
+CAPTURE_DIRNAME = "BP3D_ModelerObserver_P4_1_Captures"
+CAPTURE_GLOB = "CAPTURE_*_P4_1.zip"
+MAX_METADATA_BYTES = 256 * 1024
 DEFAULT_TIMEOUT_SECONDS = 300
 
 
@@ -21,18 +25,6 @@ class CsmcObserverActionError(RuntimeError):
     def __init__(self, code: str, message: str):
         super().__init__(message)
         self.code = code
-
-
-def _local_app_data() -> Path:
-    root = os.environ.get("LOCALAPPDATA")
-    if not root:
-        raise CsmcObserverActionError("LOCALAPPDATA_MISSING", "LOCALAPPDATA is unavailable")
-    return Path(root)
-
-
-def capture_root() -> Path:
-    """Fixed worker-owned output root. Cloud jobs cannot override this path."""
-    return _local_app_data() / "UKIE_AI_BRIDGE" / "csmc_observer" / "captures"
 
 
 def worker_binary_dir() -> Path:
@@ -44,6 +36,30 @@ def worker_binary_dir() -> Path:
 def observer_sidecar_path() -> Path:
     """Fixed sidecar path. It is never supplied by a cloud job."""
     return worker_binary_dir() / SIDECAR_BASENAME
+
+
+def capture_roots() -> list[Path]:
+    """Roots hard-coded by P4.1. Cloud jobs cannot override them."""
+    roots: list[Path] = []
+    user = os.environ.get("USERPROFILE")
+    if user:
+        desktop = Path(user) / "Desktop"
+        if desktop.exists():
+            roots.append(desktop / CAPTURE_DIRNAME)
+    temp = os.environ.get("TEMP")
+    if temp:
+        roots.append(Path(temp) / CAPTURE_DIRNAME)
+    # Preserve order while removing duplicates.
+    out: list[Path] = []
+    seen: set[str] = set()
+    for root in roots:
+        key = str(root.resolve(strict=False)).lower()
+        if key not in seen:
+            seen.add(key)
+            out.append(root)
+    if not out:
+        raise CsmcObserverActionError("CAPTURE_ROOT_UNAVAILABLE", "fixed P4.1 capture roots are unavailable")
+    return out
 
 
 def _modeler_running_tasklist() -> bool:
@@ -71,34 +87,69 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def _validated_zip(raw_path: str) -> Path:
-    root = capture_root().resolve()
-    candidate = Path(raw_path).resolve()
-    try:
-        candidate.relative_to(root)
-    except ValueError as exc:
-        raise CsmcObserverActionError("OBSERVER_OUTPUT_OUTSIDE_FIXED_ROOT", "observer output escaped the fixed capture root") from exc
-    if candidate.suffix.lower() != ".zip" or not candidate.is_file():
-        raise CsmcObserverActionError("OBSERVER_ZIP_MISSING", "observer did not produce a ZIP artifact")
-    return candidate
+def _zip_snapshot(roots: Iterable[Path]) -> dict[str, tuple[int, int]]:
+    snap: dict[str, tuple[int, int]] = {}
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for path in root.glob(CAPTURE_GLOB):
+            try:
+                st = path.stat()
+            except OSError:
+                continue
+            snap[str(path.resolve())] = (st.st_size, st.st_mtime_ns)
+    return snap
 
 
-def _parse_result(stdout: str) -> dict[str, Any]:
-    if len(stdout) > MAX_STDOUT_CHARS:
-        raise CsmcObserverActionError("OBSERVER_STDOUT_TOO_LARGE", "observer stdout exceeded the bounded contract")
-    payload_text = None
-    for line in stdout.splitlines():
-        if line.startswith(RESULT_PREFIX):
-            payload_text = line[len(RESULT_PREFIX):]
-    if payload_text is None:
-        raise CsmcObserverActionError("OBSERVER_RESULT_MISSING", "observer did not emit its bounded result record")
+def _new_zip(before: dict[str, tuple[int, int]], roots: Iterable[Path]) -> Path:
+    after = _zip_snapshot(roots)
+    changed: list[Path] = []
+    for raw, sig in after.items():
+        if before.get(raw) != sig:
+            changed.append(Path(raw))
+    if not changed:
+        raise CsmcObserverActionError("OBSERVER_ZIP_MISSING", "P4.1 observer did not create a new capture ZIP")
+    changed.sort(key=lambda p: p.stat().st_mtime_ns, reverse=True)
+    newest_time = changed[0].stat().st_mtime_ns
+    newest = [p for p in changed if p.stat().st_mtime_ns == newest_time]
+    if len(newest) != 1:
+        raise CsmcObserverActionError("OBSERVER_ZIP_AMBIGUOUS", "multiple new P4.1 ZIP artifacts have the same newest timestamp")
+    return newest[0]
+
+
+def _read_zip_json(zf: zipfile.ZipFile, basename: str) -> dict[str, Any]:
+    matches = [n for n in zf.namelist() if Path(n).name == basename]
+    if len(matches) != 1:
+        raise CsmcObserverActionError("OBSERVER_METADATA_MISSING", f"ZIP must contain exactly one {basename}")
+    info = zf.getinfo(matches[0])
+    if info.file_size > MAX_METADATA_BYTES:
+        raise CsmcObserverActionError("OBSERVER_METADATA_TOO_LARGE", f"{basename} exceeded metadata cap")
+    raw = zf.read(info)
     try:
-        payload = json.loads(payload_text)
-    except json.JSONDecodeError as exc:
-        raise CsmcObserverActionError("OBSERVER_RESULT_INVALID", "observer result JSON was invalid") from exc
-    if not isinstance(payload, dict):
-        raise CsmcObserverActionError("OBSERVER_RESULT_INVALID", "observer result must be an object")
-    return payload
+        value = json.loads(raw.decode("utf-8-sig"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise CsmcObserverActionError("OBSERVER_METADATA_INVALID", f"{basename} is invalid JSON") from exc
+    if not isinstance(value, dict):
+        raise CsmcObserverActionError("OBSERVER_METADATA_INVALID", f"{basename} must contain an object")
+    return value
+
+
+def _bounded_metadata(zip_path: Path) -> dict[str, Any]:
+    try:
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            diag = _read_zip_json(zf, "runtime_memory_diagnostic.json")
+            manifest = _read_zip_json(zf, "capture_manifest.json")
+    except zipfile.BadZipFile as exc:
+        raise CsmcObserverActionError("OBSERVER_ZIP_INVALID", "P4.1 output is not a valid ZIP") from exc
+    return {
+        "scan_reason": str(diag.get("search_reason") or "unknown")[:120],
+        "candidate_count": max(0, int(diag.get("accepted_count") or 0)),
+        "magic_hit_count": max(0, int(diag.get("magic_hit_count") or 0)),
+        "read_failures": max(0, int(diag.get("search_failures") or 0)),
+        "search_seconds": max(0.0, float(diag.get("search_seconds") or 0.0)),
+        "payload_dumped": bool(manifest.get("contains_private_runtime_payload", False)),
+        "observer_version": str(manifest.get("version") or "unknown")[:80],
+    }
 
 
 def run_capture(
@@ -106,14 +157,15 @@ def run_capture(
     process_checker: Callable[[], bool] = _modeler_running_tasklist,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
     sidecar: Path | None = None,
+    roots: list[Path] | None = None,
     timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
 ) -> dict[str, Any]:
-    """Run one fixed, non-interactive CSMC observer capture.
+    """Run the fixed P4.1 AUTO observer and detect its new ZIP.
 
-    This capability intentionally accepts no cloud-supplied command, executable,
-    path, key sequence, or arbitrary argument. MODELER must already be running;
-    this action never launches MODELER, loads a model, changes focus, or performs
-    generic keyboard/mouse automation.
+    The cloud job supplies only the action name. It cannot provide a command,
+    executable, filesystem path, argument, key sequence, model path, or upload
+    destination. MODELER must already be running. P4.1 performs its own read-only
+    attach/scan/package flow, so no B/Q keyboard automation is needed.
     """
     if os.name != "nt" and process_checker is _modeler_running_tasklist:
         raise CsmcObserverActionError("WINDOWS_REQUIRED", "CSMC observer capture is Windows-only")
@@ -122,40 +174,46 @@ def run_capture(
 
     tool = (sidecar or observer_sidecar_path()).resolve()
     if not tool.is_file() or tool.name != SIDECAR_BASENAME:
-        raise CsmcObserverActionError("OBSERVER_SIDECAR_MISSING", "fixed one-shot observer sidecar is missing")
+        raise CsmcObserverActionError("OBSERVER_SIDECAR_MISSING", "fixed P4.1 observer sidecar is missing")
 
-    root = capture_root()
-    root.mkdir(parents=True, exist_ok=True)
+    fixed_roots = roots if roots is not None else capture_roots()
+    before = _zip_snapshot(fixed_roots)
     completed = runner(
-        [str(tool), "--oneshot"],
+        [
+            POWERSHELL_EXE,
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(tool),
+        ],
         check=False,
         capture_output=True,
         text=True,
         timeout=max(30, min(int(timeout_seconds), DEFAULT_TIMEOUT_SECONDS)),
         cwd=str(tool.parent),
         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-        env={**os.environ, "UKIE_CSMC_OBSERVER_CAPTURE_ROOT": str(root)},
     )
     if completed.returncode != 0:
-        raise CsmcObserverActionError("OBSERVER_FAILED", f"one-shot observer exited with code {completed.returncode}")
+        raise CsmcObserverActionError("OBSERVER_FAILED", f"P4.1 observer exited with code {completed.returncode}")
 
-    payload = _parse_result(completed.stdout or "")
-    zip_path = _validated_zip(str(payload.get("zip_path") or ""))
+    zip_path = _new_zip(before, fixed_roots)
+    meta = _bounded_metadata(zip_path)
 
-    # Only bounded metadata crosses the control plane. Private capture bytes stay local.
+    # Only bounded metadata crosses the control plane. Private ZIP/runtime bytes stay local.
     return {
-        "schema_version": "ukie_csmc_observer_capture_v1",
+        "schema_version": "ukie_csmc_observer_capture_v2",
         "action": ACTION_NAME,
         "target": TARGET_EXE,
         "existing_modeler_session_used": True,
         "modeler_launch_performed": False,
         "model_load_performed": False,
         "focus_change_performed": False,
-        "scan_reason": str(payload.get("scan_reason") or "unknown")[:120],
-        "candidate_count": max(0, int(payload.get("candidate_count") or 0)),
-        "read_failures": max(0, int(payload.get("read_failures") or 0)),
-        "search_seconds": max(0.0, float(payload.get("search_seconds") or 0.0)),
-        "payload_dumped": bool(payload.get("payload_dumped", False)),
+        "observer_launch_automated": True,
+        "b_q_input_required": False,
+        "zip_detection_automated": True,
+        **meta,
         "zip_name": zip_path.name,
         "zip_size": zip_path.stat().st_size,
         "zip_sha256": _sha256(zip_path),
