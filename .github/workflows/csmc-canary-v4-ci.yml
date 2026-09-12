@@ -35,15 +35,16 @@ jobs:
           $diag=Get-Content -Raw .\BP3D_ModelerObserver_P4_1_DIAG_V1.ps1
           foreach($needle in @('csmc_observer_diagnose_v1','ReadProcessMemory','CLIP_STUDIO_3D_DATA2','readable_mem_private','predicate_pipeline','prefix_hits','kind_character','expected_guid','version_2','size_sanity','stored_align8_logical_eq_8','reject_reason_counts','Win32Error','payload_dump_allowed=$false','contains_private_runtime_payload=$false')){if(-not$diag.Contains($needle)){throw "diagnose marker missing: $needle"}}
           foreach($needle in @('WriteProcessMemory','VirtualProtectEx','CreateRemoteThread','Invoke-WebRequest','Invoke-RestMethod','System.Net.WebClient','SendKeys','keybd_event','mouse_event')){if($diag.Contains($needle)){throw "forbidden diagnose capability: $needle"}}
+          $action=Get-Content -Raw .\bridge\csmc_observer_diagnose_action.py
+          foreach($needle in @('SAMPLE_COUNT = 3','SAMPLE_INTERVAL_SECONDS = 2.0','bounded_temporal_resampling_same_predicates','BP3D_ModelerObserver_P4_1_DIAG_V1.ps1')){if(-not$action.Contains($needle)){throw "temporal diagnose marker missing: $needle"}}
+          foreach($needle in @('WriteProcessMemory','VirtualProtectEx','CreateRemoteThread','shell=True','os.system')){if($action.Contains($needle)){throw "forbidden temporal diagnose surface: $needle"}}
 
       - name: Verify fixed uploader contract
         shell: pwsh
         run: |
           $src=Get-Content -Raw .\bridge\csmc_artifact_upload_action.py
-          foreach($needle in @('csmc_artifact_upload','UKIE_AI_BRIDGE','csmc-canary','artifacts','CAPTURE_','P4','sha256','ukie-csmc-artifact-ingress','1EN2R6DrjsyObR2YpVFFxf1K3wFkMdzwv','local_original_retained')){if(-not$src.Contains($needle)){throw "uploader marker missing: $needle"}}
-          foreach($needle in @('subprocess','shell=True','os.system','Popen','Remove-Item','registry')){if($src.Contains($needle)){throw "forbidden uploader surface: $needle"}}
-          $edge=Get-Content -Raw .\supabase\functions\ukie-csmc-artifact-ingress\index.ts
-          foreach($needle in @('FIXED_DRIVE_FOLDER_ID','1EN2R6DrjsyObR2YpVFFxf1K3wFkMdzwv','CAPTURE_','DRIVE_READBACK_FAILED','readback_verified:true','arbitrary_destination:false')){if(-not$edge.Contains($needle)){throw "artifact ingress marker missing: $needle"}}
+          foreach($needle in @('csmc_artifact_upload','UKIE_AI_BRIDGE','csmc-canary','artifacts','CAPTURE_','P4','sha256','base44.app/api/apps/6aa2743da37b11162682c01f/functions/csmc-artifact-upload','1EN2R6DrjsyObR2YpVFFxf1K3wFkMdzwv','local_original_retained','arbitrary_url_enabled')){if(-not$src.Contains($needle)){throw "uploader marker missing: $needle"}}
+          foreach($needle in @('shell=True','os.system','Popen','Remove-Item','registry')){if($src.Contains($needle)){throw "forbidden uploader surface: $needle"}}
 
       - name: Verify queue/transport isolation contract
         shell: pwsh
@@ -79,6 +80,7 @@ jobs:
               try:
                   out=m.run_upload()
                   assert out['readback_verified'] is True and out['local_original_retained'] is True and p.exists()
+                  assert out['arbitrary_url_enabled'] is False
               finally: urllib.request.urlopen=old
           print('fixed uploader mock PASS')
           '@ | python -
@@ -111,12 +113,12 @@ jobs:
           $out='.\release-csmc-canary-v4';New-Item -ItemType Directory -Force $out|Out-Null
           Copy-Item .\dist\UKIE_AI_BRIDGE_CSMC_CANARY.exe $out
           foreach($name in @('BP3D_ModelerObserver_P4_1.ps1','BP3D_ModelerObserver_P4_1_DIAG_V1.ps1','CSMC_AutoCycle_V01.py','INSTALL_CSMC_CANARY_V4_TASK.ps1','REMOVE_CSMC_CANARY_TASK.ps1')){Copy-Item (Join-Path . $name) (Join-Path $out $name)}
-          $release=[ordered]@{schema_version='ukie_csmc_canary_release_v4';release_key='CSMC_CANARY_V4_RUN_${{ github.run_id }}';bridge_version='0.18.2-p0.18.2-csmc-canary4';commit_sha='${{ github.sha }}';workflow_run_id=[int64]${{ github.run_id }};channel='CSMC_CANARY';worker_allowlist=@('device_status','csmc_observer_capture','csmc_observer_diagnose_v1','csmc_artifact_upload');scheduled_task='UKIE_CSMC_CANARY';cadence_minutes=5;run_level='LIMITED';artifact_root='%LOCALAPPDATA%\UKIE_AI_BRIDGE\csmc-canary\artifacts';artifact_ingress='FIXED_SUPABASE_CSMC_INGRESS_ONLY';drive_folder_id='1EN2R6DrjsyObR2YpVFFxf1K3wFkMdzwv';local_original_delete=$false;production_worker_unchanged=$true;arbitrary_shell=$false;arbitrary_url=$false}|ConvertTo-Json -Depth 5
+          $release=[ordered]@{schema_version='ukie_csmc_canary_release_v4_1';release_key='CSMC_CANARY_V4_RUN_${{ github.run_id }}';bridge_version='0.18.2-p0.18.2-csmc-canary4';commit_sha='${{ github.sha }}';workflow_run_id=[int64]${{ github.run_id }};channel='CSMC_CANARY';worker_allowlist=@('device_status','csmc_observer_capture','csmc_observer_diagnose_v1','csmc_artifact_upload');scheduled_task='UKIE_CSMC_CANARY';cadence_minutes=5;run_level='LIMITED';artifact_root='%LOCALAPPDATA%\UKIE_AI_BRIDGE\csmc-canary\artifacts';artifact_ingress='FIXED_BASE44_CSMC_UPLOAD_FUNCTION_ONLY';drive_folder_id='1EN2R6DrjsyObR2YpVFFxf1K3wFkMdzwv';observer_change='bounded_temporal_resampling_same_predicates';local_original_delete=$false;production_worker_unchanged=$true;arbitrary_shell=$false;arbitrary_url=$false}|ConvertTo-Json -Depth 5
           Set-Content (Join-Path $out 'RELEASE_INFO.json') -Encoding utf8NoBOM -Value $release
           $required=@('UKIE_AI_BRIDGE_CSMC_CANARY.exe','BP3D_ModelerObserver_P4_1.ps1','BP3D_ModelerObserver_P4_1_DIAG_V1.ps1','CSMC_AutoCycle_V01.py','RELEASE_INFO.json')
           $files=@();foreach($name in @($required+'INSTALL_CSMC_CANARY_V4_TASK.ps1'+'REMOVE_CSMC_CANARY_TASK.ps1')){$p=Join-Path $out $name;$files+=[ordered]@{name=$name;size=(Get-Item $p).Length;sha256=(Get-FileHash -Algorithm SHA256 $p).Hash.ToLowerInvariant()}}
           [ordered]@{schema_version='ukie_csmc_canary_package_manifest_v2';required_files=$required;files=$files}|ConvertTo-Json -Depth 5|Set-Content (Join-Path $out 'PACKAGE_MANIFEST.json') -Encoding utf8NoBOM
-          Set-Content (Join-Path $out 'README_FIRST.txt') -Encoding utf8NoBOM -Value @('CSMC isolated canary v4 - not production','Physical capture gate was already proven on v3. v4 adds diagnose_v1 counters and fixed artifact upload.','Run INSTALL_CSMC_CANARY_V4_TASK.ps1 once after package SHA/readback verification.','Scheduled task remains LIMITED and executes only UKIE_AI_BRIDGE_CSMC_CANARY.exe once.','No new pairing, arbitrary command/path/URL, admin elevation, registry change, or local artifact deletion.','Rollback: REMOVE_CSMC_CANARY_TASK.ps1.')
+          Set-Content (Join-Path $out 'README_FIRST.txt') -Encoding utf8NoBOM -Value @('CSMC isolated canary v4.1 - not production','Physical capture gate was already proven. This package keeps every observer predicate unchanged and changes only diagnosis timing to three bounded samples.','Artifact upload uses only the fixed Base44 Google Drive connector endpoint and fixed private Drive folder.','Run INSTALL_CSMC_CANARY_V4_TASK.ps1 once after package SHA/readback verification.','Scheduled task remains LIMITED and executes only UKIE_AI_BRIDGE_CSMC_CANARY.exe once.','No new pairing, arbitrary command/path/URL, admin elevation, registry change, or local artifact deletion.','Rollback: REMOVE_CSMC_CANARY_TASK.ps1.')
           $manifest=Get-Content -Raw (Join-Path $out 'PACKAGE_MANIFEST.json')|ConvertFrom-Json
           foreach($e in $manifest.files){$p=Join-Path $out $e.name;if((Get-FileHash -Algorithm SHA256 $p).Hash.ToLowerInvariant()-ne([string]$e.sha256).ToLowerInvariant()){throw "package hash mismatch: $($e.name)"}}
 
