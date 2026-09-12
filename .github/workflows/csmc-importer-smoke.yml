@@ -27,6 +27,7 @@ jobs:
             tools/csmc_importer/runtime_blob_compare.py \
             tools/csmc_importer/csmc_p4_anchor_probe.py \
             tools/csmc_importer/csmc_p4_tail_rewrite_profile.py \
+            tools/csmc_importer/csmc_p4_stride_cadence_probe.py \
             tools/csmc_importer/modeler_capture_header_probe.py \
             tools/csmc_importer/test_probe_synthetic.py \
             tools/csmc_importer/test_clip_3d_diff_synthetic.py \
@@ -35,6 +36,7 @@ jobs:
             tools/csmc_importer/test_runtime_blob_compare_synthetic.py \
             tools/csmc_importer/test_csmc_p4_anchor_probe_synthetic.py \
             tools/csmc_importer/test_csmc_p4_tail_rewrite_profile_synthetic.py \
+            tools/csmc_importer/test_csmc_p4_stride_cadence_probe_synthetic.py \
             tools/csmc_importer/test_modeler_capture_header_probe_synthetic.py \
             tools/csmc_importer/test_modeler_observer_p4_contract.py
       - name: CSMC/CS3C schema smoke
@@ -58,6 +60,9 @@ jobs:
       - name: Synthetic P4 tail rewrite statistical profile smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_p4_tail_rewrite_profile_synthetic.py
+      - name: Synthetic P4 stride cadence metadata smoke
+        working-directory: tools/csmc_importer
+        run: python test_csmc_p4_stride_cadence_probe_synthetic.py
       - name: Synthetic historical runtime header validation smoke
         working-directory: tools/csmc_importer
         run: python test_modeler_capture_header_probe_synthetic.py
