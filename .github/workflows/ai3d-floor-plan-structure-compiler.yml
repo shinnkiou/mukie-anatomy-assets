@@ -1,0 +1,36 @@
+name: NEVER TEAR AI3D Structure Compiler QA
+
+on:
+  push:
+    branches:
+      - ai-3d-production-engine-20260913
+    paths:
+      - 'ai3d_engine/src/floorPlanStructureCompiler.js'
+      - 'ai3d_engine/src/floorPlanStructureGate.js'
+      - 'ai3d_engine/src/productionProtocol.js'
+      - 'ai3d_engine/scripts/ai3dFloorPlanStructureCompilerSmoke.mjs'
+      - '.github/workflows/ai3d-floor-plan-structure-compiler.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  structure-compiler-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run AI3D-008 Structure Compiler smoke
+        run: |
+          mkdir -p ai3d_engine/artifacts/structure_compiler
+          node ai3d_engine/scripts/ai3dFloorPlanStructureCompilerSmoke.mjs > ai3d_engine/artifacts/structure_compiler/smoke_result.json
+          cat ai3d_engine/artifacts/structure_compiler/smoke_result.json
+      - name: Upload QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai3d-structure-compiler-evidence
+          path: ai3d_engine/artifacts/structure_compiler/smoke_result.json
+          if-no-files-found: error
