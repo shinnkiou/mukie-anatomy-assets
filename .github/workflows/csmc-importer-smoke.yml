@@ -29,6 +29,7 @@ jobs:
             tools/csmc_importer/csmc_p4_tail_rewrite_profile.py \
             tools/csmc_importer/csmc_p4_stride_cadence_probe.py \
             tools/csmc_importer/csmc_p4_control_zone_grammar_probe.py \
+            tools/csmc_importer/csmc_p4_owner_consume_bracket_probe.py \
             tools/csmc_importer/modeler_capture_header_probe.py \
             tools/csmc_importer/test_probe_synthetic.py \
             tools/csmc_importer/test_clip_3d_diff_synthetic.py \
@@ -39,6 +40,7 @@ jobs:
             tools/csmc_importer/test_csmc_p4_tail_rewrite_profile_synthetic.py \
             tools/csmc_importer/test_csmc_p4_stride_cadence_probe_synthetic.py \
             tools/csmc_importer/test_csmc_p4_control_zone_grammar_probe_synthetic.py \
+            tools/csmc_importer/test_csmc_p4_owner_consume_bracket_probe_synthetic.py \
             tools/csmc_importer/test_modeler_capture_header_probe_synthetic.py \
             tools/csmc_importer/test_modeler_observer_p4_contract.py
       - name: CSMC/CS3C schema smoke
@@ -68,6 +70,9 @@ jobs:
       - name: Synthetic P4 control-zone grammar smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_p4_control_zone_grammar_probe_synthetic.py
+      - name: Synthetic P4 owner/consume bracket smoke
+        working-directory: tools/csmc_importer
+        run: python test_csmc_p4_owner_consume_bracket_probe_synthetic.py
       - name: Synthetic historical runtime header validation smoke
         working-directory: tools/csmc_importer
         run: python test_modeler_capture_header_probe_synthetic.py
