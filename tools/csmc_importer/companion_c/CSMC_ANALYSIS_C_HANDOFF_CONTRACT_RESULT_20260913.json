@@ -1,0 +1,25 @@
+{
+  "schema_version": "csmc_analysis_c_handoff_contract_result_v1",
+  "run_id": "C-033",
+  "synthetic_tests_passed": 5,
+  "real_package_handoff_state": "HANDOFF_REFERENCE_SAFE",
+  "source_package": "CSMC_ANALYSIS_C_FINAL_PACKAGE_20260913.json",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion_count": 0,
+  "blender_mesh_emit_ready": false,
+  "blender_scene_emit_ready": false,
+  "allowed_effects": ["read", "review", "reference_public_safe_findings"],
+  "forbidden_effects": [
+    "automatic_merge",
+    "semantic_promotion",
+    "blender_emit_enablement",
+    "runtime_dispatch",
+    "modeler_action",
+    "worker_action",
+    "rio26_mutation",
+    "private_payload_publication"
+  ],
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
