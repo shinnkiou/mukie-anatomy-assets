@@ -35,9 +35,15 @@ def validate(package: dict) -> dict:
     for key in ("runtime_jobs", "modeler_actions", "worker_actions", "rio26_mutations", "mainline_mutations"):
         if int(isolation.get(key, 0)) != 0:
             errors.append(f"nonzero_{key}")
-    if bool(isolation.get("automatic_merge")):
-        errors.append("automatic_merge_true")
-    if bool(isolation.get("private_bytes_in_public_repo")):
+
+    # Accept legacy and V2 key names, but fail closed if either says integration is automatic.
+    if bool(isolation.get("automatic_merge")) or bool(isolation.get("automatic_integration")):
+        errors.append("automatic_integration_true")
+
+    # Accept legacy and V2 key names, but fail closed if either says private payload is public.
+    if bool(isolation.get("private_bytes_in_public_repo")) or bool(
+        isolation.get("public_repository_contains_private_payload")
+    ):
         errors.append("private_bytes_public")
 
     unlocks = set(package.get("future_unlock_inputs") or [])
@@ -46,13 +52,14 @@ def validate(package: dict) -> dict:
 
     accepted = not errors
     return {
-        "schema_version": "csmc_analysis_c_handoff_contract_result_v1",
+        "schema_version": "csmc_analysis_c_handoff_contract_result_v2",
         "handoff_state": "HANDOFF_REFERENCE_SAFE" if accepted else "HANDOFF_REJECTED",
         "accepted": accepted,
         "errors": errors,
         "allowed_effects": ["read", "review", "reference_public_safe_findings"],
         "forbidden_effects": [
             "automatic_merge",
+            "automatic_integration",
             "semantic_promotion",
             "blender_emit_enablement",
             "runtime_dispatch",
@@ -79,7 +86,9 @@ def self_test() -> None:
             "rio26_mutations": 0,
             "mainline_mutations": 0,
             "private_bytes_in_public_repo": False,
+            "public_repository_contains_private_payload": False,
             "automatic_merge": False,
+            "automatic_integration": False,
         },
     }
     assert validate(base)["accepted"] is True
@@ -87,6 +96,8 @@ def self_test() -> None:
     assert validate(dict(base, blender_mesh_emit_ready=True))["accepted"] is False
     assert validate(dict(base, merge_policy="AUTO_MERGE"))["accepted"] is False
     assert validate(dict(base, isolation={**base["isolation"], "runtime_jobs": 1}))["accepted"] is False
+    assert validate(dict(base, isolation={**base["isolation"], "automatic_integration": True}))["accepted"] is False
+    assert validate(dict(base, isolation={**base["isolation"], "public_repository_contains_private_payload": True}))["accepted"] is False
     print("SELF_TEST_PASS")
 
 
