@@ -1,0 +1,30 @@
+{
+  "schema_version": "csmc_p4_transition_object_v1",
+  "boundary_id": "BND_197_TO_195",
+  "container_route": "character",
+  "regime_before": "+197",
+  "regime_after": "+195",
+  "clip_gap_qwords": 380,
+  "csmc_gap_qwords": 378,
+  "delta_before_qwords": 197,
+  "delta_after_qwords": 195,
+  "left_anchor_reused": true,
+  "right_anchor_reused": true,
+  "complete_cross_serialization_extinction": true,
+  "post_regime_recurs_later": true,
+  "phase_lock": {
+    "pre_before": 68,
+    "pre_after": 0,
+    "barrier_before": 0,
+    "barrier_after": 0,
+    "post_before": 0,
+    "post_after": 65
+  },
+  "guardrails": {
+    "semantic_owner_confirmed": false,
+    "codec_confirmed": false,
+    "geometry_confirmed": false,
+    "blender_import_confirmed": false,
+    "runtime_trace_executed": false
+  }
+}
