@@ -31,8 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ai3d_engine/artifacts/physical_mvp
-          printf 'run_id=%s\nsha=%s\nref=%s\n' "${GITHUB_RUN_ID}" "${GITHUB_SHA}" "${GITHUB_REF}" \
-            > ai3d_engine/artifacts/physical_mvp/runner.txt
+          printf 'run_id=%s\nsha=%s\nref=%s\n' "${GITHUB_RUN_ID}" "${GITHUB_SHA}" "${GITHUB_REF}" > ai3d_engine/artifacts/physical_mvp/runner.txt
           uname -a >> ai3d_engine/artifacts/physical_mvp/runner.txt
 
       - name: Download and verify Blender 4.2.23
@@ -42,21 +41,19 @@ jobs:
           BASE="https://download.blender.org/release/Blender4.2"
           curl --fail --location --retry 3 --retry-delay 3 --output "${BLENDER_ARCHIVE}" "${BASE}/${BLENDER_ARCHIVE}"
           curl --fail --location --retry 3 --retry-delay 3 --output "blender-${BLENDER_VERSION}.sha256" "${BASE}/blender-${BLENDER_VERSION}.sha256"
-          sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing \
-            | tee ai3d_engine/artifacts/physical_mvp/download-verification.txt
+          sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing | tee ai3d_engine/artifacts/physical_mvp/download-verification.txt
           tar -xf "${BLENDER_ARCHIVE}"
           test -x "${BLENDER_DIR}/blender"
-          "${BLENDER_DIR}/blender" --version \
-            | tee ai3d_engine/artifacts/physical_mvp/blender-version.txt
+          "${BLENDER_DIR}/blender" --version | tee ai3d_engine/artifacts/physical_mvp/blender-version.txt
 
-      - name: Run synthetic physical AI3D MVP
+      - name: Run coordinate-correct synthetic physical AI3D MVP
         shell: bash
         run: |
           set -euo pipefail
           "${BLENDER_DIR}/blender" \
             --factory-startup \
             --background \
-            --python ai3d_engine/cloud_runner/blender_physical_mvp_cpu.py \
+            --python ai3d_engine/cloud_runner/blender_physical_mvp_cpu_v2.py \
             -- \
             --output ai3d_engine/artifacts/physical_mvp \
             2>&1 | tee ai3d_engine/artifacts/physical_mvp/blender-physical-mvp.log
@@ -77,11 +74,12 @@ jobs:
           data = json.loads(result_path.read_text(encoding="utf-8"))
           manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
-          assert data["schema_version"] == "never-tear-ai3d-blender-physical-mvp-v1", data
+          assert data["schema_version"] == "never-tear-ai3d-blender-physical-mvp-v2", data
           assert data["project_key"] == "never_tear_ai3d_engine", data
           assert data["task_id"] == "AI3D-001", data
           assert data["status"] == "PASS", data
           assert data["route"] == "BLENDER_GITHUB_ACTIONS_CYCLES_CPU", data
+          assert data["coordinate_contract"] == "THREE_Y_UP_TO_BLENDER_Z_UP_V1", data
           assert data["artifact"]["physical_render"] is True, data
           assert data["artifact"]["width"] == 960 and data["artifact"]["height"] == 540, data
           assert data["artifact"]["readback_status"] == "PASS", data
@@ -107,6 +105,7 @@ jobs:
               "raw_pixel_sha256": data["artifact"]["raw_pixel_sha256"],
               "checkpoint_id": data["checkpoint"]["checkpoint_id"],
               "checkpoint_sha256": data["checkpoint"]["sha256"],
+              "coordinate_contract": data["coordinate_contract"],
               "visual_qa": data["artifact"]["visual_qa"],
           }, indent=2, sort_keys=True))
           PY
