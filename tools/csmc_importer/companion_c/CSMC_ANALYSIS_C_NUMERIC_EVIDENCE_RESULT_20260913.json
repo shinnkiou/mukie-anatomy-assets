@@ -1,0 +1,27 @@
+{
+  "schema_version": "csmc_analysis_c_numeric_evidence_matrix_v1",
+  "evidence_counts": {
+    "CONFIRMED_ENCODING": 4,
+    "SEMANTIC_CANDIDATE": 1,
+    "SCHEMA_HINT": 2,
+    "NO_DIRECT_EVIDENCE": 4,
+    "CONFIRMED_SEMANTIC": 0
+  },
+  "confirmed_encoding_ids": [
+    "COUNTED_BE_NUMERIC_ACTIVE_MANAGER3DOD",
+    "BE_FLOAT64_ACTIVE_MANAGER3DOD",
+    "BE_FLOAT32_ACTIVE_MANAGER3DOD",
+    "ACTIVE_EXTERNAL_ID_GUID_ROUTING"
+  ],
+  "semantic_candidate_ids": ["ROTATE_COUNT4_IDENTITY_PATTERN"],
+  "schema_hint_ids": ["HISTORICAL_NODE_LINKED_LIST_SCHEMA", "NODE_NAME_TEXT_SCHEMA_ONLY"],
+  "no_direct_evidence_ids": ["NO_FLOAT16", "NO_UINT_INDEX", "NO_MATRIX4X4", "NO_NORMALIZED_WEIGHT"],
+  "semantic_slots_promoted": [],
+  "semantic_promotion_count": 0,
+  "synthetic_tests_passed": 3,
+  "guardrails": [
+    "CONFIRMED_ENCODING proves a codec/grammar on the observed active field only; it does not identify an unrelated CSMC record family.",
+    "SCHEMA_HINT from ParamScheme is not proof that the current scene/blob uses the same byte layout.",
+    "Semantic promotion requires controlled differential + current-payload mapping + known-input correlation."
+  ]
+}
