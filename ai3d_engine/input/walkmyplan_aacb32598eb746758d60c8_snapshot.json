@@ -1,0 +1,38 @@
+{
+  "schema": "never-tear-ai3d-walkmyplan-snapshot-v1",
+  "captured_at": "2026-09-13T17:43:11+09:00",
+  "walkmyplan": {
+    "plan_id": "aacb32598eb746758d60c8",
+    "storey_height_m": 3.4,
+    "rooms": [
+      {"id":0,"name":"大型ハンガー","type":"Other","areaM2":163.6,"center":[24.29,20.5]},
+      {"id":1,"name":"副通路・メンテ通路","type":"Other","areaM2":123.6,"center":[56.31,2.62]},
+      {"id":2,"name":"車両整備区画","type":"Other","areaM2":171.5,"center":[30.72,8.52]},
+      {"id":3,"name":"中央通路","type":"Other","areaM2":164.7,"center":[51.3,19.81]},
+      {"id":4,"name":"ブリーフィング室","type":"Other","areaM2":190.9,"center":[30.75,32.98]},
+      {"id":5,"name":"武器庫","type":"Other","areaM2":85.0,"center":[40.5,9.05]},
+      {"id":6,"name":"指令室","type":"Other","areaM2":193.1,"center":[43.0,31.95]},
+      {"id":7,"name":"物流倉庫","type":"Other","areaM2":85.0,"center":[45.5,9.05]},
+      {"id":8,"name":"機械室","type":"Other","areaM2":173.5,"center":[53.0,9.05]},
+      {"id":9,"name":"通信室","type":"Other","areaM2":193.1,"center":[53.0,31.95]},
+      {"id":10,"name":"非常電源室","type":"Other","areaM2":138.1,"center":[62.0,9.05]},
+      {"id":11,"name":"医療室","type":"Other","areaM2":153.7,"center":[62.0,31.95]},
+      {"id":12,"name":"食堂・休憩室","type":"Other","areaM2":100.9,"center":[68.95,9.05]},
+      {"id":13,"name":"兵員居住区","type":"Other","areaM2":112.3,"center":[68.95,31.95]}
+    ],
+    "counts": {"walls":50,"openings":26,"fixtures":87,"rooms":14}
+  },
+  "adobe_assets": [
+    {"id":"urn:aaid:sc:AP:82c46e98-f5b2-49cd-8394-1872c4c8b349","name":"Semi-realistic practical militar 285165 ASi.ffgenimg","mediaType":"application/vnd.adobe.firefly-generation-image+dcx"},
+    {"id":"urn:aaid:sc:AP:8bca8e0d-1163-4483-b7df-f26475eead13","name":"A single isolated damaged indust 946813 zQN.ffgenimg","mediaType":"application/vnd.adobe.firefly-generation-image+dcx"},
+    {"id":"urn:aaid:sc:AP:bba8cb04-5d38-43fa-afd1-1fa7866329d4","name":"NEVER TEAR Mars Branch Reference Board - September 02 at 03.26 PM.aura","mediaType":"application/vnd.adobe.hz.aura+dcx"},
+    {"id":"urn:aaid:sc:AP:356dcf85-90e4-40f7-9f4a-8289d3c05218","name":"Surface damage reference sheet f 35740 dmK.ffgenimg","mediaType":"application/vnd.adobe.firefly-generation-image+dcx"},
+    {"id":"urn:aaid:sc:AP:cba96843-daf0-45d9-a421-473b33b83969","name":"Orthographic elevated top-down c 754407 gJe.ffgenimg","mediaType":"application/vnd.adobe.firefly-generation-image+dcx"},
+    {"id":"urn:aaid:sc:AP:ed688e18-8112-4fa6-9c11-dfe0557fa92c","name":"architectural reference concept  8464 fMm.ffgenimg","mediaType":"application/vnd.adobe.firefly-generation-image+dcx"}
+  ],
+  "to3d_job": {
+    "job_id": "8b16ab22-ef00-487a-b47f-ee01c947e991",
+    "status": "failed",
+    "output": null
+  }
+}

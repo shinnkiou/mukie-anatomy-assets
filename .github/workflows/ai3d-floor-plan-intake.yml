@@ -1,0 +1,35 @@
+name: NEVER TEAR AI3D Floor Plan Intake QA
+
+on:
+  push:
+    branches:
+      - ai-3d-production-engine-20260913
+    paths:
+      - 'ai3d_engine/src/externalFloorPlanIntake.js'
+      - 'ai3d_engine/scripts/ai3dFloorPlanIntakeSmoke.mjs'
+      - 'ai3d_engine/input/walkmyplan_aacb32598eb746758d60c8_snapshot.json'
+      - '.github/workflows/ai3d-floor-plan-intake.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  floor-plan-intake-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run AI3D-006 floor plan intake smoke
+        run: |
+          mkdir -p ai3d_engine/artifacts/floor_plan_intake
+          node ai3d_engine/scripts/ai3dFloorPlanIntakeSmoke.mjs > ai3d_engine/artifacts/floor_plan_intake/smoke_result.json
+          cat ai3d_engine/artifacts/floor_plan_intake/smoke_result.json
+      - name: Upload QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai3d-floor-plan-intake-evidence
+          path: ai3d_engine/artifacts/floor_plan_intake/smoke_result.json
+          if-no-files-found: error
