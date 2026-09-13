@@ -34,6 +34,7 @@ jobs:
             tools/csmc_importer/csmc_p4_unaligned_kmer_extinction_probe.py \
             tools/csmc_importer/csmc_p4_counted_be_binding_probe.py \
             tools/csmc_importer/csmc_p4_counted_be_entropy_ceiling.py \
+            tools/csmc_importer/csmc_p4_counted_be_family_compatibility.py \
             tools/csmc_importer/csmc_p4_transition_object.py \
             tools/csmc_importer/csmc_p4_transition_graph.py \
             tools/csmc_importer/csmc_p4_known_grammar_exclusion.py \
@@ -55,6 +56,7 @@ jobs:
             tools/csmc_importer/test_csmc_p4_unaligned_kmer_extinction_probe_synthetic.py \
             tools/csmc_importer/test_csmc_p4_counted_be_binding_probe_synthetic.py \
             tools/csmc_importer/test_csmc_p4_counted_be_entropy_ceiling_synthetic.py \
+            tools/csmc_importer/test_csmc_p4_counted_be_family_compatibility_synthetic.py \
             tools/csmc_importer/test_csmc_p4_transition_object_synthetic.py \
             tools/csmc_importer/test_csmc_p4_transition_graph_synthetic.py \
             tools/csmc_importer/test_csmc_p4_known_grammar_exclusion_synthetic.py \
@@ -105,6 +107,9 @@ jobs:
       - name: Synthetic P4 counted-BE entropy ceiling smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_p4_counted_be_entropy_ceiling_synthetic.py
+      - name: Synthetic P4 counted-BE family compatibility smoke
+        working-directory: tools/csmc_importer
+        run: python test_csmc_p4_counted_be_family_compatibility_synthetic.py
       - name: Synthetic P4 transition-object scope smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_p4_transition_object_synthetic.py
