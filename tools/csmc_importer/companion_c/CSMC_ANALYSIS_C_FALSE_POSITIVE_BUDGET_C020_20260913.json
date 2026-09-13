@@ -1,0 +1,16 @@
+{
+  "schema_version": "csmc_analysis_c_false_positive_budget_v1",
+  "run_id": "C-020",
+  "trial_cells": 132,
+  "families": 6,
+  "cells_per_family": 22,
+  "per_cell_uniform_prefix_upper_bound": 2.3283064365386963e-10,
+  "union_bound_any_single_hit": 3.073364496231079e-8,
+  "union_bound_any_same_family_pair": 7.513521055324546e-17,
+  "promotion_rule": "at least two exact fits in distinct records within the same preregistered side+role family",
+  "interpretation": "Guardrail null model only; serialized data are structured and not assumed independent random bytes.",
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
