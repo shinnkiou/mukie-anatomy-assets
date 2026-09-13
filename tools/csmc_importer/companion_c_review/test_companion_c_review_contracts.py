@@ -6,8 +6,8 @@ from csmc_analysis_c_pipeline_contract import CONFIRMED_SEMANTIC, analyze
 
 
 class IntegrationReviewContractTests(unittest.TestCase):
-    def test_reference_handoff_accepts_only_non_mutating_state(self):
-        package = {
+    def _safe_package(self):
+        return {
             "merge_policy": "NO_AUTOMATIC_MERGE",
             "pipeline_stage": "STRUCTURAL_ONLY",
             "semantic_promotion_count": 0,
@@ -21,12 +21,31 @@ class IntegrationReviewContractTests(unittest.TestCase):
                 "rio26_mutations": 0,
                 "mainline_mutations": 0,
                 "private_bytes_in_public_repo": False,
+                "public_repository_contains_private_payload": False,
                 "automatic_merge": False,
+                "automatic_integration": False,
             },
         }
+
+    def test_reference_handoff_accepts_only_non_mutating_state(self):
+        package = self._safe_package()
         self.assertTrue(validate(package)["accepted"])
         package["isolation"]["runtime_jobs"] = 1
         self.assertFalse(validate(package)["accepted"])
+
+    def test_v2_automatic_integration_alias_is_rejected(self):
+        package = self._safe_package()
+        package["isolation"]["automatic_integration"] = True
+        result = validate(package)
+        self.assertFalse(result["accepted"])
+        self.assertIn("automatic_integration_true", result["errors"])
+
+    def test_v2_private_payload_alias_is_rejected(self):
+        package = self._safe_package()
+        package["isolation"]["public_repository_contains_private_payload"] = True
+        result = validate(package)
+        self.assertFalse(result["accepted"])
+        self.assertIn("private_bytes_public", result["errors"])
 
     def test_pipeline_never_promotes_semantics_implicitly(self):
         state = analyze({
