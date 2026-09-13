@@ -1,0 +1,91 @@
+{
+  "schema_version": "csmc_structural_ir_v0_1",
+  "source": {
+    "clip_sha256": "ed391b6fef0f425165f6dd4719ec9000966742efde5428cb2c1446f63640e933",
+    "csmc_sha256": "388726bd12a433f36ced922077d80cf8ed3f18e543d0106d844715185b77528c",
+    "raw_bytes_embedded": false
+  },
+  "ir_axes": ["length_blocks", "preserve_signature", "boundary_class"],
+  "boundaries": [
+    {
+      "id": "BND_197_TO_195",
+      "class": "local_extinction",
+      "from_delta_blocks": 197,
+      "to_delta_blocks": 195,
+      "net_relative_size_bytes": -16,
+      "barrier_matches_old_delta": 0,
+      "barrier_matches_new_delta": 0,
+      "complete_cross_serialization_extinction": true,
+      "semantic_owner": "unresolved"
+    },
+    {
+      "id": "BND_4693615_TO_4692559",
+      "class": "mixed_reuse_repack",
+      "from_delta_blocks": 4693615,
+      "to_delta_blocks": 4692559,
+      "net_relative_size_bytes": -8448,
+      "barrier_matches_old_delta": 9,
+      "barrier_matches_new_delta": 7,
+      "complete_cross_serialization_extinction": false,
+      "semantic_owner": "unresolved"
+    },
+    {
+      "id": "BND_4692559_TO_4697174",
+      "class": "mixed_reuse_repack",
+      "from_delta_blocks": 4692559,
+      "to_delta_blocks": 4697174,
+      "net_relative_size_bytes": 36920,
+      "barrier_matches_old_delta": 7,
+      "barrier_matches_new_delta": 13,
+      "complete_cross_serialization_extinction": false,
+      "semantic_owner": "unresolved"
+    },
+    {
+      "id": "BND_195_TO_194",
+      "class": "sparse_delta_excursion",
+      "from_delta_blocks": 195,
+      "to_delta_blocks": 194,
+      "net_relative_size_bytes": -8,
+      "barrier_matches_old_delta": 0,
+      "barrier_matches_new_delta": 0,
+      "complete_cross_serialization_extinction": false,
+      "semantic_owner": "unresolved"
+    },
+    {
+      "id": "BND_194_TO_195",
+      "class": "sparse_delta_excursion",
+      "from_delta_blocks": 194,
+      "to_delta_blocks": 195,
+      "net_relative_size_bytes": 8,
+      "barrier_matches_old_delta": 0,
+      "barrier_matches_new_delta": 0,
+      "complete_cross_serialization_extinction": false,
+      "semantic_owner": "unresolved"
+    }
+  ],
+  "record_families": [
+    {"length_blocks": 48, "preserve_signature": "0000110", "count": 7, "semantic_record_type": "unresolved"},
+    {"length_blocks": 48, "preserve_signature": "0000111", "count": 3, "semantic_record_type": "unresolved"},
+    {"length_blocks": 48, "preserve_signature": "0001110", "count": 3, "semantic_record_type": "unresolved"},
+    {"length_blocks": 49, "preserve_signature": "0000111", "count": 3, "semantic_record_type": "unresolved"},
+    {"length_blocks": 49, "preserve_signature": "1000111", "count": 6, "semantic_record_type": "unresolved"}
+  ],
+  "semantic_claims": {
+    "geometry": "unresolved",
+    "index_buffer": "unresolved",
+    "uv": "unresolved",
+    "material": "unresolved",
+    "texture": "unresolved",
+    "bone_hierarchy": "unresolved",
+    "bind_pose": "unresolved",
+    "bone_indices": "unresolved",
+    "skin_weights": "unresolved"
+  },
+  "guardrails": {
+    "public_safe": true,
+    "aggregate_only": true,
+    "contains_raw_payload": false,
+    "contains_literal_qwords": false,
+    "blender_import_proven": false
+  }
+}
