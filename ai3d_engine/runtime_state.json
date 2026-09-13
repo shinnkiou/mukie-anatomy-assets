@@ -16,7 +16,10 @@
     "visual_qa": "PASS",
     "drive_sha_readback": "PASS",
     "ai3d003_lineage_runtime_qa": "PASS",
-    "ai3d005_module_assembly_qa": "PASS"
+    "ai3d005_module_assembly_qa": "PASS",
+    "ai3d004_physical_qa_gate_preflight": "PASS",
+    "ai3d004_evidence_class": "LOGIC_ONLY_NOT_PHYSICAL",
+    "ai3d004_physical_execution_claimed": false
   },
   "mvp_run": {
     "run_key": "AI3D-CLOUD-PHYSICAL-34738453130",
@@ -36,14 +39,13 @@
   "implementation": {
     "production_protocol": "ai3d_engine/src/productionProtocol.js",
     "module_assembly": "ai3d_engine/src/moduleAssembly.js",
+    "physical_qa_gate": "ai3d_engine/src/physicalQaGate.js",
     "webgl_adapter": "ai3d_engine/src/webglProductionAdapter.js",
     "cloud_physical_runner": "ai3d_engine/cloud_runner/blender_physical_mvp_cpu_v2.py",
     "windows_worker": "ai3d_engine/windows_worker/ai3d_worker.py",
     "windows_blender_action": "ai3d_engine/windows_worker/blender_physical_mvp.py",
     "worker_transport": "ai3d-worker-transport-canary",
-    "worker_action_allowlist": [
-      "ai3d_blender_physical_mvp_v1"
-    ],
+    "worker_action_allowlist": ["ai3d_blender_physical_mvp_v1"],
     "worker_arbitrary_shell": false,
     "worker_cloud_paths": false,
     "worker_coordinate_mapping_commit": "4d5512650107d815746ab4e43ebe390a8f0c09ca",
@@ -60,8 +62,8 @@
     "windows_physical_canary": "NOT_EXECUTED",
     "online_legacy_worker_version": "0.18.2-p0.18.2",
     "online_legacy_worker_eligible_for_ai3d": false,
-    "base44_checkpoint": "6aa65783b9099015a856347a",
-    "base44_commit": "bc8280ae1f217b8d92fc893d6f405fe88f303dfa"
+    "base44_checkpoint": "6aa65c5f2f886da233da86a9",
+    "base44_commit": "a557978251e69e4018f26fbda52846e4711301a1"
   },
   "completed_tasks": {
     "AI3D-001": {
@@ -98,17 +100,48 @@
       "linear": "RIO-47_DONE"
     }
   },
+  "pending_tasks": {
+    "AI3D-002": {
+      "status": "ACTIVE",
+      "physical_windows_canary": "NOT_EXECUTED",
+      "blocker": "Verified separate AI3D companion not yet online/capability-advertised"
+    },
+    "AI3D-004": {
+      "status": "READY",
+      "stage": "PLAN",
+      "gate_preflight": "PASS",
+      "gate_smoke_run": "34747109176",
+      "gate_head_sha": "95b5dc317145a3aff03fd7b0c42d2473b3fa0014",
+      "gate_artifact_id": "10313839392",
+      "gate_artifact_digest": "sha256:aba766e09630d77db3c5fbcb8b62923d3ed895ede706e42c0f185d4d13106321",
+      "drive_file_id": "1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS",
+      "evidence_sha256": "12d92e326ac119edf970077e76512dfe7a795c39e9b664c51a23329d5e0fc910",
+      "checkpoint_id": "cp-ai3d004-gate-12d92e326ac119ed",
+      "drive_readback": "PASS",
+      "supabase_readback": "PASS",
+      "evidence_class": "LOGIC_ONLY_NOT_PHYSICAL",
+      "physical_execution_claimed": false,
+      "negative_gate_tests": {
+        "pending_visual_holds": true,
+        "provider_hash_mismatch_holds": true,
+        "legacy_worker_holds": true,
+        "virtual_route_holds": true
+      }
+    }
+  },
   "links": {
     "drive_master_doc": "https://docs.google.com/document/d/1XYJaDFFQAt-htTq2xlg-kWUvO_t0NtJgP5kli0yfuDA/edit",
     "drive_physical_evidence": "https://drive.google.com/file/d/1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R/view",
     "drive_worker_package": "https://drive.google.com/file/d/1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx/view",
     "drive_worker_package_verification": "https://drive.google.com/file/d/1-sPGXOShwDtktyM4FZdhZ5mEHhemCUy3/view",
     "drive_ai3d003_lineage_evidence": "https://drive.google.com/file/d/1SMDn28sYmjoMQDJHSsLYTSk1sRpsk9av/view",
+    "drive_ai3d004_gate_evidence": "https://drive.google.com/file/d/1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS/view",
     "drive_ai3d005_module_assembly_evidence": "https://drive.google.com/file/d/19SnIAP7Oy0Pwkoozj7PaPllLbljpYmXX/view",
     "linear_project": "https://linear.app/rioma/project/never-tear-ai-3d-production-engine-2778ac7bc44c",
     "linear_ai3d_001": "https://linear.app/rioma/issue/RIO-43/ai3d-001-production-protocol-mvp-vertical-slice",
     "linear_ai3d_002": "https://linear.app/rioma/issue/RIO-44/ai3d-002-windows-worker-adapter-for-3d-command-api",
     "linear_ai3d_003": "https://linear.app/rioma/issue/RIO-45/ai3d-003-artifact-lineage-and-durable-state",
+    "linear_ai3d_004": "https://linear.app/rioma/issue/RIO-46/ai3d-004-physical-render-and-visual-qa-gate",
     "linear_ai3d_005": "https://linear.app/rioma/issue/RIO-47/ai3d-005-module-and-assembly-model",
     "supabase_project_id": "vbuokbwglauibabinaqs"
   },
@@ -117,5 +150,5 @@
     "reuse_general_architecture_only": true,
     "copy_private_or_purchased_csmc_data": false
   },
-  "next_action": "No further autonomous task is unblocked. Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm it advertises ai3d_blender_physical_mvp_v1 before queueing exactly one physical CANARY. The currently online 0.18.2-p0.18.2 worker is not eligible. After CANARY PASS, continue AI3D-004."
+  "next_action": "AI3D-004 gate preflight is PASS but is logic-only, not physical evidence. Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm it advertises ai3d_blender_physical_mvp_v1 before queueing exactly one physical CANARY. The online 0.18.2-p0.18.2 worker is ineligible. Feed the real physical result, durable provider readback and visual QA through physicalQaGate; promote only on all PASS."
 }
