@@ -26,7 +26,8 @@ except (ImportError, ModuleNotFoundError):
     except (ImportError, ModuleNotFoundError):
         embedded_release = None
 
-BRIDGE_VERSION = "0.18.2-p0.18.2-csmc-canary4"
+FALLBACK_BRIDGE_VERSION = "0.18.2-p0.18.2-csmc-canary4"
+BRIDGE_VERSION = str(getattr(embedded_release, "BRIDGE_VERSION", FALLBACK_BRIDGE_VERSION))
 PAIRING_UI_URL = "https://sync-ops-base.base44.app/"
 worker_transport.PAIRING_UI_URL = PAIRING_UI_URL
 worker_transport.base.PAIRING_UI_URL = PAIRING_UI_URL
@@ -66,6 +67,7 @@ def cmd_self_test() -> int:
     expected = {"device_status", "csmc_observer_capture", "csmc_observer_diagnose_v1", "csmc_artifact_upload"}
     checks = {
         "experimental_version": "csmc-canary" in BRIDGE_VERSION,
+        "embedded_version_bound": embedded_release is None or BRIDGE_VERSION == str(embedded_release.BRIDGE_VERSION),
         "allowlist_exact": allowed == expected,
         "isolated_edge": worker_transport.CSMC_CANARY_EDGE_URL != worker_transport.PRODUCTION_EDGE_URL,
         "active_edge_is_canary": worker_transport.base.EDGE_URL == worker_transport.CSMC_CANARY_EDGE_URL,
