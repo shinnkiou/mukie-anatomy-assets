@@ -1,0 +1,37 @@
+name: NEVER TEAR AI3D Mars Structure Geometry Authority QA
+
+on:
+  push:
+    branches:
+      - ai-3d-production-engine-20260913
+    paths:
+      - 'ai3d_engine/data/walkmyplan_revision380_geometry_recovery.json'
+      - 'ai3d_engine/scripts/ai3dMarsStructureAuthoritySmoke.mjs'
+      - 'ai3d_engine/src/floorPlanStructureCompiler.js'
+      - 'ai3d_engine/src/floorPlanStructureGate.js'
+      - 'ai3d_engine/src/productionProtocol.js'
+      - '.github/workflows/ai3d-mars-structure-authority.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mars-structure-authority-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run AI3D-009 Mars Structure Geometry Authority QA
+        run: |
+          rm -rf ai3d_engine/artifacts/mars_structure_authority
+          node ai3d_engine/scripts/ai3dMarsStructureAuthoritySmoke.mjs ai3d_engine/artifacts/mars_structure_authority
+          cat ai3d_engine/artifacts/mars_structure_authority/authority_qa.json
+      - name: Upload authority and production-plan evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai3d-mars-structure-authority-evidence
+          path: ai3d_engine/artifacts/mars_structure_authority/
+          if-no-files-found: error
