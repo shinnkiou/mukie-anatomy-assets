@@ -1,0 +1,63 @@
+name: CSMC V4.4 Serialization Trigger Candidate CI
+
+on:
+  push:
+    branches:
+      - csmc-serialization-trigger-v44-20260913
+    paths:
+      - 'ukie-ai-bridge/bridge/csmc_modeler_save_trigger_action.py'
+      - 'ukie-ai-bridge/tests/test_csmc_modeler_save_trigger_synthetic.py'
+      - '.github/workflows/csmc-v44-serialization-trigger-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  candidate-contract:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ukie-ai-bridge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile candidate action
+        run: python -m compileall -q bridge/csmc_modeler_save_trigger_action.py tests/test_csmc_modeler_save_trigger_synthetic.py
+
+      - name: Run synthetic fixed-input and rollback-surface tests
+        run: python tests/test_csmc_modeler_save_trigger_synthetic.py
+
+      - name: Verify bounded UI contract
+        shell: pwsh
+        run: |
+          $src=Get-Content -Raw .\bridge\csmc_modeler_save_trigger_action.py
+          foreach($needle in @(
+            'ACTION_NAME = "csmc_modeler_save_no_change_v1"',
+            'TARGET_EXE = "CLIPStudioModeler.exe"',
+            'VK_CONTROL = 0x11',
+            'VK_S = 0x53',
+            'VK_ESCAPE = 0x1B',
+            'CSMC_SAVE_TRIGGER_DIRTY_DOCUMENT_REJECTED',
+            'CSMC_SAVE_TRIGGER_TARGET_AMBIGUOUS',
+            'CSMC_SAVE_TRIGGER_MODAL_DETECTED',
+            'cloud_parameters_accepted',
+            'writes_current_document_possible',
+            'production_worker_changed'
+          )){if(-not $src.Contains($needle)){throw "candidate marker missing: $needle"}}
+          foreach($needle in @(
+            'shell=True','os.system','Popen(','Invoke-WebRequest','Invoke-RestMethod',
+            'WriteProcessMemory','VirtualProtectEx','CreateRemoteThread','winreg','reg.exe',
+            'runas','Start-Process -Verb RunAs','pyautogui','keyboard.write','mouse.click'
+          )){if($src.Contains($needle)){throw "forbidden candidate surface: $needle"}}
+
+      - name: Verify candidate is not live-wired
+        shell: pwsh
+        run: |
+          $worker=Get-Content -Raw .\bridge\worker_transport_csmc.py
+          $edge=Get-Content -Raw .\supabase\functions\ukie-worker-transport-csmc-canary\index.ts
+          foreach($needle in @('csmc_modeler_save_no_change_v1','csmc_modeler_save_trigger_action')){
+            if($worker.Contains($needle)){throw "candidate unexpectedly live-wired in worker: $needle"}
+            if($edge.Contains($needle)){throw "candidate unexpectedly live-wired in edge allowlist: $needle"}
+          }
+          Write-Host 'Candidate remains build/test only; no live queue or Edge allowlist change.'
