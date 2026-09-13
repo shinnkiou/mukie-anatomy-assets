@@ -4,6 +4,9 @@
 Synthetic/procedural only. No user assets, CSMC data, credentials, or arbitrary
 commands are loaded. The script implements the AI3D-001 vertical slice in a
 factory-startup Blender process and emits durable render/checkpoint evidence.
+The cloud route deliberately uses Cycles CPU so AI3D-001 tests real pixels
+without depending on a hosted runner GPU/EGL stack. GPU validation stays on the
+Windows Worker route.
 """
 from __future__ import annotations
 
@@ -11,10 +14,8 @@ import argparse
 from array import array
 import hashlib
 import json
-import math
 import os
 import platform
-import struct
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -164,7 +165,10 @@ def close_tuple(actual, expected, tolerance: float = 1e-5) -> bool:
 
 def render_physical(output_dir: Path) -> tuple[Path, str]:
     scene = bpy.context.scene
-    scene.render.engine = "BLENDER_EEVEE_NEXT"
+    scene.render.engine = "CYCLES"
+    scene.cycles.device = "CPU"
+    scene.cycles.samples = 16
+    scene.cycles.use_denoising = True
     scene.render.resolution_x = WIDTH
     scene.render.resolution_y = HEIGHT
     scene.render.resolution_percentage = 100
@@ -218,7 +222,7 @@ def main() -> None:
     checkpoint_snapshot = {
         "project_key": PROJECT_KEY,
         "task_id": TASK_ID,
-        "route": "BLENDER_GITHUB_ACTIONS",
+        "route": "BLENDER_GITHUB_ACTIONS_CYCLES_CPU",
         "object": {
             "name": OBJECT_NAME,
             "kind": "box",
@@ -232,6 +236,8 @@ def main() -> None:
             "width": WIDTH,
             "height": HEIGHT,
             "engine": bpy.context.scene.render.engine,
+            "device": "CPU",
+            "samples": scene.cycles.samples,
             "raw_pixel_sha256": raw_pixel_sha256,
             "png_sha256": png_sha256,
         },
@@ -247,7 +253,7 @@ def main() -> None:
         "task_id": TASK_ID,
         "status": automated_qa,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "route": "BLENDER_GITHUB_ACTIONS",
+        "route": "BLENDER_GITHUB_ACTIONS_CYCLES_CPU",
         "runner": {
             "blender_version": bpy.app.version_string,
             "blender_background": bpy.app.background,
@@ -264,7 +270,7 @@ def main() -> None:
             "width": WIDTH,
             "height": HEIGHT,
             "physical_render": True,
-            "renderer": f"Blender {bpy.app.version_string} / EEVEE Next",
+            "renderer": f"Blender {bpy.app.version_string} / Cycles CPU",
             "raw_pixel_format": "RGBA_FLOAT32_LINEAR",
             "raw_pixel_sha256": raw_pixel_sha256,
             "png_sha256": png_sha256,
