@@ -1,0 +1,19 @@
+{
+  "schema_version": "csmc_analysis_c_handoff_prepared_v1",
+  "run_id": "C-035",
+  "research_state": "EXHAUSTED_FOR_NON_DUPLICATIVE_STATIC_ANALYSIS",
+  "handoff_state": "REFERENCE_ONLY_PREPARED",
+  "base_research_closure_run": "C-032",
+  "handoff_contract_run": "C-033",
+  "consumer_action_run": "C-034",
+  "final_package_v2": "CSMC_ANALYSIS_C_FINAL_PACKAGE_V2_20260913.json",
+  "new_unlock_input_found": false,
+  "sources_checked_for_unlock_input": ["Google Drive", "Gmail", "Google Calendar", "Base44", "Supabase", "GitHub side branch"],
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "worker_actions": 0,
+  "rio26_mutations": 0,
+  "mainline_mutation": false,
+  "automatic_integration": false
+}
