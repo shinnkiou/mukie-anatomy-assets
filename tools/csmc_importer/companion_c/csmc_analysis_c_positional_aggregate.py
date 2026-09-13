@@ -127,7 +127,16 @@ def self_test() -> None:
     assert out["assigned_record_count"] == 20
     assert out["unassigned_tail_count"] == 2
     assert out["slot_determines_family"] is True
-    assert out["family_determines_slot"] is False  # shared 0000111 across 48/49 remains distinct via length, but slots 1/3 keys differ; this assertion is conservative fixture check
+    assert out["family_determines_slot"] is True
+
+    # A second fixture proves the analyzer can detect one family spanning two slots.
+    rows2=[dict(r) for r in rows]
+    rows2[1]["length_blocks"] = 48
+    rows2[1]["preserve_signature"] = "0000110"
+    doc2=dict(doc, corpus_id="synthetic_cross_slot", records=rows2)
+    out2=analyze(doc2)
+    assert out2["valid"] is True
+    assert out2["family_determines_slot"] is False
     print("SELF_TEST_PASS")
 
 
