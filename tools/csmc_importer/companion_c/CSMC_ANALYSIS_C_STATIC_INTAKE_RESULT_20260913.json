@@ -1,0 +1,25 @@
+{
+  "schema_version": "csmc_analysis_c_static_intake_result_v1",
+  "run_id": "C-023",
+  "synthetic_tests_passed": 4,
+  "allowed_artifact_classes": [
+    "PUBLIC_SAFE_AGGREGATE",
+    "PUBLIC_SAFE_METADATA",
+    "PRIVATE_AUTHORIZED_ISOLATED_REF",
+    "LATENT_SCHEMA_SNAPSHOT"
+  ],
+  "forbidden_acquisition_modes": [
+    "MODELER_ACTION",
+    "RUNTIME_JOB",
+    "WINDOWS_WORKER",
+    "CONTROL_GATE",
+    "MAINLINE_CANONICAL_MUTATION"
+  ],
+  "auto_semantic_promotion": false,
+  "auto_blender_emit": false,
+  "public_repo_private_bytes": false,
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
