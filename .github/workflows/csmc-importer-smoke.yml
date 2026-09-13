@@ -36,6 +36,7 @@ jobs:
             tools/csmc_importer/csmc_p4_counted_be_entropy_ceiling.py \
             tools/csmc_importer/csmc_p4_transition_object.py \
             tools/csmc_importer/csmc_p4_transition_graph.py \
+            tools/csmc_importer/csmc_p4_known_grammar_exclusion.py \
             tools/csmc_importer/csmc_p4_transition_event_contract.py \
             tools/csmc_importer/csmc_structural_ir.py \
             tools/csmc_importer/modeler_capture_header_probe.py \
@@ -55,6 +56,7 @@ jobs:
             tools/csmc_importer/test_csmc_p4_counted_be_entropy_ceiling_synthetic.py \
             tools/csmc_importer/test_csmc_p4_transition_object_synthetic.py \
             tools/csmc_importer/test_csmc_p4_transition_graph_synthetic.py \
+            tools/csmc_importer/test_csmc_p4_known_grammar_exclusion_synthetic.py \
             tools/csmc_importer/test_csmc_p4_transition_event_contract_synthetic.py \
             tools/csmc_importer/test_csmc_structural_ir_synthetic.py \
             tools/csmc_importer/test_modeler_capture_header_probe_synthetic.py \
@@ -107,6 +109,9 @@ jobs:
       - name: Synthetic P4 transition-family graph smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_p4_transition_graph_synthetic.py
+      - name: Synthetic P4 known +965 grammar exclusion smoke
+        working-directory: tools/csmc_importer
+        run: python test_csmc_p4_known_grammar_exclusion_synthetic.py
       - name: Synthetic P4 transition-event intake smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_p4_transition_event_contract_synthetic.py
