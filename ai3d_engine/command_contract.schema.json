@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://never-tear.local/ai3d/command-contract-v1.schema.json",
+  "title": "NEVER TEAR AI3D Command Contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["command_id", "op", "params", "routes"],
+  "properties": {
+    "command_id": {"type": "string", "minLength": 1},
+    "op": {
+      "type": "string",
+      "enum": [
+        "CREATE_PRIMITIVE",
+        "TRANSFORM_SET",
+        "MATERIAL_SET",
+        "MESH_EDIT",
+        "BOOLEAN",
+        "TEXTURE_SET",
+        "CAMERA_SET",
+        "LIGHT_SET",
+        "RENDER_CAPTURE",
+        "IMPORT_MODEL",
+        "EXPORT_MODEL",
+        "UNDO",
+        "QA_RUN",
+        "CHECKPOINT_SAVE"
+      ]
+    },
+    "params": {"type": "object"},
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "description": "AI-native 3D command envelope. Routes are bounded; arbitrary shell payloads are outside this contract. Physical evidence may not be substituted by virtual evidence."
+}
