@@ -1,0 +1,30 @@
+{
+  "schema_version": "csmc_analysis_c_current_pipeline_state_v1",
+  "run_id": "C-025",
+  "intake_accepted": true,
+  "evidence_package_class": "PUBLIC_SAFE_AGGREGATE_SET",
+  "route_state": "LIVE_RESOLVED_EDGE",
+  "structural_ir_valid": true,
+  "codec_binding_level": "NO_BINDING",
+  "binding_scope": "UNCONFIRMED",
+  "semantic_slots": {
+    "geometry": "UNRESOLVED",
+    "index": "UNRESOLVED",
+    "transform": "UNRESOLVED",
+    "material": "UNRESOLVED",
+    "hierarchy": "UNRESOLVED"
+  },
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "mesh_emit_ready": false,
+  "scene_emit_ready": false,
+  "material_ready": false,
+  "blocking_conditions": [
+    "no confirmed current-payload codec binding edge from +965 record family/regime",
+    "geometry semantic slot unresolved",
+    "index semantic slot unresolved"
+  ],
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
