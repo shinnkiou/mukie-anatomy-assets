@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "csmc_analysis_c_binding_evidence_contract_v1",
+  "title": "CSMC Analysis Companion C BindingEvidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "binding_id",
+    "current_payload_mapping",
+    "bounded_region_id",
+    "codec_evidence_level",
+    "exact_decode_fit_instances",
+    "same_structural_role_recurrence",
+    "controlled_differential",
+    "known_input_correlation",
+    "localized_effect",
+    "semantic_slot"
+  ],
+  "properties": {
+    "binding_id": {"type": "string", "minLength": 1},
+    "current_payload_mapping": {"type": "boolean"},
+    "bounded_region_id": {"type": ["string", "null"]},
+    "codec_evidence_level": {
+      "type": "string",
+      "enum": ["NO_DIRECT_EVIDENCE", "SCHEMA_HINT", "SEMANTIC_CANDIDATE", "CONFIRMED_ENCODING", "CONFIRMED_SEMANTIC"]
+    },
+    "exact_decode_fit_instances": {"type": "integer", "minimum": 0},
+    "same_structural_role_recurrence": {"type": "boolean"},
+    "controlled_differential": {"type": "boolean"},
+    "known_input_correlation": {"type": "boolean"},
+    "localized_effect": {"type": "boolean"},
+    "semantic_slot": {
+      "type": ["string", "null"],
+      "enum": [null, "geometry", "index", "transform", "material", "hierarchy"]
+    }
+  }
+}
