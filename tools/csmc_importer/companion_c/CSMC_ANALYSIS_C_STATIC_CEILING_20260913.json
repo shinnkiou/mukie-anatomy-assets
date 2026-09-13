@@ -1,0 +1,67 @@
+{
+  "schema_version": "csmc_analysis_c_static_ceiling_v1",
+  "run_id": "C-027",
+  "ceiling_type": "INPUT_EVIDENCE_CEILING",
+  "method_ceiling": false,
+  "missing_edges": [
+    {
+      "edge_id": "E1_PLUS965_TO_CONFIRMED_CODEC",
+      "from": "current +965 record regime/family",
+      "to": "confirmed counted-numeric or other codec",
+      "status": "MISSING",
+      "minimum_new_static_evidence": "pre-existing authorized isolated current-data reference sufficient to run preregistered C-018 test"
+    },
+    {
+      "edge_id": "E2_CURRENT_REGION_TO_GEOMETRY",
+      "from": "current bound region",
+      "to": "geometry semantic slot",
+      "status": "MISSING",
+      "minimum_new_static_evidence": "independent geometry correlation such as an interpretable pre-existing controlled pair or equivalent labeled evidence"
+    },
+    {
+      "edge_id": "E3_CURRENT_REGION_TO_INDEX",
+      "from": "current bound region",
+      "to": "index semantic slot",
+      "status": "MISSING",
+      "minimum_new_static_evidence": "independent index-layout correlation with width/count/topology evidence"
+    },
+    {
+      "edge_id": "E4_CURRENT_MODEL_TO_TRANSFORM",
+      "from": "current model representation",
+      "to": "transform semantic slot",
+      "status": "MISSING",
+      "existing_support": "separate active counted-BE numeric fields plus quaternion-like candidate",
+      "minimum_new_static_evidence": "current model binding or interpretable transform correlation"
+    },
+    {
+      "edge_id": "E5_CURRENT_MODEL_TO_HIERARCHY",
+      "from": "current model representation",
+      "to": "hierarchy semantic slot",
+      "status": "MISSING",
+      "existing_support": "container routing plus historical node-chain schema hints",
+      "minimum_new_static_evidence": "current live model-node chain or equivalent mapping evidence"
+    },
+    {
+      "edge_id": "E6_CURRENT_REGION_TO_MATERIAL",
+      "from": "current model/material-bearing region",
+      "to": "material semantic slot",
+      "status": "MISSING",
+      "minimum_new_static_evidence": "material-bearing region plus independent semantic correlation"
+    }
+  ],
+  "available_methods": [
+    "semantics-free IR",
+    "owner/container route map",
+    "binding evidence contract",
+    "preregistered counted-numeric scan",
+    "false-positive budget",
+    "binding-scope classifier",
+    "static-intake validator",
+    "pipeline gate classifier"
+  ],
+  "runtime_request_needed_by_companion": false,
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
