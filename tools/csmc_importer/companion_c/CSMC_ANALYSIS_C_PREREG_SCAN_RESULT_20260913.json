@@ -1,0 +1,32 @@
+{
+  "schema_version": "csmc_analysis_c_preregistered_scan_result_v1",
+  "run_id": "C-018",
+  "protocol_status": "PREREGISTERED_READY",
+  "self_test_status": "PASS",
+  "record_count_per_side": 22,
+  "sides": 2,
+  "structural_roles": ["stable_prefix", "control_zone", "rewritten_tail"],
+  "trial_cells": 132,
+  "role_lengths_bytes": {
+    "stable_prefix": 168,
+    "control_zone": 56,
+    "rewritten_tail_48q": 160,
+    "rewritten_tail_49q": 168
+  },
+  "expected_be_f32_counts": {
+    "stable_prefix": 41,
+    "control_zone": 13,
+    "rewritten_tail_48q": 39,
+    "rewritten_tail_49q": 41
+  },
+  "be_f64_whole_role_possible": false,
+  "recurrent_binding_rule": ">=2 exact fits in distinct records for the same side and preregistered structural role",
+  "sliding_windows": false,
+  "post_hoc_roles": false,
+  "current_payload_scan_executed": false,
+  "reason_current_payload_scan_not_executed": "No isolated private +965 binary is present in the Companion C Drive namespace; runtime/mainline acquisition is prohibited for this lane.",
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
