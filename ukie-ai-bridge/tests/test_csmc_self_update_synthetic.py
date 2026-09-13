@@ -3,10 +3,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import sys
 import tempfile
 import zipfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bridge import csmc_self_update as m
 
 
