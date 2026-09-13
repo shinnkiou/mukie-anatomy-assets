@@ -1,0 +1,59 @@
+{
+  "schema": "never-tear-ai3d-structure-compiler-runtime-evidence-v1",
+  "task_id": "AI3D-008",
+  "status": "PASS",
+  "evidence_class": "SYNTHETIC_AUTHORITATIVE_FIXTURE_NOT_PHYSICAL",
+  "github": {
+    "head_sha": "43281c39f4f33c65f9f1cafb04a8be800f14e71d",
+    "run_id": "34755081555",
+    "job_id": "103717981573",
+    "check_conclusion": "success",
+    "actions_artifact_id": "10316872064",
+    "actions_artifact_digest": "sha256:d40f605aafeb038e5cab4a5f67de13a3fabcd065eea94763468b982b4b065a3c"
+  },
+  "drive": {
+    "file_id": "17Y2D0Ltn1Oan4GNH4pHi5SXa7KVe9DPb",
+    "file_name": "AI3D-008-structure-compiler-evidence.zip",
+    "size_bytes": 854,
+    "readback_sha256": "d40f605aafeb038e5cab4a5f67de13a3fabcd065eea94763468b982b4b065a3c",
+    "exact_sha_readback": "PASS"
+  },
+  "smoke_json_sha256": "50f4c392436063bbca65bee9c0e3ad2c291294643b920d42dd445fa3f4db6e96",
+  "compiler": {
+    "compiled_artifact_id": "structure-compile-f81fd6cc85c1178c",
+    "compiled_artifact_sha256": "f81fd6cc85c1178c1c30cae6363bb98697026b212276222d3d286b383778872f",
+    "geometry_sha256": "b03724d91ff3a8f7e70f8f5673b925184697e254bb3bdc29c8b6de713e12316e",
+    "production_plan_id": "structure-plan-6246d2ba1835363c",
+    "production_plan_sha256": "6246d2ba1835363c467b4493a40164dfee5a826c96ac4b556c1e92a09561c041",
+    "command_count": 12,
+    "deterministic_recompile": true,
+    "invalid_wall_reference_rejected": true,
+    "invalid_span_rejected": true
+  },
+  "gates": {
+    "current_mars_source": "HOLD",
+    "current_mars_reason": "SOURCE_GATE_HOLD",
+    "dimension_incomplete_fixture": "HOLD",
+    "dimension_incomplete_reason": "PHYSICAL_DIMENSIONS_INCOMPLETE",
+    "complete_authoritative_fixture": "PASS"
+  },
+  "qa": {
+    "status": "PASS",
+    "artifact_sha_readback": "PASS",
+    "geometry_sha_readback": "PASS",
+    "plan_sha_readback": "PASS",
+    "commands_validate": "PASS",
+    "no_inferred_dimensions": "PASS"
+  },
+  "policy": {
+    "inferred_dimensions": false,
+    "room_area_reconstruction": false,
+    "footprint_reconstruction": false,
+    "total_wall_length_reconstruction": false,
+    "adobe_geometry_truth": false,
+    "failed_to3d_geometry_truth": false,
+    "physical_execution_claimed": false,
+    "mars_structure_compiled": false
+  },
+  "next_action": "Compiler implementation is complete. Keep the actual Mars Structure source on HOLD until authoritative wall endpoints, wall thicknesses, and opening profiles are available. AI3D-002 remains the primary physical project gate."
+}
