@@ -1,0 +1,94 @@
+name: NEVER TEAR AI3D Windows Worker Canary
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ai3d_engine/windows_worker/**"
+      - ".github/workflows/ai3d-worker-canary-windows.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai3d-worker-canary-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-worker:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Syntax and source self-test
+        shell: pwsh
+        run: |
+          python -m py_compile ai3d_engine/windows_worker/ai3d_worker.py ai3d_engine/windows_worker/blender_physical_mvp.py
+          python ai3d_engine/windows_worker/ai3d_worker.py --self-test | Tee-Object -FilePath ai3d-worker-selftest-source.json
+
+      - name: Install PyInstaller
+        shell: pwsh
+        run: python -m pip install --disable-pip-version-check --no-input pyinstaller==6.15.0
+
+      - name: Build standalone companion EXE
+        shell: pwsh
+        run: |
+          pyinstaller `
+            --noconfirm `
+            --clean `
+            --onefile `
+            --name NEVER_TEAR_AI3D_WORKER_CANARY `
+            --add-data "ai3d_engine/windows_worker/blender_physical_mvp.py;." `
+            ai3d_engine/windows_worker/ai3d_worker.py
+
+      - name: Packaged self-test
+        shell: pwsh
+        run: |
+          .\dist\NEVER_TEAR_AI3D_WORKER_CANARY.exe --self-test | Tee-Object -FilePath ai3d-worker-selftest-packaged.json
+
+      - name: Create manifest and ZIP
+        shell: pwsh
+        run: |
+          $exe = Resolve-Path .\dist\NEVER_TEAR_AI3D_WORKER_CANARY.exe
+          $sha = (Get-FileHash -Algorithm SHA256 $exe).Hash.ToLower()
+          $size = (Get-Item $exe).Length
+          $manifest = [ordered]@{
+            schema_version = "never-tear-ai3d-worker-release-v1"
+            worker_version = "0.1.0-ai3d-canary"
+            protocol = "never-tear-ai3d-worker-v1"
+            allowed_actions = @("ai3d_blender_physical_mvp_v1")
+            arbitrary_shell = $false
+            cloud_filesystem_paths = $false
+            requires_existing_ukie_pairing = $true
+            exe_sha256 = $sha
+            exe_size_bytes = $size
+            source_commit = "${env:GITHUB_SHA}"
+            canary_promoted = $false
+          }
+          $manifest | ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 .\dist\release_manifest.json
+          Copy-Item .\ai3d-worker-selftest-source.json .\dist\source_selftest.json
+          Copy-Item .\ai3d-worker-selftest-packaged.json .\dist\packaged_selftest.json
+          Compress-Archive -Path .\dist\NEVER_TEAR_AI3D_WORKER_CANARY.exe,.\dist\release_manifest.json,.\dist\source_selftest.json,.\dist\packaged_selftest.json -DestinationPath .\NEVER_TEAR_AI3D_WORKER_CANARY.zip -Force
+          Get-FileHash -Algorithm SHA256 .\NEVER_TEAR_AI3D_WORKER_CANARY.zip | Format-List | Out-File .\zip_sha256.txt
+          Get-Content .\dist\release_manifest.json
+          Get-Content .\zip_sha256.txt
+
+      - name: Upload canary package
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEVER-TEAR-AI3D-WORKER-CANARY-${{ github.run_id }}
+          path: |
+            NEVER_TEAR_AI3D_WORKER_CANARY.zip
+            zip_sha256.txt
+            dist/release_manifest.json
+            dist/source_selftest.json
+            dist/packaged_selftest.json
+          if-no-files-found: error
+          retention-days: 14
