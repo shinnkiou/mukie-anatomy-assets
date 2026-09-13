@@ -1,0 +1,44 @@
+name: NEVER TEAR AI3D Lineage Smoke
+
+on:
+  push:
+    branches:
+      - ai-3d-production-engine-20260913
+    paths:
+      - 'ai3d_engine/src/**'
+      - 'ai3d_engine/scripts/ai3dLineageSmoke.mjs'
+      - '.github/workflows/ai3d-lineage-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lineage-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run AI3D-003 lineage smoke
+        run: node ai3d_engine/scripts/ai3dLineageSmoke.mjs
+
+      - name: Hash evidence
+        shell: bash
+        run: |
+          sha256sum artifacts/ai3d_lineage/lineage_smoke_result.json | tee artifacts/ai3d_lineage/lineage_smoke_result.sha256
+          cat artifacts/ai3d_lineage/lineage_smoke_result.json
+
+      - name: Upload lineage evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai3d-lineage-smoke-evidence
+          path: artifacts/ai3d_lineage/
+          if-no-files-found: error
+          retention-days: 30
