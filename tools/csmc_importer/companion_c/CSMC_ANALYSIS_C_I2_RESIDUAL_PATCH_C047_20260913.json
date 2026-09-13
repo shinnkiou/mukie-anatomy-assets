@@ -1,0 +1,59 @@
+{
+  "schema_version": "csmc_analysis_c_i2_residual_patch_result_v1",
+  "research_run": "C-047",
+  "source_type": "PUBLIC_SAFE_CROSS_LANE_I2_CROSS_CONSTRAINT_AUDIT",
+  "source_mainline_commit": "98bf20e5b1380832343146b37515bb5a837608b6",
+  "source_ci_commit": "08919bd359fa29749125f771cd570667edde3361",
+  "source_ci_run": 34757761870,
+  "source_ci_conclusion": "success",
+  "cross_constraint_result": {
+    "ambiguous_record_indices": [2, 3, 8, 14, 15, 21],
+    "candidate_signatures": ["0000111", "0001110"],
+    "trusted_signature_quota": {"0000111": 3, "0001110": 3},
+    "complete_assignments_remaining": 20,
+    "forced_rows": 0,
+    "deterministic_reduction_from_current_durable_corpus": false
+  },
+  "residual_transport_contract": {
+    "recommended": {
+      "observation_count": 6,
+      "observation_positions": ["q24", "q27"],
+      "requires_provenance_hash": true,
+      "quota_derivation_used": false
+    },
+    "quota_assisted_minimum": {
+      "observation_count": 5,
+      "observation_positions": ["q24", "q27"],
+      "requires_provenance_hash": true,
+      "requires_trusted_signature_quota": true,
+      "requires_quota_provenance_hash": true,
+      "derived_sixth_signature_only_if_unique": true
+    },
+    "requires_existing_c040_baseline": true,
+    "full_i2_validator_replaced": false
+  },
+  "q24_mapping": {
+    "0": "0000111",
+    "1": "0001110"
+  },
+  "q27_mapping": {
+    "0": "0001110",
+    "1": "0000111"
+  },
+  "synthetic_tests": {
+    "passed": 11,
+    "failed": 0
+  },
+  "global_invariants": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "raw_or_private_payload_bytes_used": false,
+    "runtime_dispatch_requested": false,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "automatic_integration": false
+  }
+}
