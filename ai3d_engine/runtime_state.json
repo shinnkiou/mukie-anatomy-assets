@@ -3,37 +3,59 @@
   "project_key": "never_tear_ai3d_engine",
   "canonical_name": "NEVER TEAR AI 3D Production Engine",
   "status": "ACTIVE",
-  "stage": "QA",
-  "active_task": "AI3D-001",
+  "stage": "IMPLEMENT",
+  "active_task": "AI3D-002",
   "qa": {
     "protocol_smoke": "PASS",
     "route_switch_test": "PASS",
     "lint": "PASS",
     "vite_build": "PASS",
     "webgl_adapter": "IMPLEMENTED_BUILD_PASS",
-    "physical_render_durable_evidence": "IMPLEMENTED_BUILD_PASS",
-    "physical_render": "WEBGL_DURABLE_EVIDENCE_PATH_IMPLEMENTED_NOT_EXECUTED",
-    "visual_qa": "PENDING"
+    "physical_render_durable_evidence": "PASS",
+    "physical_render": "PASS",
+    "visual_qa": "PASS",
+    "drive_sha_readback": "PASS"
   },
   "mvp_run": {
-    "run_key": "AI3D-SMOKE-1789270226857",
-    "render_artifact_id": "render-6c8d34887be0f8bf",
-    "render_artifact_sha256": "6c8d34887be0f8bfe737a7c0e88fc0275838cbd0d02a456e05ad19a62f13a890",
-    "checkpoint_id": "cp-6a1ce352a7d25268",
-    "checkpoint_sha256": "6a1ce352a7d25268018c353e5065131c0a84ddc5393762893749cea637aa34f1",
-    "physical_render": false
+    "run_key": "AI3D-CLOUD-PHYSICAL-34738453130",
+    "route": "BLENDER_GITHUB_ACTIONS_CYCLES_CPU",
+    "coordinate_contract": "THREE_Y_UP_TO_BLENDER_Z_UP_V1",
+    "render_artifact_id": "blender-render-7bc5b7bca3cd3384",
+    "render_artifact_sha256": "7bc5b7bca3cd33844b4da57a13176a550f130aca36aa7f81b34c514707c7ddb2",
+    "raw_pixel_sha256": "9cf0345bac55a1e5c4b481bc8a8e11a402ddc05f72d1866335832591f7bf4bc4",
+    "checkpoint_id": "cp-ai3d001-visualpass-7eb045faac51e35c",
+    "checkpoint_sha256": "7eb045faac51e35cf8a3a34194c200d8c0f5ae21877e48e00d01e274765f2c81",
+    "physical_render": true,
+    "visual_qa": "PASS",
+    "drive_file_id": "1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R",
+    "github_run_id": "34738453130",
+    "github_actions_artifact_id": "10311342759"
   },
   "implementation": {
     "production_protocol": "ai3d_engine/src/productionProtocol.js",
     "webgl_adapter": "ai3d_engine/src/webglProductionAdapter.js",
+    "cloud_physical_runner": "ai3d_engine/cloud_runner/blender_physical_mvp_cpu_v2.py",
+    "windows_worker": "ai3d_engine/windows_worker/ai3d_worker.py",
+    "windows_blender_action": "ai3d_engine/windows_worker/blender_physical_mvp.py",
+    "worker_transport": "ai3d-worker-transport-canary",
+    "worker_action_allowlist": ["ai3d_blender_physical_mvp_v1"],
+    "worker_arbitrary_shell": false,
+    "worker_cloud_paths": false,
+    "worker_previous_packaging_run": "34738248556",
+    "worker_previous_packaging_status": "PASS",
+    "worker_coordinate_mapping_commit": "4d5512650107d815746ab4e43ebe390a8f0c09ca",
+    "worker_corrected_packaging_run": "34743230600",
+    "worker_corrected_packaging_status": "IN_PROGRESS",
+    "windows_physical_canary": "NOT_EXECUTED",
     "base44_checkpoint": "6aa61fb2fdf17e0341faf651",
-    "base44_commit": "07ed204b825ff17b78e22d813f1ac0d5934c9d8a",
-    "physical_render_storage": "Base44 Core.UploadFile",
-    "physical_render_ledger": "ModelArtifactRef"
+    "base44_commit": "07ed204b825ff17b78e22d813f1ac0d5934c9d8a"
   },
   "links": {
     "drive_master_doc": "https://docs.google.com/document/d/1XYJaDFFQAt-htTq2xlg-kWUvO_t0NtJgP5kli0yfuDA/edit",
+    "drive_physical_evidence": "https://drive.google.com/file/d/1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R/view",
     "linear_project": "https://linear.app/rioma/project/never-tear-ai-3d-production-engine-2778ac7bc44c",
+    "linear_ai3d_001": "https://linear.app/rioma/issue/RIO-43/ai3d-001-production-protocol-mvp-vertical-slice",
+    "linear_ai3d_002": "https://linear.app/rioma/issue/RIO-44/ai3d-002-windows-worker-adapter-for-3d-command-api",
     "supabase_project_id": "vbuokbwglauibabinaqs"
   },
   "boundary": {
@@ -41,5 +63,5 @@
     "reuse_general_architecture_only": true,
     "copy_private_or_purchased_csmc_data": false
   },
-  "next_action": "Run Physical MVP in a real WebGL browser. Confirm the actual 960x540 PNG is uploaded, registered in ModelArtifactRef with pixel SHA/PNG SHA/provider readback status, then visually QA that PNG and promote only if PASS."
+  "next_action": "AI3D-002 ACTIVE. Wait for corrected Windows packaging run 34743230600. If PASS, download and hash-verify the corrected companion ZIP, then install/run only the separate AI3D companion Worker on the paired Windows device and execute one physical CANARY with upload/readback/visual QA. Do not queue the old P0.18.2 worker."
 }
