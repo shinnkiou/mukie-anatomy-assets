@@ -1,0 +1,40 @@
+{
+  "schema_version": "csmc_analysis_c_parser_skeleton_result_v1",
+  "run_id": "C-012",
+  "stages": [
+    "route_resolution",
+    "structural_normalization",
+    "typed_codec_catalog_annotation",
+    "semantic_gate"
+  ],
+  "route_count": 2,
+  "routes": ["character", "scene"],
+  "character_regime": {
+    "regime_id": "REGIME_PLUS_965",
+    "record_family_count": 5,
+    "record_instance_count": 22,
+    "internal_section_owner": "UNRESOLVED"
+  },
+  "confirmed_codec_catalog_count": 4,
+  "record_family_codec_binding_count": 0,
+  "semantic_promotions_from_numeric_evidence": 0,
+  "required_for_blender_geometry_emit": ["geometry", "index"],
+  "current_blocked_slots": ["geometry", "index"],
+  "can_emit_blender_geometry": false,
+  "synthetic_tests": {
+    "passed": 4,
+    "failed": 0,
+    "cases": [
+      "current evidence blocks Blender emit",
+      "confirmed codec does not auto-bind to record family",
+      "CANDIDATE geometry/index still block emit",
+      "synthetic CONFIRMED geometry/index with evidence IDs opens gate"
+    ]
+  },
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false,
+  "rio26_mutation": false,
+  "canonical_repoll": false
+}
