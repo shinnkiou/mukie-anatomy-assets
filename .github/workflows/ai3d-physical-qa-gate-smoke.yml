@@ -1,0 +1,45 @@
+name: NEVER TEAR AI3D Physical QA Gate Smoke
+
+on:
+  push:
+    branches:
+      - ai-3d-production-engine-20260913
+    paths:
+      - 'ai3d_engine/src/physicalQaGate.js'
+      - 'ai3d_engine/src/productionProtocol.js'
+      - 'ai3d_engine/scripts/ai3dPhysicalQaGateSmoke.mjs'
+      - '.github/workflows/ai3d-physical-qa-gate-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  physical-qa-gate-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run AI3D-004 physical QA gate smoke
+        run: node ai3d_engine/scripts/ai3dPhysicalQaGateSmoke.mjs
+
+      - name: Hash evidence
+        shell: bash
+        run: |
+          sha256sum artifacts/ai3d_physical_qa_gate/physical_qa_gate_smoke_result.json | tee artifacts/ai3d_physical_qa_gate/provider_readback.sha256
+          cat artifacts/ai3d_physical_qa_gate/physical_qa_gate_smoke_result.json
+
+      - name: Upload physical QA gate evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai3d-physical-qa-gate-smoke-evidence
+          path: artifacts/ai3d_physical_qa_gate/
+          if-no-files-found: error
+          retention-days: 30
