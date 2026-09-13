@@ -1,0 +1,35 @@
+{
+  "schema_version": "csmc_analysis_c_numeric_field_relation_v1",
+  "run_id": "C-031",
+  "field_count": 7,
+  "fields": [
+    {"name":"MultiViewTargetPosition","count":3,"width":"BE-f64"},
+    {"name":"MultiViewPresetCameraFrustum","count":6,"width":"BE-f64"},
+    {"name":"MultiViewPresetCameraPosition","count":3,"width":"BE-f64"},
+    {"name":"MultiViewPresetCameraRotate","count":4,"width":"BE-f64"},
+    {"name":"MultiViewPresetCameraUpGuide","count":3,"width":"BE-f64"},
+    {"name":"MultiViewNearClipEnable","count":6,"width":"BE-f32"},
+    {"name":"MultiViewNearClipPosition","count":6,"width":"BE-f64"}
+  ],
+  "observations": {
+    "count3_widths":["BE-f64"],
+    "count4_widths":["BE-f64"],
+    "count6_widths":["BE-f64","BE-f32"],
+    "near_clip_same_prefix_same_count_different_width": true,
+    "position_suffix_counts":[3,6],
+    "position_suffix_widths":["BE-f64"],
+    "only_f32_field":"MultiViewNearClipEnable",
+    "only_f32_all_zero_in_this_file": true
+  },
+  "rejected_generalizations": [
+    "arity determines numeric width",
+    "shared lexical prefix plus arity determines numeric width",
+    "Position suffix determines arity",
+    "Enable suffix universally implies BE-f32",
+    "all-zero counted vectors are necessarily boolean/flag arrays"
+  ],
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
