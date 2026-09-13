@@ -5,9 +5,9 @@ import json
 import sys
 
 try:
-    from bridge.csmc_self_update import CsmcSelfUpdateError, run_cycle, self_test
+    from bridge.csmc_self_update_runtime import CsmcSelfUpdateError, run_cycle, self_test
 except ModuleNotFoundError:
-    from csmc_self_update import CsmcSelfUpdateError, run_cycle, self_test
+    from csmc_self_update_runtime import CsmcSelfUpdateError, run_cycle, self_test
 
 
 def main(argv: list[str] | None = None) -> int:
