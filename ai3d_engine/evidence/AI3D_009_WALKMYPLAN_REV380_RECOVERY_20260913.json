@@ -1,0 +1,49 @@
+{
+  "schema": "never-tear-ai3d-walkmyplan-revision-recovery-summary-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-009",
+  "status": "PASS_CANDIDATE_NOT_PROMOTED",
+  "source": {
+    "provider": "WALKMYPLAN",
+    "plan_id": "aacb32598eb746758d60c8",
+    "revision": 380,
+    "revision_counts": {"walls":50,"openings":26,"fixtures":83,"rooms":15},
+    "current_compact_counts": {"walls":50,"openings":26,"fixtures":87,"rooms":14},
+    "storey_height_m": 3.4
+  },
+  "geometry_recovery": {
+    "all_wall_endpoints_present": true,
+    "all_wall_thicknesses_present": true,
+    "all_opening_profiles_present": true,
+    "recovered_total_wall_length_m": 678.4,
+    "current_total_wall_length_m": 678.4,
+    "recovered_footprint_m": [74,44.2],
+    "current_footprint_m": [74,44.2],
+    "aggregate_geometry_match": true,
+    "revision_381_423_wall_or_opening_edits_observed": false
+  },
+  "compiler": {
+    "source_gate": "READY",
+    "status": "PASS",
+    "qa": "PASS",
+    "command_count": 179,
+    "geometry_sha256": "0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb",
+    "plan_sha256": "83389de2d8016fb6dc1ec043befd071d8c937b162c6dbf479a9d19582b3e5313",
+    "artifact_sha256": "9453eb39e916c096bfd1e0355bd92070e350cd1f69858da5aafec11d953f6465"
+  },
+  "base44": {
+    "checkpoint": "6aa69408e73d90be81ecc8d7",
+    "commit": "9c40c1a069a4fb7a434db6e0b6c875c0accded5d",
+    "source_file_sha256": "33a3c7ebe1fd7f9cd26c74fe0390ac3a1ffc8238fa3f202998ef0fcdf7be0549",
+    "evidence_file_sha256": "a6e6439b1ba19da0d414ad1105a3e763e01fcdc9610a3d74d9264bb1cee51c62"
+  },
+  "linear_issue": "RIO-52",
+  "policy": {
+    "inferred_dimensions": false,
+    "physical_execution_claimed": false,
+    "current_geometry_promoted": false,
+    "current_14_room_module_registry_replaced": false,
+    "hold_reason": "ROOM_SOLVER_RECONCILIATION_14_CURRENT_VS_15_REVISION"
+  },
+  "next_action": "Keep AI3D-002 as primary physical gate. In parallel reconcile current 14-room compact solver with revisioned wall/opening geometry. If no wall/opening geometry change occurred after revision 380, promote recovered wall/opening geometry as Structure authority while preserving the current 14-room Module Registry separately."
+}
