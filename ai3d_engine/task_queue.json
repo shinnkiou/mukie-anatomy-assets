@@ -1,7 +1,7 @@
 {
   "schema": "never-tear-ai3d-task-queue-v1",
   "project_key": "never_tear_ai3d_engine",
-  "updated_at": "2026-09-13T17:14:30+09:00",
+  "updated_at": "2026-09-13T18:50:00+09:00",
   "priority_order": ["BLOCKED_FIX", "QA_FAIL_FIX", "ACTIVE", "HIGH", "NORMAL"],
   "tasks": [
     {
@@ -161,7 +161,50 @@
         "github_actions_artifact_id": "10314167472"
       }],
       "checkpoint_id": "cp-ai3d005-module-d1b26b164d3ae210",
-      "next_action": "COMPLETE. No further autonomous task is unblocked until AI3D-002 companion capability gate passes; then continue AI3D-004."
+      "next_action": "COMPLETE. AI3D-006 floor-plan intake also completed; primary project gate remains AI3D-002 companion capability / physical Windows CANARY."
+    },
+    {
+      "task_id": "AI3D-006",
+      "title": "WalkMyPlan floor plan intake → Module Registry",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "stage": "COMPLETE",
+      "dependencies": ["AI3D-005"],
+      "qa": {
+        "github_actions": "PASS",
+        "github_run_id": "34748464426",
+        "github_head_sha": "31f608d1d843bb08c1b9e58163553ba88620d53e",
+        "github_actions_artifact_id": "10314553338",
+        "github_actions_artifact_digest": "sha256:1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28",
+        "drive_file_id": "1kDfnhwfopqRVg4iR0MJVrZ7ocC4edFS6",
+        "drive_zip_sha256": "1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28",
+        "drive_readback": "PASS",
+        "smoke_json_sha256": "8a0969d2e28aeb902edd5ba59992924e761a3fbcd5292b5c86de7fbc5fe7bff2",
+        "artifact_id": "floorplan-8deef39ab59ba414",
+        "artifact_sha256": "8deef39ab59ba41482aa9c24f240c341924a94f7b2ce28f5460f01d4ee1141cd",
+        "module_count": 14,
+        "walkmyplan_plan_id": "aacb32598eb746758d60c8",
+        "walkmyplan_counts": {"walls": 50, "openings": 26, "fixtures": 87, "rooms": 14},
+        "storey_height_m": 3.4,
+        "no_invented_dimensions": true,
+        "adobe_reference_count": 6,
+        "adobe_boundary": "NON_CANONICAL_VISUAL_REFERENCE",
+        "to3d_historical_job": "8b16ab22-ef00-487a-b47f-ee01c947e991_FAILED_NO_RETRY",
+        "supabase_readback": "PASS",
+        "linear": "RIO-49_DONE",
+        "base44_checkpoint": "6aa6736b28c37c0048b26881",
+        "base44_commit": "611b9115eaa8caaa39fccee2ad14976cfb7fd59f"
+      },
+      "artifacts": [{
+        "artifact_id": "floorplan-8deef39ab59ba414",
+        "drive_file_id": "1kDfnhwfopqRVg4iR0MJVrZ7ocC4edFS6",
+        "sha256": "8deef39ab59ba41482aa9c24f240c341924a94f7b2ce28f5460f01d4ee1141cd",
+        "evidence_zip_sha256": "1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28",
+        "github_run_id": "34748464426",
+        "github_actions_artifact_id": "10314553338"
+      }],
+      "checkpoint_id": "cp-ai3d006-floorplan-951c9653824bed58",
+      "next_action": "COMPLETE. Preserve WalkMyPlan as measured source, Adobe as noncanonical visual reference, and failed to3D as historical no-retry. Primary active gate remains AI3D-002 companion capability / physical Windows CANARY."
     }
   ]
 }
