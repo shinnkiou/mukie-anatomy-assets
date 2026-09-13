@@ -3,7 +3,8 @@
 
 This validator is intentionally conservative: a handoff is safe only when it
 preserves the side-lane's unresolved semantic state and cannot imply runtime or
-mainline action.
+mainline action. Missing safety declarations are rejected rather than assumed
+safe.
 """
 from __future__ import annotations
 import argparse
@@ -16,6 +17,18 @@ REQUIRED_UNLOCKS = {
     "I3_INTERPRETABLE_CONTROLLED_PAIR_OR_LABELED_DIFFERENTIAL",
     "I4_CURRENT_MODEL_NODE_MAPPING_ARTIFACT",
 }
+REQUIRED_ZERO_ISOLATION_KEYS = (
+    "runtime_jobs",
+    "modeler_actions",
+    "worker_actions",
+    "rio26_mutations",
+    "mainline_mutations",
+)
+AUTOMATION_KEYS = ("automatic_merge", "automatic_integration")
+PRIVATE_PUBLICATION_KEYS = (
+    "private_bytes_in_public_repo",
+    "public_repository_contains_private_payload",
+)
 
 
 def validate(package: dict) -> dict:
@@ -31,19 +44,25 @@ def validate(package: dict) -> dict:
     if bool(package.get("blender_scene_emit_ready")):
         errors.append("scene_emit_must_remain_blocked")
 
-    isolation = dict(package.get("isolation") or {})
-    for key in ("runtime_jobs", "modeler_actions", "worker_actions", "rio26_mutations", "mainline_mutations"):
-        if int(isolation.get(key, 0)) != 0:
+    isolation = package.get("isolation")
+    if not isinstance(isolation, dict):
+        errors.append("missing_isolation_object")
+        isolation = {}
+
+    for key in REQUIRED_ZERO_ISOLATION_KEYS:
+        if key not in isolation:
+            errors.append(f"missing_{key}")
+        elif int(isolation[key]) != 0:
             errors.append(f"nonzero_{key}")
 
-    # Accept legacy and V2 key names, but fail closed if either says integration is automatic.
-    if bool(isolation.get("automatic_merge")) or bool(isolation.get("automatic_integration")):
+    if not any(key in isolation for key in AUTOMATION_KEYS):
+        errors.append("missing_automatic_integration_guardrail")
+    elif any(bool(isolation.get(key)) for key in AUTOMATION_KEYS):
         errors.append("automatic_integration_true")
 
-    # Accept legacy and V2 key names, but fail closed if either says private payload is public.
-    if bool(isolation.get("private_bytes_in_public_repo")) or bool(
-        isolation.get("public_repository_contains_private_payload")
-    ):
+    if not any(key in isolation for key in PRIVATE_PUBLICATION_KEYS):
+        errors.append("missing_private_publication_guardrail")
+    elif any(bool(isolation.get(key)) for key in PRIVATE_PUBLICATION_KEYS):
         errors.append("private_bytes_public")
 
     unlocks = set(package.get("future_unlock_inputs") or [])
@@ -52,7 +71,7 @@ def validate(package: dict) -> dict:
 
     accepted = not errors
     return {
-        "schema_version": "csmc_analysis_c_handoff_contract_result_v2",
+        "schema_version": "csmc_analysis_c_handoff_contract_result_v3",
         "handoff_state": "HANDOFF_REFERENCE_SAFE" if accepted else "HANDOFF_REJECTED",
         "accepted": accepted,
         "errors": errors,
@@ -85,9 +104,7 @@ def self_test() -> None:
             "worker_actions": 0,
             "rio26_mutations": 0,
             "mainline_mutations": 0,
-            "private_bytes_in_public_repo": False,
             "public_repository_contains_private_payload": False,
-            "automatic_merge": False,
             "automatic_integration": False,
         },
     }
@@ -98,6 +115,8 @@ def self_test() -> None:
     assert validate(dict(base, isolation={**base["isolation"], "runtime_jobs": 1}))["accepted"] is False
     assert validate(dict(base, isolation={**base["isolation"], "automatic_integration": True}))["accepted"] is False
     assert validate(dict(base, isolation={**base["isolation"], "public_repository_contains_private_payload": True}))["accepted"] is False
+    missing = dict(base, isolation={k: v for k, v in base["isolation"].items() if k != "worker_actions"})
+    assert validate(missing)["accepted"] is False
     print("SELF_TEST_PASS")
 
 
