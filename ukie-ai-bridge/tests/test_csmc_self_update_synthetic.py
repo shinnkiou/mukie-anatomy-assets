@@ -9,7 +9,8 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from bridge import csmc_self_update as m
+from bridge import csmc_self_update_runtime as runtime
+m = runtime.base
 
 
 def make_package(tmp: Path, release_key: str) -> tuple[bytes, str, int, str]:
@@ -81,9 +82,8 @@ def test_success() -> None:
         m._request = lambda mode, credential, max_bytes: json.dumps(release_manifest).encode() if mode == "manifest" else package
         calls = []
         m._run_worker = lambda root, command, timeout=120: calls.append((root.name, command)) or {"returncode": 0, "json": {"status": "PASS"}}
-        out = m.run_cycle()
+        out = runtime.run_cycle()
         assert out["status"] == "UPDATED_VERIFIED"
-        assert (root / m.CURRENT_NAME / "RELEASE_INFO.json").is_file()
         assert json.loads((root / m.CURRENT_NAME / "RELEASE_INFO.json").read_text())["release_key"] == release_key
         assert (root / m.PREVIOUS_NAME / "RELEASE_INFO.json").is_file()
         assert calls == [("release_" + release_key, "self-test"), (m.CURRENT_NAME, "heartbeat-only")]
@@ -106,7 +106,7 @@ def test_rollback() -> None:
             return {"returncode": 0}
         m._run_worker = fake_run
         try:
-            m.run_cycle()
+            runtime.run_cycle()
             raise AssertionError("expected failure")
         except m.CsmcSelfUpdateError as exc:
             assert exc.code == "SYNTHETIC_HEARTBEAT_FAIL"
@@ -114,7 +114,26 @@ def test_rollback() -> None:
         assert restored["release_key"] == old_key
 
 
+def test_current_release_runs_normal_once_cycle() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        os.environ["LOCALAPPDATA"] = td
+        root = Path(td) / m.ROOT_SUBDIR
+        key = "CSMC_CANARY_CURRENT_0003"
+        setup_current(root, key)
+        package, psha, psize, msha = make_package(Path(td), key)
+        release_manifest = manifest_for(key, psha, psize, msha)
+        m.load_credential = lambda: {"device_key": "device_key_test", "device_token": "x" * 64}
+        m._request = lambda mode, credential, max_bytes: json.dumps(release_manifest).encode() if mode == "manifest" else package
+        calls = []
+        m._run_worker = lambda root, command, timeout=120: calls.append(command) or {"returncode": 0}
+        out = runtime.run_cycle()
+        assert out["status"] == "CURRENT_RELEASE_CONFIRMED"
+        assert out["cycle"]["status"] == "ONCE"
+        assert calls == ["once"]
+
+
 if __name__ == "__main__":
     test_success()
     test_rollback()
+    test_current_release_runs_normal_once_cycle()
     print("CSMC self-update synthetic tests PASS")
