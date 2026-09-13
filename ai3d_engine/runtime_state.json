@@ -11,7 +11,8 @@
     "lint": "PASS",
     "vite_build": "PASS",
     "webgl_adapter": "IMPLEMENTED_BUILD_PASS",
-    "physical_render": "WEBGL_ADAPTER_IMPLEMENTED_NOT_EXECUTED",
+    "physical_render_durable_evidence": "IMPLEMENTED_BUILD_PASS",
+    "physical_render": "WEBGL_DURABLE_EVIDENCE_PATH_IMPLEMENTED_NOT_EXECUTED",
     "visual_qa": "PENDING"
   },
   "mvp_run": {
@@ -25,8 +26,10 @@
   "implementation": {
     "production_protocol": "ai3d_engine/src/productionProtocol.js",
     "webgl_adapter": "ai3d_engine/src/webglProductionAdapter.js",
-    "base44_checkpoint": "6aa61c6660759b6657cc4d4c",
-    "base44_commit": "b58dbdcd9c56bf6db2ec90190f381180f5d0d120"
+    "base44_checkpoint": "6aa61fb2fdf17e0341faf651",
+    "base44_commit": "07ed204b825ff17b78e22d813f1ac0d5934c9d8a",
+    "physical_render_storage": "Base44 Core.UploadFile",
+    "physical_render_ledger": "ModelArtifactRef"
   },
   "links": {
     "drive_master_doc": "https://docs.google.com/document/d/1XYJaDFFQAt-htTq2xlg-kWUvO_t0NtJgP5kli0yfuDA/edit",
@@ -38,5 +41,5 @@
     "reuse_general_architecture_only": true,
     "copy_private_or_purchased_csmc_data": false
   },
-  "next_action": "Run Physical MVP in a real WebGL browser, read back the pixel-render SHA and checkpoint, perform visual QA, and promote the canary handlers only if PASS."
+  "next_action": "Run Physical MVP in a real WebGL browser. Confirm the actual 960x540 PNG is uploaded, registered in ModelArtifactRef with pixel SHA/PNG SHA/provider readback status, then visually QA that PNG and promote only if PASS."
 }
