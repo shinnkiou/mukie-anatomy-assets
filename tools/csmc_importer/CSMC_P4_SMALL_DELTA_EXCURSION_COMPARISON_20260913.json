@@ -1,0 +1,62 @@
+{
+  "analysis": "sparse_plus194_excursion_inside_plus195_regime",
+  "boundaries": {
+    "BND_194_TO_195": {
+      "barrier_matches_new_delta": 0,
+      "barrier_matches_old_delta": 0,
+      "clip_barrier_distinct_found_anywhere_in_csmc": 10,
+      "clip_barrier_distinct_total": 1576,
+      "clip_barrier_qwords": 1582,
+      "complete_cross_serialization_extinction": false,
+      "csmc_barrier_distinct_found_anywhere_in_clip": 4,
+      "csmc_barrier_distinct_total": 1572,
+      "csmc_barrier_qwords": 1583,
+      "net_relative_size_change_bytes": 8,
+      "post_matches_new_delta": 45,
+      "post_matches_old_delta": 0,
+      "pre_matches_new_delta": 0,
+      "pre_matches_old_delta": 4
+    },
+    "BND_195_TO_194": {
+      "barrier_matches_new_delta": 0,
+      "barrier_matches_old_delta": 0,
+      "clip_barrier_distinct_found_anywhere_in_csmc": 6,
+      "clip_barrier_distinct_total": 5089,
+      "clip_barrier_qwords": 5090,
+      "complete_cross_serialization_extinction": false,
+      "csmc_barrier_distinct_found_anywhere_in_clip": 5,
+      "csmc_barrier_distinct_total": 5089,
+      "csmc_barrier_qwords": 5089,
+      "net_relative_size_change_bytes": -8,
+      "post_matches_new_delta": 2,
+      "post_matches_old_delta": 0,
+      "pre_matches_new_delta": 0,
+      "pre_matches_old_delta": 17
+    }
+  },
+  "guardrails": {
+    "codec_or_protection_claimed": false,
+    "geometry_semantics_claimed": false,
+    "modeler_actions": 0,
+    "production_worker_changed": false,
+    "raw_payload_bytes_in_output": false,
+    "raw_qword_values_in_output": false,
+    "runtime_jobs": 0,
+    "stable_gate_changed": false
+  },
+  "landmark_ranking": {
+    "preferred": "BND_197_TO_195",
+    "reason": "BND_197_TO_195 has much stronger anchor support and complete cross-serialization qword extinction; the +194 excursion has only six unique-once anchors and retains global qword reuse inside both barriers."
+  },
+  "paired_excursion": {
+    "first_delta_change_qwords": -1,
+    "interpretation": "The sparse +194 anchors form a temporary one-qword displacement excursion inside the broader +195 regime, but neither transition is a complete global qword-extinction island. This is contrast evidence: near-conserved delta changes can occur without reproducing the unusually sharp +197->+195 extinction motif.",
+    "net_delta_after_pair_qwords": 0,
+    "second_delta_change_qwords": 1
+  },
+  "schema_version": "csmc_p4_small_delta_excursion_comparison_v1",
+  "unique_once_anchor_support": {
+    "delta_194": 6,
+    "delta_195": 187
+  }
+}
