@@ -1,0 +1,107 @@
+{
+  "schema_version": "csmc_analysis_c_package_manifest_v1",
+  "package_id": "CSMC_ANALYSIS_COMPANION_C_20260913",
+  "merge_policy": "NO_AUTOMATIC_MERGE",
+  "lane": "CSMC_ANALYSIS_COMPANION_C",
+  "current_pipeline_stage": "STRUCTURAL_ONLY",
+  "confirmed_facts": [
+    "Boundary grammar has at least LOCAL_EXTINCTION_CANDIDATE and MIXED_REUSE_REPACK_CANDIDATE structural classes.",
+    "+197->+195 is the only complete-extinction case among the three retained boundary examples.",
+    "The +965 corpus contains 22 complete records of 48/49 qwords with stable q0..20, mixed q21..27, fixed rewrite q22/q23, fixed preserve q25/q26, and rewrite tail q28+.",
+    "Five joint structural record families exist and require independent length_blocks and preserve_signature axes.",
+    "The analyzed +965 corpus has character-route provenance: character external container -> unresolved +965 regime -> structural record family.",
+    "Two live external routes are statically resolved before semantics: catalog_character and scene.",
+    "Active Manager3DOd fields establish a counted big-endian numeric serializer grammar using u32be count plus BE-f64 or BE-f32 values.",
+    "No confirmed current +965 record-family-to-codec binding edge exists.",
+    "No geometry/index/transform/material/hierarchy semantic slot is confirmed for the current +965 model representation.",
+    "The current real pipeline state is STRUCTURAL_ONLY and Blender mesh emission is blocked.",
+    "The current stopping point is an input-evidence ceiling, not a parser-architecture ceiling."
+  ],
+  "rejected_hypotheses": [
+    "All major boundaries use complete-extinction grammar.",
+    "Record length alone determines preserve behavior or preserve signature alone determines 48/49 length.",
+    "Historical P3 plans are equivalent to executed interpretable controlled pairs.",
+    "Resolved external payload kind proves mesh/bone/material semantics.",
+    "Total serialized size alone identifies counted numeric width/arity.",
+    "Historical FirstIndex/NextIndex are mesh-index evidence.",
+    "Quaternion-like hints prove current node byte layout.",
+    "Confirmed numeric encoding automatically binds to +965 records.",
+    "One exact counted-prefix fit is sufficient for confirmed codec binding.",
+    "Same joint record family must be mandatory for baseline same-role recurrence.",
+    "Five-record periodicity plus marginal family counts determines supergroup slot mapping.",
+    "Raw bytes or absolute offsets are intrinsically required for future supergroup-slot correlation.",
+    "Accepted static input or confirmed codec binding may implicitly promote semantics."
+  ],
+  "candidate_grammar": {
+    "external_routing": [
+      "Canvas3DModelLoader.ModelData -> external reference -> CHNKExta -> DATA2 catalog_character",
+      "Manager3DOd.SceneData -> external reference -> CHNKExta -> DATA2 scene"
+    ],
+    "plus965_record": {
+      "length_blocks": [48,49],
+      "stable_prefix": "q0..20",
+      "control_zone": "q21..27",
+      "fixed_rewrite": [22,23],
+      "fixed_preserve": [25,26],
+      "conditional": [21,24,27],
+      "rewrite_tail": "q28+"
+    },
+    "numeric_codec_catalog": "u32be count + count elements of BE-f64 or BE-f32 on separately confirmed active SQLite fields",
+    "historical_node_topology_hint": "count + first-index seed + NextIndex linked nodes with NodeName TEXT and rotation/translation/scale fields"
+  },
+  "record_container_map": {
+    "character": "LIVE_RESOLVED_EDGE",
+    "scene": "LIVE_RESOLVED_EDGE",
+    "plus965_character_regime": "STRUCTURAL_CORPUS",
+    "internal_plus965_section_owner": "UNRESOLVED",
+    "legacy_model_node_chain": "SCHEMA_ONLY",
+    "Layer3DModelData": "UNRESOLVED_ROUTE",
+    "BankData": "UNRESOLVED_ROUTE"
+  },
+  "semantic_candidates": {
+    "geometry": {"state":"UNRESOLVED","confidence":"NO_DIRECT_EVIDENCE"},
+    "index": {"state":"UNRESOLVED","confidence":"NO_DIRECT_EVIDENCE"},
+    "transform": {"state":"UNRESOLVED","candidate":"counted BE numerics + quaternion-like rotation family","confidence":"HIGH_CANDIDATE_SEPARATE_SURFACE_NOT_CURRENT_MODEL_BOUND"},
+    "material": {"state":"UNRESOLVED","confidence":"NO_DIRECT_EVIDENCE"},
+    "hierarchy": {"state":"UNRESOLVED","candidate":"historical count/first/next node topology + NodeName + live container routing","confidence":"HIGH_SCHEMA_ROUTE_HINT_NOT_CURRENT_MODEL_BOUND"}
+  },
+  "reusable_code": [
+    "csmc_analysis_c_minimal_ir.py",
+    "csmc_analysis_c_owner_container_map.py",
+    "csmc_analysis_c_parser_skeleton.py",
+    "csmc_analysis_c_binding_graph.py",
+    "csmc_analysis_c_binding_evidence.py",
+    "csmc_analysis_c_binding_scope.py",
+    "csmc_analysis_c_static_intake_manifest.py",
+    "csmc_analysis_c_pipeline_contract.py",
+    "csmc_analysis_c_preregistered_counted_be_scan.py",
+    "csmc_analysis_c_positional_aggregate.py"
+  ],
+  "current_blockers": [
+    "E1_PLUS965_TO_CONFIRMED_CODEC",
+    "E2_CURRENT_REGION_TO_GEOMETRY",
+    "E3_CURRENT_REGION_TO_INDEX",
+    "E4_CURRENT_MODEL_TO_TRANSFORM",
+    "E5_CURRENT_MODEL_TO_HIERARCHY",
+    "E6_CURRENT_REGION_TO_MATERIAL",
+    "POSITIONAL_AGGREGATE_GAP for supergroup-slot correlation"
+  ],
+  "future_high_information_static_inputs": [
+    "An already-existing authorized isolated current +965 payload reference accepted by the C-023 intake contract, enabling unchanged C-018 preregistered scan.",
+    "A public-safe ordered positional aggregate with record_index, supergroup_index, slot_index, length_blocks, preserve_signature, enabling C-029 slot-family analysis.",
+    "An already-existing interpretable controlled pair or equivalent labeled differential artifact, enabling semantic correlation without new runtime requests.",
+    "A current live model-node mapping artifact, enabling hierarchy/transform candidate binding tests."
+  ],
+  "guardrails": [
+    "No runtime/MODELER/Worker/Canary/Control Gate/RIO-26 actions.",
+    "No canonical repoll after initial snapshot.",
+    "No private bytes in public GitHub.",
+    "No automatic semantic promotion.",
+    "No automatic Blender emission.",
+    "No automatic merge to mainline."
+  ],
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
