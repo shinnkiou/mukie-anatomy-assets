@@ -1,0 +1,35 @@
+name: CSMC Companion C Review
+
+on:
+  pull_request:
+    paths:
+      - "tools/csmc_importer/companion_c_review/**"
+      - ".github/workflows/csmc-companion-c-review.yml"
+  push:
+    branches:
+      - "csmc-analysis-companion-c-integration-review-20260913"
+    paths:
+      - "tools/csmc_importer/companion_c_review/**"
+      - ".github/workflows/csmc-companion-c-review.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run Companion C review contracts
+        working-directory: tools/csmc_importer/companion_c_review
+        run: python -m unittest -v test_companion_c_review_contracts.py
+      - name: Run standalone handoff self-test
+        working-directory: tools/csmc_importer/companion_c_review
+        run: python csmc_analysis_c_handoff_contract.py --self-test
+      - name: Run standalone pipeline self-test
+        working-directory: tools/csmc_importer/companion_c_review
+        run: python csmc_analysis_c_pipeline_contract.py --self-test
