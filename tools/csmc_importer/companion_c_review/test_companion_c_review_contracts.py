@@ -20,9 +20,7 @@ class IntegrationReviewContractTests(unittest.TestCase):
                 "worker_actions": 0,
                 "rio26_mutations": 0,
                 "mainline_mutations": 0,
-                "private_bytes_in_public_repo": False,
                 "public_repository_contains_private_payload": False,
-                "automatic_merge": False,
                 "automatic_integration": False,
             },
         }
@@ -46,6 +44,13 @@ class IntegrationReviewContractTests(unittest.TestCase):
         result = validate(package)
         self.assertFalse(result["accepted"])
         self.assertIn("private_bytes_public", result["errors"])
+
+    def test_missing_isolation_guardrail_is_rejected(self):
+        package = self._safe_package()
+        del package["isolation"]["worker_actions"]
+        result = validate(package)
+        self.assertFalse(result["accepted"])
+        self.assertIn("missing_worker_actions", result["errors"])
 
     def test_pipeline_never_promotes_semantics_implicitly(self):
         state = analyze({
