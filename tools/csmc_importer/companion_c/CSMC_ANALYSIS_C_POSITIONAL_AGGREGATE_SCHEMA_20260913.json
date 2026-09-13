@@ -1,0 +1,31 @@
+{
+  "schema_version": "csmc_analysis_c_positional_aggregate_input_v1",
+  "purpose": "Public-safe ordered metadata sufficient for supergroup-slot vs record-family correlation without raw payload bytes or absolute offsets.",
+  "required_top_level": ["corpus_id","provenance_hash","container_route","regime_id","records"],
+  "record_fields": {
+    "record_index": "unique nonnegative integer; preserves order",
+    "supergroup_index": "nonnegative integer for records assigned to a complete five-record group, otherwise null",
+    "slot_index": "integer 0..4 when supergroup_index is present, otherwise null",
+    "length_blocks": "48 or 49 for current +965 corpus",
+    "preserve_signature": "7-character binary structural signature for q21..27"
+  },
+  "explicitly_not_required": [
+    "payload bytes",
+    "raw mesh data",
+    "absolute file offsets",
+    "textures",
+    "semantic labels",
+    "MODELER state",
+    "runtime observations"
+  ],
+  "supported_analysis": [
+    "slot-family contingency table",
+    "mutual information between slot and structural family",
+    "whether slot determines family",
+    "whether family determines slot"
+  ],
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
