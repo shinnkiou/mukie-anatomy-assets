@@ -1,7 +1,7 @@
 {
   "schema": "never-tear-ai3d-task-queue-v1",
   "project_key": "never_tear_ai3d_engine",
-  "updated_at": "2026-09-13T18:50:00+09:00",
+  "updated_at": "2026-09-13T20:35:00+09:00",
   "priority_order": ["BLOCKED_FIX", "QA_FAIL_FIX", "ACTIVE", "HIGH", "NORMAL"],
   "tasks": [
     {
@@ -11,24 +11,12 @@
       "status": "COMPLETE",
       "stage": "COMPLETE",
       "goal": "Structured command sequence creates a box, corrects transform, applies material, produces render evidence, runs QA and saves a checkpoint.",
-      "qa": {
-        "protocol_smoke": "PASS",
-        "lint": "PASS",
-        "vite_build": "PASS",
-        "physical_render": "PASS",
-        "physical_visual_qa": "PASS",
-        "drive_sha_readback": "PASS",
-        "coordinate_contract": "THREE_Y_UP_TO_BLENDER_Z_UP_V1"
-      },
-      "artifacts": [{
-        "artifact_id": "blender-render-7bc5b7bca3cd3384",
-        "png_sha256": "7bc5b7bca3cd33844b4da57a13176a550f130aca36aa7f81b34c514707c7ddb2",
-        "raw_pixel_sha256": "9cf0345bac55a1e5c4b481bc8a8e11a402ddc05f72d1866335832591f7bf4bc4",
-        "drive_file_id": "1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R",
-        "github_run_id": "34738453130"
-      }],
-      "checkpoint_id": "cp-ai3d001-visualpass-7eb045faac51e35c",
-      "next_action": "COMPLETE. Continue AI3D-002."
+      "acceptance_criteria": ["Protocol smoke PASS", "route switching is bounded and recorded", "QA PASS", "checkpoint SHA-256 exists", "physical render gate remains explicit until WebGL/Blender visual QA", "physical render PASS", "Drive SHA readback PASS", "visual QA PASS"],
+      "dependencies": [],
+      "artifact_refs": ["render-6c8d34887be0f8bf", "cp-6a1ce352a7d25268", "blender-render-7bc5b7bca3cd3384", "cp-ai3d001-visualpass-7eb045faac51e35c", "drive:1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R"],
+      "qa": {"physical_render":"PASS","visual_qa":"PASS","drive_sha_readback":"PASS","coordinate_contract":"THREE_Y_UP_TO_BLENDER_Z_UP_V1","github_run_id":"34738453130","png_sha256":"7bc5b7bca3cd33844b4da57a13176a550f130aca36aa7f81b34c514707c7ddb2","raw_pixel_sha256":"9cf0345bac55a1e5c4b481bc8a8e11a402ddc05f72d1866335832591f7bf4bc4"},
+      "next_action": "COMPLETE. Continue AI3D-002 Windows Worker CANARY.",
+      "attempt_count": 1
     },
     {
       "task_id": "AI3D-002",
@@ -36,32 +24,13 @@
       "priority": "HIGH",
       "status": "ACTIVE",
       "stage": "IMPLEMENT",
+      "goal": "Map allowlisted AI3D commands to PROJECT RELAY / UKIE Worker without arbitrary shell payloads.",
+      "acceptance_criteria": ["allowlisted runner", "claim/lease/heartbeat", "idempotent command_id", "checkpoint/resume", "physical execution evidence"],
       "dependencies": ["AI3D-001"],
-      "qa": {
-        "corrected_packaging_run": "34743230600",
-        "corrected_packaging": "PASS",
-        "source_selftest": "PASS",
-        "packaged_selftest": "PASS",
-        "coordinate_mapping_commit": "4d5512650107d815746ab4e43ebe390a8f0c09ca",
-        "package_artifact_id": "worker-package-f06f0a122e2f24e2",
-        "package_sha256": "f06f0a122e2f24e28620ebdce7ff13c17e6e3bb49e27ee202a3e8f1c7498e03b",
-        "package_drive_file_id": "1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx",
-        "package_drive_readback": "PASS",
-        "exe_sha256": "53595f20432f1a586ddd654ec9d3bdb7c37a93f3ad1b468a181dda91246ec625",
-        "package_checkpoint_id": "cp-ai3d002-package-a9a0cc5bcbdb6103",
-        "physical_windows_canary": "NOT_EXECUTED",
-        "online_legacy_worker_version": "0.18.2-p0.18.2",
-        "online_legacy_worker_eligible": false
-      },
-      "artifacts": [{
-        "artifact_id": "worker-package-f06f0a122e2f24e2",
-        "drive_file_id": "1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx",
-        "sha256": "f06f0a122e2f24e28620ebdce7ff13c17e6e3bb49e27ee202a3e8f1c7498e03b",
-        "github_run_id": "34743230600",
-        "github_actions_artifact_id": "10312598839"
-      }],
-      "checkpoint_id": "cp-ai3d002-package-a9a0cc5bcbdb6103",
-      "next_action": "Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm capability ai3d_blender_physical_mvp_v1 before queueing exactly one physical CANARY. Do not queue the old P0.18.2 worker."
+      "artifact_refs": ["github:4d5512650107d815746ab4e43ebe390a8f0c09ca", "github-actions:34743230600", "worker-package-f06f0a122e2f24e2", "drive:1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx", "cp-ai3d002-package-a9a0cc5bcbdb6103"],
+      "qa": {"previous_windows_packaging":"PASS","source_selftest":"PASS","packaged_selftest":"PASS","coordinate_mapping_commit":"4d5512650107d815746ab4e43ebe390a8f0c09ca","corrected_packaging_run":"34743230600","corrected_packaging_status":"PASS","package_artifact_id":"worker-package-f06f0a122e2f24e2","package_sha256":"f06f0a122e2f24e28620ebdce7ff13c17e6e3bb49e27ee202a3e8f1c7498e03b","package_drive_file_id":"1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx","package_drive_readback":"PASS","exe_sha256":"53595f20432f1a586ddd654ec9d3bdb7c37a93f3ad1b468a181dda91246ec625","package_checkpoint_id":"cp-ai3d002-package-a9a0cc5bcbdb6103","online_legacy_worker_version":"0.18.2-p0.18.2","online_legacy_worker_eligible":false,"physical_windows_canary":"NOT_EXECUTED"},
+      "next_action": "Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm capability ai3d_blender_physical_mvp_v1 before queueing exactly one physical CANARY. The currently online 0.18.2-p0.18.2 worker is not eligible.",
+      "attempt_count": 0
     },
     {
       "task_id": "AI3D-003",
@@ -69,29 +38,14 @@
       "priority": "HIGH",
       "status": "COMPLETE",
       "stage": "COMPLETE",
+      "goal": "Persist source, parameters, parent, SHA, QA, checkpoint and next_action for models/renders/textures/modules.",
+      "acceptance_criteria": ["Supabase durable ledger", "Base44 refs", "Drive large-artifact routing", "readback verification"],
       "dependencies": ["AI3D-001"],
-      "qa": {
-        "lineage_runtime_qa": "PASS",
-        "github_run_id": "34746031705",
-        "github_head_sha": "fabbc2fc40fd968432ae9f34d91ba3c84859b5e2",
-        "github_actions_artifact_id": "10313728057",
-        "drive_file_id": "1SMDn28sYmjoMQDJHSsLYTSk1sRpsk9av",
-        "evidence_sha256": "5e3f5e7a9c16cd8b992062a7e7773ff05427964e53c9a0d56944b2a9d69cd650",
-        "artifact_id": "lineage-render-45df38f352bb0829",
-        "artifact_sha256": "45df38f352bb0829a2c058728b8758451358de0865c4ef2a5a63f408a267bebf",
-        "params_sha256": "d930bc6af5c30fdec4e8488db282c0328713830d5023c28cd2c636f44ce39226",
-        "drive_readback": "PASS",
-        "supabase_readback": "PASS",
-        "linear": "RIO-45_DONE"
-      },
-      "artifacts": [{
-        "artifact_id": "lineage-render-45df38f352bb0829",
-        "drive_file_id": "1SMDn28sYmjoMQDJHSsLYTSk1sRpsk9av",
-        "github_run_id": "34746031705",
-        "github_actions_artifact_id": "10313728057"
-      }],
+      "artifact_refs": ["lineage-render-45df38f352bb0829", "lineage-smoke-5e3f5e7a9c16cd8b", "drive:1SMDn28sYmjoMQDJHSsLYTSk1sRpsk9av", "github-actions:34746031705", "cp-8034a2400197dc64"],
+      "qa": {"lineage_runtime_qa":"PASS","github_run_id":"34746031705","github_head_sha":"fabbc2fc40fd968432ae9f34d91ba3c84859b5e2","github_actions_artifact_id":"10313728057","evidence_json_sha256":"5e3f5e7a9c16cd8b992062a7e7773ff05427964e53c9a0d56944b2a9d69cd650","artifact_sha256":"45df38f352bb0829a2c058728b8758451358de0865c4ef2a5a63f408a267bebf","params_sha256":"d930bc6af5c30fdec4e8488db282c0328713830d5023c28cd2c636f44ce39226","checkpoint_sha256":"8034a2400197dc646a40605e647366b8b2f80d5bb35e3a9db66177eb167f6d5c","drive_readback":"PASS","supabase_readback":"PASS","linear_issue":"RIO-45_DONE"},
       "checkpoint_id": "cp-8034a2400197dc64",
-      "next_action": "COMPLETE. AI3D-005 unblocked."
+      "next_action": "COMPLETE. Continue AI3D-005 while AI3D-002 remains at the human-side Windows companion gate.",
+      "attempt_count": 2
     },
     {
       "task_id": "AI3D-004",
@@ -99,34 +53,14 @@
       "priority": "HIGH",
       "status": "READY",
       "stage": "PLAN",
+      "goal": "Require actual WebGL/Blender pixels and visual review before promotion.",
+      "acceptance_criteria": ["pixel render artifact", "geometry QA", "material QA", "visual QA", "promote only on PASS"],
       "dependencies": ["AI3D-001", "AI3D-002"],
-      "qa": {
-        "physical_qa_gate_preflight": "PASS",
-        "github_run_id": "34747109176",
-        "github_head_sha": "95b5dc317145a3aff03fd7b0c42d2473b3fa0014",
-        "github_actions_artifact_id": "10313839392",
-        "github_actions_artifact_digest": "sha256:aba766e09630d77db3c5fbcb8b62923d3ed895ede706e42c0f185d4d13106321",
-        "drive_file_id": "1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS",
-        "evidence_sha256": "12d92e326ac119edf970077e76512dfe7a795c39e9b664c51a23329d5e0fc910",
-        "drive_readback": "PASS",
-        "supabase_readback": "PASS",
-        "evidence_class": "LOGIC_ONLY_NOT_PHYSICAL",
-        "physical_execution_claimed": false,
-        "valid_complete_evidence_promotes": true,
-        "pending_visual_holds": true,
-        "provider_hash_mismatch_holds": true,
-        "legacy_worker_holds": true,
-        "virtual_route_holds": true
-      },
-      "artifacts": [{
-        "artifact_id": "physical-qa-gate-smoke-12d92e326ac119ed",
-        "drive_file_id": "1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS",
-        "sha256": "12d92e326ac119edf970077e76512dfe7a795c39e9b664c51a23329d5e0fc910",
-        "github_run_id": "34747109176",
-        "github_actions_artifact_id": "10313839392"
-      }],
+      "artifact_refs": ["physical-qa-gate-smoke-12d92e326ac119ed", "drive:1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS", "github-actions:34747109176", "cp-ai3d004-gate-12d92e326ac119ed"],
+      "qa": {"physical_qa_gate_preflight":"PASS","github_run_id":"34747109176","github_head_sha":"95b5dc317145a3aff03fd7b0c42d2473b3fa0014","github_actions_artifact_id":"10313839392","github_actions_artifact_digest":"sha256:aba766e09630d77db3c5fbcb8b62923d3ed895ede706e42c0f185d4d13106321","drive_file_id":"1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS","evidence_json_sha256":"12d92e326ac119edf970077e76512dfe7a795c39e9b664c51a23329d5e0fc910","drive_readback":"PASS","supabase_readback":"PASS","evidence_class":"LOGIC_ONLY_NOT_PHYSICAL","physical_execution_claimed":false,"valid_complete_evidence_promotes":true,"pending_visual_holds":true,"provider_hash_mismatch_holds":true,"legacy_worker_holds":true,"virtual_route_holds":true},
       "checkpoint_id": "cp-ai3d004-gate-12d92e326ac119ed",
-      "next_action": "Wait for AI3D-002 physical Windows CANARY PASS. Then evaluate the real physical worker result + durable provider readback + visual QA through physicalQaGate. PROMOTE only on all PASS."
+      "next_action": "Wait for AI3D-002 physical Windows CANARY PASS. Then evaluate the real worker result + durable provider readback + visual QA through physicalQaGate; PROMOTE only when every physical gate passes.",
+      "attempt_count": 1
     },
     {
       "task_id": "AI3D-005",
@@ -134,34 +68,14 @@
       "priority": "NORMAL",
       "status": "COMPLETE",
       "stage": "COMPLETE",
+      "goal": "Represent reusable building rooms, equipment and character parts as modules assembled into larger models.",
+      "acceptance_criteria": ["module ids", "socket/transform metadata", "dependency graph", "assembly QA"],
       "dependencies": ["AI3D-003"],
-      "qa": {
-        "module_ids": "PASS",
-        "socket_transform_metadata": "PASS",
-        "dependency_graph": "PASS",
-        "assembly_qa": "PASS",
-        "dependency_cycle_rejected": true,
-        "incompatible_socket_rejected": true,
-        "github_run_id": "34746370948",
-        "github_head_sha": "217bf54f6f136ffbcb1f8c6b0e9d197a6395f400",
-        "github_actions_artifact_id": "10314167472",
-        "drive_file_id": "19SnIAP7Oy0Pwkoozj7PaPllLbljpYmXX",
-        "evidence_sha256": "d1b26b164d3ae2107ce03becf8e04747c48c77d6043283ae08ae855cb7b13aca",
-        "artifact_id": "assembly-3506ef9c9ed984f6",
-        "artifact_sha256": "3506ef9c9ed984f6cd36d001d2e051c9a5f2bcf8b735d97cb327528d6116b1cf",
-        "params_sha256": "dcad0908221c6991ad2e5db0eccc019f47674e64051741f70e87519173fdc07f",
-        "drive_readback": "PASS",
-        "supabase_readback": "PASS",
-        "linear": "RIO-47_DONE"
-      },
-      "artifacts": [{
-        "artifact_id": "assembly-3506ef9c9ed984f6",
-        "drive_file_id": "19SnIAP7Oy0Pwkoozj7PaPllLbljpYmXX",
-        "github_run_id": "34746370948",
-        "github_actions_artifact_id": "10314167472"
-      }],
+      "artifact_refs": ["assembly-3506ef9c9ed984f6", "module-assembly-smoke-d1b26b164d3ae210", "drive:19SnIAP7Oy0Pwkoozj7PaPllLbljpYmXX", "github-actions:34746370948", "cp-ai3d005-module-d1b26b164d3ae210"],
+      "qa": {"module_ids":"PASS","socket_transform_metadata":"PASS","dependency_graph":"PASS","assembly_qa":"PASS","dependency_cycle_rejected":true,"incompatible_socket_rejected":true,"github_run_id":"34746370948","github_head_sha":"217bf54f6f136ffbcb1f8c6b0e9d197a6395f400","github_actions_artifact_id":"10314167472","drive_file_id":"19SnIAP7Oy0Pwkoozj7PaPllLbljpYmXX","evidence_json_sha256":"d1b26b164d3ae2107ce03becf8e04747c48c77d6043283ae08ae855cb7b13aca","artifact_sha256":"3506ef9c9ed984f6cd36d001d2e051c9a5f2bcf8b735d97cb327528d6116b1cf","params_sha256":"dcad0908221c6991ad2e5db0eccc019f47674e64051741f70e87519173fdc07f","drive_readback":"PASS","supabase_readback":"PASS","linear_issue":"RIO-47_DONE"},
       "checkpoint_id": "cp-ai3d005-module-d1b26b164d3ae210",
-      "next_action": "COMPLETE. AI3D-006 floor-plan intake also completed; primary project gate remains AI3D-002 companion capability / physical Windows CANARY."
+      "next_action": "COMPLETE. AI3D-006 floor-plan intake also completed; primary project gate remains AI3D-002 companion capability / physical Windows CANARY.",
+      "attempt_count": 1
     },
     {
       "task_id": "AI3D-006",
@@ -169,42 +83,29 @@
       "priority": "HIGH",
       "status": "COMPLETE",
       "stage": "COMPLETE",
+      "goal": "Convert measured WalkMyPlan room summaries into deterministic AI3D ROOM modules without inventing missing dimensions, while preserving Adobe/to3D source boundaries.",
+      "acceptance_criteria": ["deterministic manifest SHA-256", "Module Registry validation PASS", "14 room modules exactly", "50 walls / 26 openings / 87 fixtures / 14 rooms / 3.4 m source summary readback", "Adobe references remain noncanonical visual-only", "failed to3D job remains ineligible/no-retry", "GitHub Actions smoke PASS and evidence readback", "sync to Supabase/Base44/Drive/Linear"],
       "dependencies": ["AI3D-005"],
-      "qa": {
-        "github_actions": "PASS",
-        "github_run_id": "34748464426",
-        "github_head_sha": "31f608d1d843bb08c1b9e58163553ba88620d53e",
-        "github_actions_artifact_id": "10314553338",
-        "github_actions_artifact_digest": "sha256:1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28",
-        "drive_file_id": "1kDfnhwfopqRVg4iR0MJVrZ7ocC4edFS6",
-        "drive_zip_sha256": "1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28",
-        "drive_readback": "PASS",
-        "smoke_json_sha256": "8a0969d2e28aeb902edd5ba59992924e761a3fbcd5292b5c86de7fbc5fe7bff2",
-        "artifact_id": "floorplan-8deef39ab59ba414",
-        "artifact_sha256": "8deef39ab59ba41482aa9c24f240c341924a94f7b2ce28f5460f01d4ee1141cd",
-        "module_count": 14,
-        "walkmyplan_plan_id": "aacb32598eb746758d60c8",
-        "walkmyplan_counts": {"walls": 50, "openings": 26, "fixtures": 87, "rooms": 14},
-        "storey_height_m": 3.4,
-        "no_invented_dimensions": true,
-        "adobe_reference_count": 6,
-        "adobe_boundary": "NON_CANONICAL_VISUAL_REFERENCE",
-        "to3d_historical_job": "8b16ab22-ef00-487a-b47f-ee01c947e991_FAILED_NO_RETRY",
-        "supabase_readback": "PASS",
-        "linear": "RIO-49_DONE",
-        "base44_checkpoint": "6aa6736b28c37c0048b26881",
-        "base44_commit": "611b9115eaa8caaa39fccee2ad14976cfb7fd59f"
-      },
-      "artifacts": [{
-        "artifact_id": "floorplan-8deef39ab59ba414",
-        "drive_file_id": "1kDfnhwfopqRVg4iR0MJVrZ7ocC4edFS6",
-        "sha256": "8deef39ab59ba41482aa9c24f240c341924a94f7b2ce28f5460f01d4ee1141cd",
-        "evidence_zip_sha256": "1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28",
-        "github_run_id": "34748464426",
-        "github_actions_artifact_id": "10314553338"
-      }],
+      "artifact_refs": ["floorplan-8deef39ab59ba414", "github:31f608d1d843bb08c1b9e58163553ba88620d53e", "github-actions:34748464426", "github-actions-artifact:10314553338", "drive:1kDfnhwfopqRVg4iR0MJVrZ7ocC4edFS6", "walkmyplan:aacb32598eb746758d60c8", "cp-ai3d006-floorplan-951c9653824bed58", "linear:RIO-49_DONE"],
+      "qa": {"static_source_readback":"PASS","base44_source_mirror_readback":"PASS","github_actions":"PASS","github_run_id":"34748464426","github_head_sha":"31f608d1d843bb08c1b9e58163553ba88620d53e","github_actions_artifact_id":"10314553338","github_actions_artifact_digest":"sha256:1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28","drive_file_id":"1kDfnhwfopqRVg4iR0MJVrZ7ocC4edFS6","drive_zip_sha256":"1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28","drive_readback":"PASS","smoke_json_sha256":"8a0969d2e28aeb902edd5ba59992924e761a3fbcd5292b5c86de7fbc5fe7bff2","artifact_id":"floorplan-8deef39ab59ba414","artifact_sha256":"8deef39ab59ba41482aa9c24f240c341924a94f7b2ce28f5460f01d4ee1141cd","module_count":14,"walkmyplan_counts":{"walls":50,"openings":26,"fixtures":87,"rooms":14},"storey_height_m":3.4,"no_invented_dimensions":"PASS","adobe_reference_count":6,"adobe_boundary":"NON_CANONICAL_VISUAL_REFERENCE","to3d_historical_job":"FAILED_NO_RETRY","supabase_readback":"PASS","linear_issue":"RIO-49_DONE"},
       "checkpoint_id": "cp-ai3d006-floorplan-951c9653824bed58",
-      "next_action": "COMPLETE. Preserve WalkMyPlan as measured source, Adobe as noncanonical visual reference, and failed to3D as historical no-retry. Primary active gate remains AI3D-002 companion capability / physical Windows CANARY."
+      "next_action": "COMPLETE. Preserve WalkMyPlan as measured source, Adobe as noncanonical visual reference, and the failed to3D job as historical no-retry. Primary active gate remains AI3D-002 companion capability / physical Windows CANARY.",
+      "attempt_count": 1
+    },
+    {
+      "task_id": "AI3D-007",
+      "title": "Floor plan Structure Source Gate",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "stage": "COMPLETE",
+      "goal": "Fail closed before Structure compilation unless an authoritative source supplies complete wall endpoints and opening placement geometry; never infer missing dimensions from room summaries or visual references.",
+      "acceptance_criteria": ["summary-only WalkMyPlan source evaluates HOLD / BLOCK_STRUCTURE_COMPILE", "complete authoritative wall/opening fixture evaluates READY / ALLOW_STRUCTURE_COMPILE", "Adobe VISUAL_REFERENCE_ONLY cannot satisfy geometry truth", "missing/incomplete wall or opening geometry is explicitly detected", "deterministic artifact SHA readback PASS", "Base44/Supabase/Linear canonical readback PASS"],
+      "dependencies": ["AI3D-006"],
+      "artifact_refs": ["structure-gate-04e0b366cf076c44", "github:050df69e9b756025147a4d51a9dc54c6a71a08c4", "github:c851543b1e1ce68b88b7130717cea93803c28597", "github:92ed88cd019afdd311767c93af5ed2e7369a4e91", "github:d83757fc3ae14287f539b442c429e9093652ace7", "walkmyplan:aacb32598eb746758d60c8", "cp-ai3d007-structure-gate-81ca89e39acef1db", "linear:RIO-50_DONE"],
+      "qa": {"runtime_qa":"PASS","current_source_gate":"HOLD","promotion":"BLOCK_STRUCTURE_COMPILE","gate_reasons":["WALL_GEOMETRY_MISSING","OPENING_GEOMETRY_MISSING"],"reported_counts":{"walls":50,"openings":26,"fixtures":87,"rooms":14},"observed_geometry":{"walls_with_geometry":0,"openings_with_geometry":0},"walkmyplan_total_wall_length_m":678.4,"walkmyplan_footprint_m":[74,44.2],"storey_height_m":3.4,"positive_fixture":"READY","adobe_geometry_truth":"REJECTED","to3d_failed_job":"INELIGIBLE_NO_RETRY","artifact_sha256":"04e0b366cf076c443265530d19bf2f2afa0386514b1110b5f7c8525ac6ce9c46","evidence_json_sha256":"286d712eed8b20385fdd9ae5a10bf724b26c2ad937af8359a9a5bc00927f8606","base44_source_mirror_readback":"PASS","supabase_readback":"PASS","github_actions":"NOT_YET_OBSERVED","linear_issue":"RIO-50_DONE"},
+      "checkpoint_id": "cp-ai3d007-structure-gate-81ca89e39acef1db",
+      "next_action": "COMPLETE. Gate implementation is finished, but the current Mars floor-plan source remains HOLD until authoritative complete wall endpoint and opening placement geometry is available. The additional measured footprint and total wall length are context only and must not be used to reconstruct missing endpoints. Primary physical gate remains AI3D-002 companion capability / one CANARY.",
+      "attempt_count": 1
     }
   ]
 }
