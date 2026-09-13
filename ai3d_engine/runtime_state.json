@@ -1,0 +1,35 @@
+{
+  "schema": "never-tear-ai3d-runtime-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "canonical_name": "NEVER TEAR AI 3D Production Engine",
+  "status": "ACTIVE",
+  "stage": "QA",
+  "active_task": "AI3D-001",
+  "qa": {
+    "protocol_smoke": "PASS",
+    "route_switch_test": "PASS",
+    "lint": "PASS",
+    "vite_build": "PASS",
+    "physical_render": "PENDING",
+    "visual_qa": "PENDING"
+  },
+  "mvp_run": {
+    "run_key": "AI3D-SMOKE-1789270226857",
+    "render_artifact_id": "render-6c8d34887be0f8bf",
+    "render_artifact_sha256": "6c8d34887be0f8bfe737a7c0e88fc0275838cbd0d02a456e05ad19a62f13a890",
+    "checkpoint_id": "cp-6a1ce352a7d25268",
+    "checkpoint_sha256": "6a1ce352a7d25268018c353e5065131c0a84ddc5393762893749cea637aa34f1",
+    "physical_render": false
+  },
+  "links": {
+    "drive_master_doc": "https://docs.google.com/document/d/1XYJaDFFQAt-htTq2xlg-kWUvO_t0NtJgP5kli0yfuDA/edit",
+    "linear_project": "https://linear.app/rioma/project/never-tear-ai-3d-production-engine-2778ac7bc44c",
+    "supabase_project_id": "vbuokbwglauibabinaqs"
+  },
+  "boundary": {
+    "continue_csmc_analysis": false,
+    "reuse_general_architecture_only": true,
+    "copy_private_or_purchased_csmc_data": false
+  },
+  "next_action": "Integrate actual WebGL/Blender pixel render evidence into the command API and run visual QA before handler promotion."
+}
