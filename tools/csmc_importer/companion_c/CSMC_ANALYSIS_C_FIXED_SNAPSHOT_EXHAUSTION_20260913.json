@@ -1,0 +1,77 @@
+{
+  "schema_version": "csmc_analysis_c_fixed_snapshot_exhaustion_v1",
+  "run_id": "C-032",
+  "snapshot_state": "EXHAUSTED_FOR_NON_DUPLICATIVE_STATIC_ANALYSIS",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "axes": {
+    "boundary_grammar": {
+      "state":"EXHAUSTED_AT_CURRENT_AGGREGATES",
+      "completed":["independent boundary motif comparison","local extinction vs mixed reuse/repack classification"],
+      "blocked_by":"no additional independent boundary aggregates in fixed snapshot"
+    },
+    "record_grammar": {
+      "state":"EXHAUSTED_AT_CURRENT_AGGREGATES",
+      "completed":["48/49 length factorization","q21..27 preserve-signature factorization","five joint families","stable/control/rewrite region model"],
+      "blocked_by":"ordered per-record positional aggregate absent for supergroup slot correlation"
+    },
+    "owner_container": {
+      "state":"EXHAUSTED_AT_CURRENT_AGGREGATES",
+      "completed":["character live route","scene live route","legacy schema-only node topology","unresolved route parking"],
+      "blocked_by":"no new current-model owner/child mapping artifact"
+    },
+    "numeric_codec": {
+      "state":"EXHAUSTED_AT_CURRENT_AGGREGATES",
+      "completed":["counted BE-f64/f32 exact-fit grammar","arity/width distribution","same-prefix same-count width divergence","quaternion-like candidate","qword arithmetic","preregistered future scan","false-positive budget"],
+      "blocked_by":"no isolated current +965 static input to test binding"
+    },
+    "semantic_assignment": {
+      "state":"EXHAUSTED_AT_CURRENT_AGGREGATES",
+      "completed":["negative evidence audit for matrix/index/weight","slot-specific blocker matrix","binding evidence contract"],
+      "blocked_by":"no executed interpretable controlled pair or equivalent labeled current-model evidence"
+    },
+    "historical_p3": {
+      "state":"EXHAUSTED_AT_CURRENT_AGGREGATES",
+      "completed":["durable evidence search","plan/template vs executed-pair separation"],
+      "blocked_by":"no durable executed P3 teacher pair found"
+    },
+    "parser_architecture": {
+      "state":"READY",
+      "completed":["semantics-free IR","route/structure/codec/semantic gates","binding scope","static intake contract","Blender emission gate","analysis package manifest"],
+      "blocked_by":null
+    }
+  },
+  "next_unlock_inputs": [
+    {
+      "input_id":"I1_ISOLATED_PLUS965_STATIC_REF",
+      "purpose":"run unchanged C-018 preregistered counted-numeric binding test",
+      "requires_runtime_from_companion":false
+    },
+    {
+      "input_id":"I2_PUBLIC_SAFE_POSITIONAL_AGGREGATE",
+      "purpose":"run C-029 supergroup-slot vs family correlation",
+      "requires_runtime_from_companion":false
+    },
+    {
+      "input_id":"I3_INTERPRETABLE_CONTROLLED_PAIR_OR_LABELED_DIFFERENTIAL",
+      "purpose":"semantic correlation for geometry/index/transform/material/hierarchy",
+      "requires_runtime_from_companion":false
+    },
+    {
+      "input_id":"I4_CURRENT_MODEL_NODE_MAPPING_ARTIFACT",
+      "purpose":"bind historical hierarchy/transform schema hints to current representation",
+      "requires_runtime_from_companion":false
+    }
+  ],
+  "forbidden_repeats": [
+    "same +197->+195 LCS/literal/XOR/add-sub fitting",
+    "same +965 cadence fitting",
+    "reinterpreting FirstIndex/NextIndex as mesh indices without new evidence",
+    "promoting quaternion candidate without current-model binding",
+    "searching semantic labels from mere numeric plausibility",
+    "recomputing family marginals without a new observation axis"
+  ],
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
