@@ -56,7 +56,7 @@ jobs:
           "${BLENDER_DIR}/blender" \
             --factory-startup \
             --background \
-            --python ai3d_engine/cloud_runner/blender_physical_mvp.py \
+            --python ai3d_engine/cloud_runner/blender_physical_mvp_cpu.py \
             -- \
             --output ai3d_engine/artifacts/physical_mvp \
             2>&1 | tee ai3d_engine/artifacts/physical_mvp/blender-physical-mvp.log
@@ -81,9 +81,10 @@ jobs:
           assert data["project_key"] == "never_tear_ai3d_engine", data
           assert data["task_id"] == "AI3D-001", data
           assert data["status"] == "PASS", data
-          assert data["route"] == "BLENDER_GITHUB_ACTIONS", data
+          assert data["route"] == "BLENDER_GITHUB_ACTIONS_CYCLES_CPU", data
           assert data["artifact"]["physical_render"] is True, data
           assert data["artifact"]["width"] == 960 and data["artifact"]["height"] == 540, data
+          assert data["artifact"]["readback_status"] == "PASS", data
           assert data["artifact"]["visual_qa"] == "PENDING", data
           assert data["synthetic_only"] is True and data["user_assets_loaded"] is False, data
           assert data["csmc_private_data_loaded"] is False, data
@@ -94,6 +95,7 @@ jobs:
           png_sha = hashlib.sha256(png_path.read_bytes()).hexdigest()
           result_sha = hashlib.sha256(result_path.read_bytes()).hexdigest()
           assert png_sha == data["artifact"]["png_sha256"], (png_sha, data["artifact"]["png_sha256"])
+          assert data["artifact"]["raw_pixel_sha256"] != png_sha, data["artifact"]
           assert manifest["files"][png_path.name]["sha256"] == png_sha, manifest
           assert manifest["files"][png_path.name]["size_bytes"] == png_path.stat().st_size, manifest
           assert manifest["files"][result_path.name]["sha256"] == result_sha, manifest
