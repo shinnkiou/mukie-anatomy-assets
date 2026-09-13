@@ -1,0 +1,17 @@
+{
+  "schema_version": "csmc_analysis_c_binding_scope_result_v1",
+  "run_id": "C-022",
+  "synthetic_tests_passed": 4,
+  "scope_states": [
+    "UNCONFIRMED",
+    "ROLE_LEVEL_UNSCOPED",
+    "FAMILY_LOCAL",
+    "CROSS_FAMILY_GENERALIZED"
+  ],
+  "semantic_state_changed": false,
+  "blender_emit_gate_changed": false,
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
