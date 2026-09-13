@@ -1,0 +1,51 @@
+{
+  "evidence_refs": [
+    "CSMC_ANALYSIS_C_BOUNDARY_MOTIF_20260913",
+    "CSMC_ANALYSIS_C_RECORD_FAMILY_FACTORIZATION_20260913"
+  ],
+  "guardrails": [
+    "Structure is not semantics.",
+    "A record family must not be named Mesh/Index/UV/Material/Bone/Weight without independent evidence.",
+    "CONFIRMED semantic status requires at least one explicit evidence id."
+  ],
+  "parser_contract": {
+    "qword_alignment_bytes": 8,
+    "raw_payload_bytes_embedded": false,
+    "semantic_confirmation_requires_evidence": true,
+    "semantic_free": true
+  },
+  "schema_version": "csmc_analysis_c_minimal_ir_v1",
+  "semantic_slots": {
+    "geometry": {"candidate_notes": [], "confidence": 0.0, "evidence_ids": [], "status": "UNRESOLVED"},
+    "hierarchy": {"candidate_notes": [], "confidence": 0.0, "evidence_ids": [], "status": "UNRESOLVED"},
+    "index": {"candidate_notes": [], "confidence": 0.0, "evidence_ids": [], "status": "UNRESOLVED"},
+    "material": {"candidate_notes": [], "confidence": 0.0, "evidence_ids": [], "status": "UNRESOLVED"},
+    "transform": {"candidate_notes": [], "confidence": 0.0, "evidence_ids": [], "status": "UNRESOLVED"}
+  },
+  "structural_grammar": {
+    "boundaries": [
+      {"boundary_class": "LOCAL_EXTINCTION_CANDIDATE", "boundary_id": "BND_197_TO_195", "cross_serialization_survival_distinct": 0, "net_relative_size_change_bytes": -16, "new_delta_barrier_match_density": 0.0, "old_delta_barrier_match_density": 0.0, "semantic_role": "UNRESOLVED"},
+      {"boundary_class": "MIXED_REUSE_REPACK_CANDIDATE", "boundary_id": "BND_4692559_TO_4697174", "cross_serialization_survival_distinct": 308, "net_relative_size_change_bytes": 36920, "new_delta_barrier_match_density": 0.003638399104394067, "old_delta_barrier_match_density": 0.0019591379792891126, "semantic_role": "UNRESOLVED"},
+      {"boundary_class": "MIXED_REUSE_REPACK_CANDIDATE", "boundary_id": "BND_4693615_TO_4692559", "cross_serialization_survival_distinct": 40, "net_relative_size_change_bytes": -8448, "new_delta_barrier_match_density": 0.005283018867924529, "old_delta_barrier_match_density": 0.006792452830188679, "semantic_role": "UNRESOLVED"}
+    ],
+    "boundary_classes_observed": ["LOCAL_EXTINCTION_CANDIDATE", "MIXED_REUSE_REPACK_CANDIDATE"],
+    "record_families": [
+      {"count": 7, "family_id": "RF_00", "length_blocks": 48, "preserve_signature": "0000110", "semantic_role": "UNRESOLVED"},
+      {"count": 3, "family_id": "RF_01", "length_blocks": 48, "preserve_signature": "0000111", "semantic_role": "UNRESOLVED"},
+      {"count": 3, "family_id": "RF_02", "length_blocks": 48, "preserve_signature": "0001110", "semantic_role": "UNRESOLVED"},
+      {"count": 3, "family_id": "RF_03", "length_blocks": 49, "preserve_signature": "0000111", "semantic_role": "UNRESOLVED"},
+      {"count": 6, "family_id": "RF_04", "length_blocks": 49, "preserve_signature": "1000111", "semantic_role": "UNRESOLVED"}
+    ],
+    "record_family_axes": ["length_blocks", "preserve_signature"],
+    "record_layout": {
+      "conditional_qwords": [21, 24, 27],
+      "control_zone": {"end_qword_inclusive": 27, "start_qword": 21},
+      "fixed_preserve_qwords": [25, 26],
+      "fixed_rewrite_qwords": [22, 23],
+      "observed_record_lengths_blocks": [48, 49],
+      "qword_bytes": 8,
+      "rewrite_tail_start_qword": 28,
+      "stable_prefix": {"end_qword_inclusive": 20, "start_qword": 0}
+    }
+  }
+}
