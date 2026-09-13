@@ -1,0 +1,49 @@
+{
+  "schema": "never-tear-ai3d-task-queue-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "priority_order": ["BLOCKED_FIX", "QA_FAIL_FIX", "ACTIVE", "HIGH", "NORMAL"],
+  "tasks": [
+    {
+      "task_id": "AI3D-001",
+      "title": "Production Protocol MVP vertical slice",
+      "priority": "URGENT",
+      "status": "ACTIVE",
+      "stage": "QA",
+      "goal": "Structured command sequence creates a box, corrects transform, applies material, produces render evidence, runs QA and saves a checkpoint.",
+      "qa": {"protocol_smoke":"PASS","lint":"PASS","vite_build":"PASS","physical_visual_qa":"PENDING"},
+      "next_action": "Integrate physical WebGL/Blender render evidence and visual QA before promotion."
+    },
+    {
+      "task_id": "AI3D-002",
+      "title": "Windows Worker adapter for 3D Command API",
+      "priority": "HIGH",
+      "status": "READY",
+      "stage": "PLAN",
+      "dependencies": ["AI3D-001"]
+    },
+    {
+      "task_id": "AI3D-003",
+      "title": "Artifact lineage and durable state",
+      "priority": "HIGH",
+      "status": "READY",
+      "stage": "PLAN",
+      "dependencies": ["AI3D-001"]
+    },
+    {
+      "task_id": "AI3D-004",
+      "title": "Physical render and visual QA gate",
+      "priority": "HIGH",
+      "status": "READY",
+      "stage": "PLAN",
+      "dependencies": ["AI3D-001","AI3D-002"]
+    },
+    {
+      "task_id": "AI3D-005",
+      "title": "Module and Assembly model",
+      "priority": "NORMAL",
+      "status": "READY",
+      "stage": "PLAN",
+      "dependencies": ["AI3D-003"]
+    }
+  ]
+}
