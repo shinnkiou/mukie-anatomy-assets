@@ -1,0 +1,23 @@
+{
+  "schema_version": "csmc_analysis_c_semantic_fixture_extension_c049_v1",
+  "source_type": "PUBLIC_SAFE_ACQUIRED_FIXTURE_METADATA",
+  "source_drive_resource_index_id": "16GgICogyj5xj5nHp9nELIov14yJGzHsAjtSuDroy_i4",
+  "source_fingerprint_library_id": "1v1KPLyRWJKXrviNQQ5jBn7NQaX2mUfiR",
+  "fixtures": {
+    "KHRONOS_BUFFER_INTERLEAVED_00": {"sha256":"ac6289c77338ee278b3dd8838787329483dc09ac37192951f3ec6ede553a54e4","license":"MIT","ground_truth":["vertex","index","uv"],"layout_tags":["INTERLEAVED_STRIDE_32"]},
+    "KHRONOS_ACCESSOR_SPARSE_00": {"sha256":"098106a42447ac52f43af11450d45a6482259943310861b3e110db0404ae3da4","license":"MIT","ground_truth":["vertex"],"layout_tags":["SPARSE_ACCESSOR"]},
+    "KHRONOS_MESH_PRIMITIVE_ATTRIBUTE_06": {"sha256":"57a0e7949aa7d1ed09dc356fcb2ab9ec016245ab61319f07fa9eb9503dac4f4b","license":"MIT","ground_truth":["uv","normal","tangent"],"layout_tags":["NORMAL_TEXTURE","VERTEX_NORMAL","VERTEX_TANGENT"]},
+    "KHRONOS_MATERIAL_MIXED_02": {"sha256":"3eb7000eb6b9442a998adebd6416a51314d29bbee1f70949e28002c8b7cb8da9","license":"MIT","ground_truth":["material_routing"],"layout_tags":["MULTI_PRIMITIVE","MULTI_MATERIAL"]}
+  },
+  "newly_calibrated_vs_c041": ["normal", "tangent"],
+  "layout_negative_controls": ["INTERLEAVED_STRIDE_32", "SPARSE_ACCESSOR", "MULTI_PRIMITIVE", "MULTI_MATERIAL"],
+  "known_fixture_high_cases": 7,
+  "numeric_shape_without_relationship_cases": 2,
+  "synthetic_tests_passed": 12,
+  "synthetic_tests_failed": 0,
+  "c041_modified": false,
+  "csmc_semantic_promotion": false,
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "blender_emit_ready": false,
+  "raw_private_bytes_used": false
+}
