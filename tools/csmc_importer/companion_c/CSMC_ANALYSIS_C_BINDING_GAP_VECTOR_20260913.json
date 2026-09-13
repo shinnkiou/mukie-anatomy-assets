@@ -1,0 +1,82 @@
+{
+  "schema_version": "csmc_analysis_c_binding_gap_vector_v1",
+  "run_id": "C-015",
+  "candidates": [
+    {
+      "candidate_id": "COUNTED_BE_TO_PLUS965",
+      "current_payload_mapping": true,
+      "bounded_region": true,
+      "confirmed_codec": true,
+      "recurrent_exact_fit": false,
+      "same_structural_role_recurrence": false,
+      "controlled_differential": false,
+      "known_input_correlation": false,
+      "localized_effect": false,
+      "semantic_slot": false,
+      "codec_gap": {
+        "satisfied_count": 3,
+        "total": 5,
+        "missing_count": 2,
+        "missing": ["recurrent_exact_fit", "same_structural_role_recurrence"]
+      },
+      "semantic_gap": {
+        "satisfied_count": 3,
+        "total": 9,
+        "missing_count": 6,
+        "missing": ["recurrent_exact_fit", "same_structural_role_recurrence", "controlled_differential", "known_input_correlation", "localized_effect", "semantic_slot"]
+      }
+    },
+    {
+      "candidate_id": "QUATERNION_TO_CURRENT_NODE_TRANSFORM",
+      "current_payload_mapping": false,
+      "bounded_region": false,
+      "confirmed_codec": false,
+      "recurrent_exact_fit": false,
+      "same_structural_role_recurrence": false,
+      "controlled_differential": false,
+      "known_input_correlation": false,
+      "localized_effect": false,
+      "semantic_slot": true,
+      "codec_gap": {
+        "satisfied_count": 0,
+        "total": 5,
+        "missing_count": 5,
+        "missing": ["current_payload_mapping", "bounded_region", "confirmed_codec", "recurrent_exact_fit", "same_structural_role_recurrence"]
+      },
+      "semantic_gap": {
+        "satisfied_count": 1,
+        "total": 9,
+        "missing_count": 8,
+        "missing": ["current_payload_mapping", "bounded_region", "confirmed_codec", "recurrent_exact_fit", "same_structural_role_recurrence", "controlled_differential", "known_input_correlation", "localized_effect"]
+      }
+    },
+    {
+      "candidate_id": "LATENT_NODE_TOPOLOGY_TO_CURRENT_HIERARCHY",
+      "current_payload_mapping": false,
+      "bounded_region": false,
+      "confirmed_codec": false,
+      "recurrent_exact_fit": false,
+      "same_structural_role_recurrence": false,
+      "controlled_differential": false,
+      "known_input_correlation": false,
+      "localized_effect": false,
+      "semantic_slot": true,
+      "codec_gap": {
+        "satisfied_count": 0,
+        "total": 5,
+        "missing_count": 5,
+        "missing": ["current_payload_mapping", "bounded_region", "confirmed_codec", "recurrent_exact_fit", "same_structural_role_recurrence"]
+      },
+      "semantic_gap": {
+        "satisfied_count": 1,
+        "total": 9,
+        "missing_count": 8,
+        "missing": ["current_payload_mapping", "bounded_region", "confirmed_codec", "recurrent_exact_fit", "same_structural_role_recurrence", "controlled_differential", "known_input_correlation", "localized_effect"]
+      }
+    }
+  ],
+  "nearest_codec_candidate": "COUNTED_BE_TO_PLUS965",
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "semantic_promotion_count": 0
+}
