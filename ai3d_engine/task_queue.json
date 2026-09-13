@@ -7,19 +7,48 @@
       "task_id": "AI3D-001",
       "title": "Production Protocol MVP vertical slice",
       "priority": "URGENT",
-      "status": "ACTIVE",
-      "stage": "QA",
+      "status": "COMPLETE",
+      "stage": "COMPLETE",
       "goal": "Structured command sequence creates a box, corrects transform, applies material, produces render evidence, runs QA and saves a checkpoint.",
-      "qa": {"protocol_smoke":"PASS","lint":"PASS","vite_build":"PASS","physical_visual_qa":"PENDING"},
-      "next_action": "Integrate physical WebGL/Blender render evidence and visual QA before promotion."
+      "qa": {
+        "protocol_smoke": "PASS",
+        "lint": "PASS",
+        "vite_build": "PASS",
+        "physical_render": "PASS",
+        "physical_visual_qa": "PASS",
+        "drive_sha_readback": "PASS",
+        "coordinate_contract": "THREE_Y_UP_TO_BLENDER_Z_UP_V1"
+      },
+      "artifacts": [
+        {
+          "artifact_id": "blender-render-7bc5b7bca3cd3384",
+          "png_sha256": "7bc5b7bca3cd33844b4da57a13176a550f130aca36aa7f81b34c514707c7ddb2",
+          "raw_pixel_sha256": "9cf0345bac55a1e5c4b481bc8a8e11a402ddc05f72d1866335832591f7bf4bc4",
+          "drive_file_id": "1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R",
+          "github_run_id": "34738453130"
+        }
+      ],
+      "checkpoint_id": "cp-ai3d001-visualpass-7eb045faac51e35c",
+      "next_action": "COMPLETE. Continue AI3D-002."
     },
     {
       "task_id": "AI3D-002",
       "title": "Windows Worker adapter for 3D Command API",
       "priority": "HIGH",
-      "status": "READY",
-      "stage": "PLAN",
-      "dependencies": ["AI3D-001"]
+      "status": "ACTIVE",
+      "stage": "IMPLEMENT",
+      "dependencies": ["AI3D-001"],
+      "qa": {
+        "previous_windows_packaging_run": "34738248556",
+        "previous_windows_packaging": "PASS",
+        "source_selftest": "PASS",
+        "packaged_selftest": "PASS",
+        "coordinate_mapping_commit": "4d5512650107d815746ab4e43ebe390a8f0c09ca",
+        "corrected_packaging_run": "34743230600",
+        "corrected_packaging": "IN_PROGRESS",
+        "physical_windows_canary": "NOT_EXECUTED"
+      },
+      "next_action": "Wait for corrected packaging run 34743230600. If PASS, download/hash-verify ZIP and execute one isolated physical CANARY with the separate AI3D companion Worker; do not widen or queue the old P0.18.2 worker."
     },
     {
       "task_id": "AI3D-003",
@@ -35,7 +64,7 @@
       "priority": "HIGH",
       "status": "READY",
       "stage": "PLAN",
-      "dependencies": ["AI3D-001","AI3D-002"]
+      "dependencies": ["AI3D-001", "AI3D-002"]
     },
     {
       "task_id": "AI3D-005",
