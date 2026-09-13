@@ -1,0 +1,81 @@
+{
+  "boundaries": {
+    "BND_197_TO_195": {
+      "barrier_matches_new_delta": 0,
+      "barrier_matches_old_delta": 0,
+      "clip_barrier_distinct_found_anywhere_in_csmc": 0,
+      "clip_barrier_distinct_total": 380,
+      "clip_barrier_qwords": 380,
+      "complete_cross_serialization_extinction": true,
+      "csmc_barrier_distinct_found_anywhere_in_clip": 0,
+      "csmc_barrier_distinct_total": 378,
+      "csmc_barrier_qwords": 378,
+      "from_delta_qwords": 197,
+      "net_relative_size_change_bytes": -16,
+      "post_matches_new_delta": 4,
+      "post_matches_old_delta": 0,
+      "post_window_qwords": 256,
+      "pre_matches_new_delta": 0,
+      "pre_matches_old_delta": 68,
+      "pre_window_qwords": 257,
+      "to_delta_qwords": 195
+    },
+    "BND_4692559_TO_4697174": {
+      "barrier_matches_new_delta": 13,
+      "barrier_matches_old_delta": 7,
+      "clip_barrier_distinct_found_anywhere_in_csmc": 124,
+      "clip_barrier_distinct_total": 3225,
+      "clip_barrier_qwords": 3573,
+      "complete_cross_serialization_extinction": false,
+      "csmc_barrier_distinct_found_anywhere_in_clip": 184,
+      "csmc_barrier_distinct_total": 7924,
+      "csmc_barrier_qwords": 8188,
+      "from_delta_qwords": 4692559,
+      "net_relative_size_change_bytes": 36920,
+      "post_matches_new_delta": 46,
+      "post_matches_old_delta": 0,
+      "post_window_qwords": 256,
+      "pre_matches_new_delta": 0,
+      "pre_matches_old_delta": 45,
+      "pre_window_qwords": 257,
+      "to_delta_qwords": 4697174
+    },
+    "BND_4693615_TO_4692559": {
+      "barrier_matches_new_delta": 7,
+      "barrier_matches_old_delta": 9,
+      "clip_barrier_distinct_found_anywhere_in_csmc": 22,
+      "clip_barrier_distinct_total": 1217,
+      "clip_barrier_qwords": 1325,
+      "complete_cross_serialization_extinction": false,
+      "csmc_barrier_distinct_found_anywhere_in_clip": 18,
+      "csmc_barrier_distinct_total": 246,
+      "csmc_barrier_qwords": 269,
+      "from_delta_qwords": 4693615,
+      "net_relative_size_change_bytes": -8448,
+      "post_matches_new_delta": 45,
+      "post_matches_old_delta": 0,
+      "post_window_qwords": 256,
+      "pre_matches_new_delta": 0,
+      "pre_matches_old_delta": 30,
+      "pre_window_qwords": 257,
+      "to_delta_qwords": 4692559
+    }
+  },
+  "guardrails": {
+    "codec_or_protection_mechanism_claimed": false,
+    "geometry_semantics_claimed": false,
+    "modeler_actions": 0,
+    "production_worker_changed": false,
+    "raw_payload_bytes_in_output": false,
+    "raw_qword_values_in_output": false,
+    "runtime_jobs": 0,
+    "stable_gate_changed": false
+  },
+  "interpretation": {
+    "local_transition_priority": "BND_197_TO_195",
+    "reason": "Only BND_197_TO_195 shows complete cross-serialization qword extinction plus zero barrier matches under either neighboring delta while both boundary qwords are reused. The 4.69M transitions retain barrier/global reuse and fit broader repack/reorder mixing better than a clean local serializer-owned extinction unit.",
+    "runtime_implication": "If a narrow consume/decode trace is later enabled, prioritize the +197->+195 transition event over the 4.69M section-level transitions."
+  },
+  "schema_version": "csmc_p4_boundary_motif_comparison_v1",
+  "source": "aggregate outputs from csmc_p4_owner_consume_bracket_probe.py"
+}
