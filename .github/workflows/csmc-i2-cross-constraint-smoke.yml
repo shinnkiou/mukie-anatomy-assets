@@ -1,0 +1,27 @@
+name: CSMC I2 cross-constraint smoke
+
+on:
+  push:
+    branches:
+      - csmc-importer-experimental-20260902
+    paths:
+      - 'tools/csmc_importer/csmc_p4_i2_cross_constraint_audit.py'
+      - 'tools/csmc_importer/test_csmc_p4_i2_cross_constraint_audit_synthetic.py'
+      - 'tools/csmc_importer/CSMC_P4_I2_CROSS_CONSTRAINT_AUDIT_20260913.md'
+      - '.github/workflows/csmc-i2-cross-constraint-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  synthetic-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile public-safe I2 audit
+        run: |
+          python -m py_compile tools/csmc_importer/csmc_p4_i2_cross_constraint_audit.py tools/csmc_importer/test_csmc_p4_i2_cross_constraint_audit_synthetic.py
+      - name: Run public-safe I2 cross-constraint synthetic test
+        working-directory: tools/csmc_importer
+        run: python test_csmc_p4_i2_cross_constraint_audit_synthetic.py
