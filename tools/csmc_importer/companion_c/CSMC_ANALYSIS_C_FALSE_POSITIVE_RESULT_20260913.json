@@ -1,0 +1,14 @@
+{
+  "schema_version": "csmc_analysis_c_counted_be_false_positive_v1",
+  "run_id": "C-017",
+  "trials": 22,
+  "possible_widths": 2,
+  "per_trial_upper_bound": 4.656612873077393e-10,
+  "at_least_one": 1.0244548270786985e-8,
+  "at_least_two": 5.009014005782978e-17,
+  "at_least_three": 1.555002606053169e-25,
+  "interpretation": "Under a conservative independent high-entropy null, recurrent same-role exact fits are orders of magnitude stronger than a single exact fit. This is a guardrail model, not proof about structured CELSYS data.",
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0
+}
