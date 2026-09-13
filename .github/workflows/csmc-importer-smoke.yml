@@ -32,6 +32,7 @@ jobs:
             tools/csmc_importer/csmc_p4_owner_consume_bracket_probe.py \
             tools/csmc_importer/csmc_p4_barrier_collision_baseline_probe.py \
             tools/csmc_importer/csmc_p4_unaligned_kmer_extinction_probe.py \
+            tools/csmc_importer/csmc_p4_counted_be_binding_probe.py \
             tools/csmc_importer/csmc_structural_ir.py \
             tools/csmc_importer/modeler_capture_header_probe.py \
             tools/csmc_importer/test_probe_synthetic.py \
@@ -46,6 +47,7 @@ jobs:
             tools/csmc_importer/test_csmc_p4_owner_consume_bracket_probe_synthetic.py \
             tools/csmc_importer/test_csmc_p4_barrier_collision_baseline_probe_synthetic.py \
             tools/csmc_importer/test_csmc_p4_unaligned_kmer_extinction_probe_synthetic.py \
+            tools/csmc_importer/test_csmc_p4_counted_be_binding_probe_synthetic.py \
             tools/csmc_importer/test_csmc_structural_ir_synthetic.py \
             tools/csmc_importer/test_modeler_capture_header_probe_synthetic.py \
             tools/csmc_importer/test_modeler_observer_p4_contract.py
@@ -85,6 +87,9 @@ jobs:
       - name: Synthetic P4 unaligned k-mer extinction smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_p4_unaligned_kmer_extinction_probe_synthetic.py
+      - name: Synthetic P4 counted-BE fixed-role binding smoke
+        working-directory: tools/csmc_importer
+        run: python test_csmc_p4_counted_be_binding_probe_synthetic.py
       - name: Synthetic semantics-free structural IR smoke
         working-directory: tools/csmc_importer
         run: python test_csmc_structural_ir_synthetic.py
