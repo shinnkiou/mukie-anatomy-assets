@@ -52,6 +52,29 @@ class IntegrationReviewContractTests(unittest.TestCase):
         self.assertFalse(result["accepted"])
         self.assertIn("missing_worker_actions", result["errors"])
 
+    def test_missing_top_level_guardrails_are_rejected(self):
+        for key in ("merge_policy", "blender_mesh_emit_ready", "blender_scene_emit_ready"):
+            with self.subTest(key=key):
+                package = self._safe_package()
+                del package[key]
+                result = validate(package)
+                self.assertFalse(result["accepted"])
+                self.assertIn(f"missing_{key}", result["errors"])
+
+    def test_malformed_zero_counter_is_rejected_without_crashing(self):
+        package = self._safe_package()
+        package["isolation"]["worker_actions"] = "not-a-number"
+        result = validate(package)
+        self.assertFalse(result["accepted"])
+        self.assertIn("invalid_worker_actions", result["errors"])
+
+    def test_missing_semantic_promotion_count_is_rejected(self):
+        package = self._safe_package()
+        del package["semantic_promotion_count"]
+        result = validate(package)
+        self.assertFalse(result["accepted"])
+        self.assertIn("missing_semantic_promotion_count", result["errors"])
+
     def test_pipeline_never_promotes_semantics_implicitly(self):
         state = analyze({
             "intake_accepted": True,
