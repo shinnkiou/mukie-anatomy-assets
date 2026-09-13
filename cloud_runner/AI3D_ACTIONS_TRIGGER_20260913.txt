@@ -1,0 +1,3 @@
+NEVER TEAR AI3D GitHub Actions trigger probe.
+Synthetic/public-safe marker only.
+No user assets, private CSMC data, credentials, or executable payloads.
