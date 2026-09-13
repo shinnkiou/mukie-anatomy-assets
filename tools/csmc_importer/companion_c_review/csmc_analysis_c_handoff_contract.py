@@ -3,8 +3,8 @@
 
 This validator is intentionally conservative: a handoff is safe only when it
 preserves the side-lane's unresolved semantic state and cannot imply runtime or
-mainline action. Missing safety declarations are rejected rather than assumed
-safe.
+mainline action. Missing or malformed safety declarations are rejected rather
+than assumed safe.
 """
 from __future__ import annotations
 import argparse
@@ -31,18 +31,49 @@ PRIVATE_PUBLICATION_KEYS = (
 )
 
 
+def _require_zero(errors: list[str], obj: dict, key: str) -> None:
+    if key not in obj:
+        errors.append(f"missing_{key}")
+        return
+    try:
+        value = int(obj[key])
+    except (TypeError, ValueError):
+        errors.append(f"invalid_{key}")
+        return
+    if value != 0:
+        errors.append(f"nonzero_{key}")
+
+
 def validate(package: dict) -> dict:
     errors: list[str] = []
-    if package.get("merge_policy") not in {None, "NO_AUTOMATIC_MERGE"}:
+
+    if "merge_policy" not in package:
+        errors.append("missing_merge_policy")
+    elif package["merge_policy"] != "NO_AUTOMATIC_MERGE":
         errors.append("automatic_merge_not_allowed")
+
     if package.get("pipeline_stage") != "STRUCTURAL_ONLY":
         errors.append("unexpected_pipeline_stage")
-    if int(package.get("semantic_promotion_count", -1)) != 0:
-        errors.append("semantic_promotion_not_zero")
-    if bool(package.get("blender_mesh_emit_ready")):
-        errors.append("mesh_emit_must_remain_blocked")
-    if bool(package.get("blender_scene_emit_ready")):
-        errors.append("scene_emit_must_remain_blocked")
+
+    if "semantic_promotion_count" not in package:
+        errors.append("missing_semantic_promotion_count")
+    else:
+        try:
+            semantic_promotion_count = int(package["semantic_promotion_count"])
+        except (TypeError, ValueError):
+            errors.append("invalid_semantic_promotion_count")
+        else:
+            if semantic_promotion_count != 0:
+                errors.append("semantic_promotion_not_zero")
+
+    for key, error_name in (
+        ("blender_mesh_emit_ready", "mesh_emit_must_remain_blocked"),
+        ("blender_scene_emit_ready", "scene_emit_must_remain_blocked"),
+    ):
+        if key not in package:
+            errors.append(f"missing_{key}")
+        elif package[key] is not False:
+            errors.append(error_name)
 
     isolation = package.get("isolation")
     if not isinstance(isolation, dict):
@@ -50,10 +81,7 @@ def validate(package: dict) -> dict:
         isolation = {}
 
     for key in REQUIRED_ZERO_ISOLATION_KEYS:
-        if key not in isolation:
-            errors.append(f"missing_{key}")
-        elif int(isolation[key]) != 0:
-            errors.append(f"nonzero_{key}")
+        _require_zero(errors, isolation, key)
 
     if not any(key in isolation for key in AUTOMATION_KEYS):
         errors.append("missing_automatic_integration_guardrail")
@@ -71,7 +99,7 @@ def validate(package: dict) -> dict:
 
     accepted = not errors
     return {
-        "schema_version": "csmc_analysis_c_handoff_contract_result_v3",
+        "schema_version": "csmc_analysis_c_handoff_contract_result_v4",
         "handoff_state": "HANDOFF_REFERENCE_SAFE" if accepted else "HANDOFF_REJECTED",
         "accepted": accepted,
         "errors": errors,
@@ -117,6 +145,12 @@ def self_test() -> None:
     assert validate(dict(base, isolation={**base["isolation"], "public_repository_contains_private_payload": True}))["accepted"] is False
     missing = dict(base, isolation={k: v for k, v in base["isolation"].items() if k != "worker_actions"})
     assert validate(missing)["accepted"] is False
+    missing_merge = {k: v for k, v in base.items() if k != "merge_policy"}
+    assert validate(missing_merge)["accepted"] is False
+    missing_emit = {k: v for k, v in base.items() if k != "blender_mesh_emit_ready"}
+    assert validate(missing_emit)["accepted"] is False
+    malformed = dict(base, isolation={**base["isolation"], "worker_actions": "not-a-number"})
+    assert validate(malformed)["accepted"] is False
     print("SELF_TEST_PASS")
 
 
