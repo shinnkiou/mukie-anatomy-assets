@@ -46,6 +46,7 @@ jobs:
             --onefile `
             --name NEVER_TEAR_AI3D_WORKER_CANARY `
             --add-data "ai3d_engine/windows_worker/blender_physical_mvp.py;." `
+            --add-data "ai3d_engine/windows_worker/ai3d_worker.py;." `
             ai3d_engine/windows_worker/ai3d_worker.py
 
       - name: Packaged self-test
