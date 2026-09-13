@@ -1,0 +1,52 @@
+{
+  "schema_version": "csmc_analysis_c_next_evidence_router_adapter_result_v1",
+  "research_run": "C-048",
+  "source_type": "PUBLIC_SAFE_MAINLINE_ROUTER_RECONCILIATION",
+  "source_findings_commit": "dbc352fdff82024246057a48167e97f4ff455568",
+  "source_ci_commit": "5c6a7e018ce5ef6a20c94a2c5ba6c2d218e00a6b",
+  "source_ci_run": 34757907968,
+  "source_ci_conclusion": "success",
+  "compatibility": {
+    "mainline_no_action_state_matches_companion": true,
+    "mainline_complete_i2_route_matches_c047_after_normalization": true,
+    "mainline_owner_edge_route_matches_c045_boundary": true,
+    "mainline_validated_unlock_route_matches_c040": true,
+    "mainline_external_pair_route_requires_companion_i1_validation": true,
+    "runtime_authorization_remains_separate": true
+  },
+  "i2_reconciliation": {
+    "mainline_router_accepts_partial_five_bit_i2_directly": false,
+    "companion_c047_can_accept_quota_assisted_five_bit_patch": true,
+    "required_composition": "five-bit partial -> C-047 residual validator -> normalized complete six-signature residual -> assemble full I2 -> C-040 full 22-row validator -> mainline complete-I2 route",
+    "contradiction": false
+  },
+  "external_pair_reconciliation": {
+    "companion_may_seek_or_acquire_pair": false,
+    "already_present_external_pair_may_be_processed": true,
+    "prerequisite": "exact hash match verified externally and I1 static validation accepted",
+    "allowed_probe": [
+      "record_whole",
+      "stable_prefix_0_20",
+      "control_zone_21_27",
+      "preserved_island_25_26"
+    ],
+    "posthoc_window_widening": false
+  },
+  "synthetic_tests": {"passed": 11, "failed": 0},
+  "current_router_state": {
+    "status": "NO_ADMISSIBLE_ACTION_CURRENT_DURABLE_CORPUS",
+    "selected_actions": 0
+  },
+  "global_invariants": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false,
+    "evidence_acquisition": false,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "automatic_integration": false
+  }
+}
