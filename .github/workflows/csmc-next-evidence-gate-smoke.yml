@@ -1,0 +1,27 @@
+name: CSMC next-evidence gate smoke
+
+on:
+  push:
+    branches:
+      - csmc-importer-experimental-20260902
+    paths:
+      - 'tools/csmc_importer/csmc_p4_next_evidence_gate.py'
+      - 'tools/csmc_importer/test_csmc_p4_next_evidence_gate_synthetic.py'
+      - 'tools/csmc_importer/CSMC_P4_NEXT_EVIDENCE_GATE_20260913.md'
+      - '.github/workflows/csmc-next-evidence-gate-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  synthetic-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile fail-closed next-evidence gate
+        run: |
+          python -m py_compile tools/csmc_importer/csmc_p4_next_evidence_gate.py tools/csmc_importer/test_csmc_p4_next_evidence_gate_synthetic.py
+      - name: Run next-evidence gate synthetic test
+        working-directory: tools/csmc_importer
+        run: python test_csmc_p4_next_evidence_gate_synthetic.py
