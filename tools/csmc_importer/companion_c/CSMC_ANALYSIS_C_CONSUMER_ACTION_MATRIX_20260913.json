@@ -1,0 +1,23 @@
+{
+  "schema_version": "csmc_analysis_c_consumer_action_matrix_v1",
+  "run_id": "C-034",
+  "states": ["SAFE_REFERENCE_ONLY", "REVIEW_REQUIRED", "FORBIDDEN_WITHOUT_NEW_EVIDENCE_OR_EXPLICIT_USER_AUTHORIZATION"],
+  "actions": [
+    {"action":"read_side_branch_findings","state":"SAFE_REFERENCE_ONLY","effect":"none"},
+    {"action":"inspect_public_safe_parser_code","state":"SAFE_REFERENCE_ONLY","effect":"none"},
+    {"action":"reference_package_from_mainline_documentation","state":"SAFE_REFERENCE_ONLY","effect":"none"},
+    {"action":"run_validator_on_future_static_input_in_side_lane","state":"SAFE_REFERENCE_ONLY","effect":"side-lane evidence evaluation only"},
+    {"action":"copy_or_cherry_pick_individual_public_safe_utility","state":"REVIEW_REQUIRED","effect":"possible mainline code change","requirements":["explicit human/user authorization","review of target diff","preserve semantic gates","no private bytes"]},
+    {"action":"create_mainline_PR_from_side_branch","state":"REVIEW_REQUIRED","effect":"proposed mainline change only","requirements":["explicit human/user authorization","draft/review state","no auto-merge"]},
+    {"action":"merge_side_branch","state":"FORBIDDEN_WITHOUT_NEW_EVIDENCE_OR_EXPLICIT_USER_AUTHORIZATION","effect":"mainline mutation"},
+    {"action":"set_geometry_index_transform_material_hierarchy_confirmed","state":"FORBIDDEN_WITHOUT_NEW_EVIDENCE_OR_EXPLICIT_USER_AUTHORIZATION","effect":"semantic promotion","requirements":["slot-specific independent evidence"]},
+    {"action":"enable_blender_mesh_or_scene_emit","state":"FORBIDDEN_WITHOUT_NEW_EVIDENCE_OR_EXPLICIT_USER_AUTHORIZATION","effect":"downstream output enablement","requirements":["C-024 readiness rules satisfied"]},
+    {"action":"dispatch_runtime_modeler_worker_control_gate","state":"FORBIDDEN_WITHOUT_NEW_EVIDENCE_OR_EXPLICIT_USER_AUTHORIZATION","effect":"runtime/mainline interaction"},
+    {"action":"publish_private_payload_bytes_to_public_repo","state":"FORBIDDEN_WITHOUT_NEW_EVIDENCE_OR_EXPLICIT_USER_AUTHORIZATION","effect":"privacy/licensing violation risk"}
+  ],
+  "current_recommendation": "SAFE_REFERENCE_ONLY",
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
