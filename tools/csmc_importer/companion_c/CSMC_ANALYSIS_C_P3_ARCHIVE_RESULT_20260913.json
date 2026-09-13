@@ -1,0 +1,31 @@
+{
+  "candidate_count": 3,
+  "candidates": [
+    {"c0_vs_b0_diff": null, "classification": "PLAN_ONLY", "id": "canonical_handoff_plan_reference", "interpretable": null, "kind": "PLAN_REFERENCE", "source": "google_drive", "stage_sha256": {}},
+    {"c0_vs_b0_diff": null, "classification": "PLAN_ONLY", "id": "CSMC_P3_CONTROLLED_PAIR_RUNBOOK_V01.md", "interpretable": null, "kind": "RUNBOOK", "source": "github", "stage_sha256": {}, "status": "READY_FOR_PRIVATE_TARGET_EXECUTION"},
+    {"c0_vs_b0_diff": null, "classification": "PLAN_ONLY", "id": "p3_pair_manifest_template.json", "interpretable": null, "kind": "TEMPLATE", "source": "github", "stage_sha256": {}}
+  ],
+  "classification_counts": {"PLAN_ONLY": 3},
+  "executed_interpretable_pair_found": false,
+  "guardrails": [
+    "A runbook, template, or canonical mention is not execution evidence.",
+    "At minimum A0/C0/B0 hashes, a C0-vs-B0 differential, and interpretable=true are required for semantic promotion.",
+    "A negative archival search is scoped to the examined stores and documented naming conventions."
+  ],
+  "schema_version": "csmc_analysis_c_p3_artifact_evidence_v1",
+  "searched_experiment_ids": ["P3-CONTROL-001", "P3-CAMERA-001", "P3-BONE-001", "P3-TRANS-001", "P3-VARIANT-001", "P3-MATERIAL-001"],
+  "semantic_promotion_allowed": false,
+  "store_summary": {
+    "base44_matching_p3_records": 0,
+    "github_manifest_nonempty_stage_hashes": 0,
+    "github_manifest_nonnull_diffs": 0,
+    "github_runbook_status": "READY_FOR_PRIVATE_TARGET_EXECUTION",
+    "google_drive_hyphen_execution_artifacts": 0,
+    "google_drive_hyphen_plan_reference_hits": 6,
+    "google_drive_hyphen_queries": 6,
+    "google_drive_underscore_execution_artifacts": 0,
+    "google_drive_underscore_queries": 6,
+    "linear_exact_search_primary_result": "RIO-26_PLAN_CONTEXT",
+    "supabase_matching_p3_rows": 0
+  }
+}
