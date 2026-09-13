@@ -1,0 +1,14 @@
+{
+  "schema_version": "csmc_analysis_c_pipeline_contract_result_v1",
+  "run_id": "C-024",
+  "synthetic_tests_passed": 5,
+  "stages": ["REJECTED_INPUT","INTAKE_ONLY","STRUCTURAL_ONLY","CODEC_BOUND","SEMANTIC_PARTIAL"],
+  "mesh_emit_requirement": ["geometry=CONFIRMED_SEMANTIC","index=CONFIRMED_SEMANTIC"],
+  "scene_emit_additional_requirement": ["transform=CONFIRMED_SEMANTIC","hierarchy=CONFIRMED_SEMANTIC"],
+  "material_is_independent_enrichment": true,
+  "implicit_codec_binding": false,
+  "implicit_semantic_promotion": false,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
