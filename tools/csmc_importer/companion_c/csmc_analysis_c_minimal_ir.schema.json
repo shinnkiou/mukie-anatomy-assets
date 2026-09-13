@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:csmc-analysis-c:minimal-ir:v1",
+  "title": "CSMC Analysis Companion C Minimal Importer IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "parser_contract", "structural_grammar", "semantic_slots", "evidence_refs", "guardrails"],
+  "properties": {
+    "schema_version": {"const": "csmc_analysis_c_minimal_ir_v1"},
+    "parser_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantic_free", "raw_payload_bytes_embedded", "qword_alignment_bytes", "semantic_confirmation_requires_evidence"],
+      "properties": {
+        "semantic_free": {"const": true},
+        "raw_payload_bytes_embedded": {"const": false},
+        "qword_alignment_bytes": {"const": 8},
+        "semantic_confirmation_requires_evidence": {"const": true}
+      }
+    },
+    "structural_grammar": {
+      "type": "object",
+      "required": ["boundary_classes_observed", "boundaries", "record_layout", "record_families", "record_family_axes"],
+      "properties": {
+        "boundary_classes_observed": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["boundary_id", "boundary_class", "net_relative_size_change_bytes", "cross_serialization_survival_distinct", "old_delta_barrier_match_density", "new_delta_barrier_match_density", "semantic_role"],
+            "properties": {
+              "boundary_id": {"type": "string"},
+              "boundary_class": {"enum": ["LOCAL_EXTINCTION_CANDIDATE", "MIXED_REUSE_REPACK_CANDIDATE", "UNRESOLVED_BOUNDARY"]},
+              "net_relative_size_change_bytes": {"type": "integer"},
+              "cross_serialization_survival_distinct": {"type": "integer", "minimum": 0},
+              "old_delta_barrier_match_density": {"type": "number", "minimum": 0, "maximum": 1},
+              "new_delta_barrier_match_density": {"type": "number", "minimum": 0, "maximum": 1},
+              "semantic_role": {"const": "UNRESOLVED"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "record_layout": {"type": "object"},
+        "record_families": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["family_id", "length_blocks", "preserve_signature", "count", "semantic_role"],
+            "properties": {
+              "family_id": {"type": "string"},
+              "length_blocks": {"type": "integer", "minimum": 1},
+              "preserve_signature": {"type": "string", "pattern": "^[01]{7}$"},
+              "count": {"type": "integer", "minimum": 1},
+              "semantic_role": {"const": "UNRESOLVED"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "record_family_axes": {
+          "type": "array",
+          "const": ["length_blocks", "preserve_signature"]
+        }
+      }
+    },
+    "semantic_slots": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["geometry", "index", "transform", "material", "hierarchy"],
+      "properties": {
+        "geometry": {"$ref": "#/$defs/semanticSlot"},
+        "index": {"$ref": "#/$defs/semanticSlot"},
+        "transform": {"$ref": "#/$defs/semanticSlot"},
+        "material": {"$ref": "#/$defs/semanticSlot"},
+        "hierarchy": {"$ref": "#/$defs/semanticSlot"}
+      }
+    },
+    "evidence_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+    "guardrails": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "$defs": {
+    "semanticSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "confidence", "evidence_ids", "candidate_notes"],
+      "properties": {
+        "status": {"enum": ["UNRESOLVED", "CANDIDATE", "CONFIRMED"]},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "evidence_ids": {"type": "array", "items": {"type": "string"}},
+        "candidate_notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
