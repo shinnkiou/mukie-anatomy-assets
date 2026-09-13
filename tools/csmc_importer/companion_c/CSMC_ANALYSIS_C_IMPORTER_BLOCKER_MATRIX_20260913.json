@@ -1,0 +1,47 @@
+{
+  "schema_version": "csmc_analysis_c_importer_blocker_matrix_v1",
+  "run_id": "C-026",
+  "slots": {
+    "geometry": {
+      "semantic_state": "UNRESOLVED",
+      "direct_existing_evidence": "NONE",
+      "known_negative": ["no direct float16 geometry evidence"],
+      "missing": ["current-data codec binding", "geometry-specific interpretation", "independent semantic correlation"],
+      "static_progress_without_new_isolated_data": "EXHAUSTED_AT_CURRENT_SNAPSHOT"
+    },
+    "index": {
+      "semantic_state": "UNRESOLVED",
+      "direct_existing_evidence": "NONE",
+      "known_negative": ["no direct uint16/uint32 mesh-index evidence", "SQL FirstIndex/NextIndex are hierarchy navigation, not mesh indices"],
+      "missing": ["current-data codec binding", "index-width/layout evidence", "independent semantic correlation"],
+      "static_progress_without_new_isolated_data": "EXHAUSTED_AT_CURRENT_SNAPSHOT"
+    },
+    "transform": {
+      "semantic_state": "UNRESOLVED",
+      "direct_existing_evidence": "CONFIRMED_NUMERIC_ENCODING_ON_SEPARATE_ACTIVE_SQLITE_FIELDS",
+      "supporting_candidates": ["counted BE-f64/f32", "quaternion-like rotation candidate"],
+      "missing": ["binding from model record/regime to confirmed codec", "current model-transform mapping", "controlled differential or equivalent semantic correlation"],
+      "static_progress_without_new_isolated_data": "SCHEMA_AND_CODEC_HINTS_EXHAUSTED"
+    },
+    "material": {
+      "semantic_state": "UNRESOLVED",
+      "direct_existing_evidence": "NONE_IN_CURRENT_COMPANION_INVENTORY",
+      "missing": ["current-data material-bearing region", "codec/layout evidence", "semantic correlation"],
+      "static_progress_without_new_isolated_data": "EXHAUSTED_AT_CURRENT_SNAPSHOT"
+    },
+    "hierarchy": {
+      "semantic_state": "UNRESOLVED",
+      "direct_existing_evidence": "STRUCTURAL_CONTAINER_ROUTING_CONFIRMED",
+      "supporting_candidates": ["historical count+first-index+NextIndex node topology", "NodeName TEXT schema hint", "active external GUID routing"],
+      "missing": ["current live model-node chain", "binding from current record/regime to hierarchy representation", "independent semantic correlation"],
+      "static_progress_without_new_isolated_data": "SCHEMA_AND_ROUTE_HINTS_EXHAUSTED"
+    }
+  },
+  "minimum_mesh_emit_blockers": ["geometry", "index"],
+  "minimum_scene_emit_additional_blockers": ["transform", "hierarchy"],
+  "material_is_independent": true,
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
