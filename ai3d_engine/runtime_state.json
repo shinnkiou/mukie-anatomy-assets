@@ -41,18 +41,28 @@
     "worker_action_allowlist": ["ai3d_blender_physical_mvp_v1"],
     "worker_arbitrary_shell": false,
     "worker_cloud_paths": false,
-    "worker_previous_packaging_run": "34738248556",
-    "worker_previous_packaging_status": "PASS",
     "worker_coordinate_mapping_commit": "4d5512650107d815746ab4e43ebe390a8f0c09ca",
     "worker_corrected_packaging_run": "34743230600",
-    "worker_corrected_packaging_status": "IN_PROGRESS",
+    "worker_corrected_packaging_status": "PASS",
+    "worker_package_artifact_id": "worker-package-f06f0a122e2f24e2",
+    "worker_package_sha256": "f06f0a122e2f24e28620ebdce7ff13c17e6e3bb49e27ee202a3e8f1c7498e03b",
+    "worker_package_drive_file_id": "1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx",
+    "worker_package_drive_readback": "PASS",
+    "worker_exe_sha256": "53595f20432f1a586ddd654ec9d3bdb7c37a93f3ad1b468a181dda91246ec625",
+    "worker_source_selftest": "PASS",
+    "worker_packaged_selftest": "PASS",
+    "worker_package_checkpoint": "cp-ai3d002-package-a9a0cc5bcbdb6103",
     "windows_physical_canary": "NOT_EXECUTED",
-    "base44_checkpoint": "6aa61fb2fdf17e0341faf651",
-    "base44_commit": "07ed204b825ff17b78e22d813f1ac0d5934c9d8a"
+    "online_legacy_worker_version": "0.18.2-p0.18.2",
+    "online_legacy_worker_eligible_for_ai3d": false,
+    "base44_checkpoint": "6aa64665e5dbcc7341ba91db",
+    "base44_commit": "789fb2c8dc95168b16f43a42fed5a58875608824"
   },
   "links": {
     "drive_master_doc": "https://docs.google.com/document/d/1XYJaDFFQAt-htTq2xlg-kWUvO_t0NtJgP5kli0yfuDA/edit",
     "drive_physical_evidence": "https://drive.google.com/file/d/1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R/view",
+    "drive_worker_package": "https://drive.google.com/file/d/1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx/view",
+    "drive_worker_package_verification": "https://drive.google.com/file/d/1-sPGXOShwDtktyM4FZdhZ5mEHhemCUy3/view",
     "linear_project": "https://linear.app/rioma/project/never-tear-ai-3d-production-engine-2778ac7bc44c",
     "linear_ai3d_001": "https://linear.app/rioma/issue/RIO-43/ai3d-001-production-protocol-mvp-vertical-slice",
     "linear_ai3d_002": "https://linear.app/rioma/issue/RIO-44/ai3d-002-windows-worker-adapter-for-3d-command-api",
@@ -63,5 +73,5 @@
     "reuse_general_architecture_only": true,
     "copy_private_or_purchased_csmc_data": false
   },
-  "next_action": "AI3D-002 ACTIVE. Wait for corrected Windows packaging run 34743230600. If PASS, download and hash-verify the corrected companion ZIP, then install/run only the separate AI3D companion Worker on the paired Windows device and execute one physical CANARY with upload/readback/visual QA. Do not queue the old P0.18.2 worker."
+  "next_action": "Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm it advertises ai3d_blender_physical_mvp_v1 before queueing one physical CANARY. The currently online 0.18.2-p0.18.2 worker is not eligible."
 }
