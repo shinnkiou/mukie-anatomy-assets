@@ -5,8 +5,9 @@
   "status": "ACTIVE",
   "stage": "IMPLEMENT",
   "active_task": "AI3D-002",
-  "updated_at": "2026-09-13T21:52:00+09:00",
-  "next_action": "AI3D-009 COMPLETE. Next primary gate: start the verified separate AI3D Windows companion, require ai3d_blender_physical_mvp_v1 capability, then queue exactly ONE physical CANARY. Never queue the legacy worker. AI3D-004 remains waiting for real physical evidence.",
+  "secondary_ready_task": "AI3D-010",
+  "updated_at": "2026-09-14T07:09:00+09:00",
+  "next_action": "AI3D-002 remains the only execution gate: recheck telemetry and queue exactly ONE physical CANARY only after verified companion capability ai3d_blender_physical_mvp_v1 appears. Geometry research is closed. AI3D-010 is prepared; after AI3D-004 real physical QA PASS, build Central Corridor authoritative Structure subset first, then reuse/integrate the existing Blast Junction overlay.",
   "implementation": {
     "production_protocol": "ai3d_engine/src/productionProtocol.js",
     "module_assembly": "ai3d_engine/src/moduleAssembly.js",
@@ -15,6 +16,7 @@
     "floor_plan_structure_compiler": "ai3d_engine/src/floorPlanStructureCompiler.js",
     "mars_structure_authority_source": "ai3d_engine/data/walkmyplan_revision380_geometry_recovery.json",
     "mars_structure_authority_qa": "ai3d_engine/scripts/ai3dMarsStructureAuthoritySmoke.mjs",
+    "mars_module_execution_manifest": "ai3d_engine/data/mars_structure_module_execution_v1.json",
     "physical_qa_gate": "ai3d_engine/src/physicalQaGate.js",
     "windows_worker": "ai3d_engine/windows_worker/ai3d_worker.py",
     "windows_blender_action": "ai3d_engine/windows_worker/blender_physical_mvp.py",
@@ -26,7 +28,7 @@
     "legacy_worker_version": "0.18.2-p0.18.2",
     "legacy_worker_protocol": "ukie_worker_v1",
     "legacy_worker_eligible_for_ai3d": false,
-    "legacy_worker_last_seen": "2026-09-13T12:42:31.373Z",
+    "legacy_worker_last_seen": "2026-09-13T13:55:13.202Z",
     "ai3d_companion_capability_gate": "HOLD",
     "required_capability": "ai3d_blender_physical_mvp_v1",
     "ai3d_worker_jobs_count": 0,
@@ -65,28 +67,37 @@
       "compiled_artifact_sha256": "9453eb39e916c096bfd1e0355bd92070e350cd1f69858da5aafec11d953f6465",
       "command_count": 179,
       "github_run_id": "34757780144",
-      "github_head_sha": "93d72d6f0bcba2a5bea73a28f5304a799ff3e8a5",
       "github_actions_artifact_id": "10317779026",
       "drive_file_id": "1SdyIbnRNZXgxViBPVPVffV3iS1ApdCs9",
       "evidence_zip_sha256": "9edfcb48f1e180017c3cfcb5e752b4efe9f4bcdb4e87a847a97843d32de3ddee",
       "drive_exact_sha_readback": "PASS",
-      "drive_master_revision": "ANLCKQmrEIq6LvNYyWyt_3JiOL7pzVqsFpTHsBndbUl0lTH1x6qJTfOd3Uo0Eo9MIyJ7aeOpzGS1rd_z3SifyD6rpQMJ8jwdn9puHt2p100",
-      "drive_master_section18": "READBACK_PASS",
       "supabase_checkpoint_id": "cp-ai3d009-geometry-authority-9edfcb48f1e18001",
       "base44_checkpoint_id": "6aa69c2142be75727952f16f",
-      "base44_commit": "beff79e21255ea662a26ea28329a3269fdee2790",
       "linear": "RIO-52_DONE",
-      "evidence_class": "AUTHORITATIVE_MARS_GEOMETRY_COMPILE_NOT_PHYSICAL",
-      "inferred_dimensions": false,
       "physical_execution_claimed": false
     }
   },
-  "pending_tasks": {
-    "AI3D-002": {"status":"ACTIVE","blocker":"Verified separate AI3D companion is not capability-advertised; legacy worker is ineligible","physical_windows_canary":"NOT_EXECUTED"},
-    "AI3D-004": {"status":"READY","blocker":"Depends on AI3D-002 real physical CANARY PASS","physical_execution_claimed":false}
+  "ready_tasks": {
+    "AI3D-010": {
+      "status": "READY",
+      "stage": "PLAN",
+      "title": "Mars Central Corridor + Blast Junction first production modules",
+      "dependencies": ["AI3D-009","AI3D-002","AI3D-004"],
+      "central_corridor": {"wall_count":13,"opening_count":13,"compiler_command_subset_count":65,"wall_ids":[10009,10020,10022,10023,10024,10025,10026,10027,10028,10029,10030,10031,10032],"opening_ids":[10205,10043,10044,10045,10046,10047,10048,10049,10050,10051,10052,10053,10054]},
+      "blast_junction": {"mode":"existing_damage_overlay_reuse","primary_source_wall_ids":[10027,10032,10009],"critical_opening_ids":[10049,10054,10205],"asset_prefixes":["DMG024_","HERO_BLAST_"]},
+      "existing_assets_reused": true,
+      "geometry_mutated_in_preflight": false,
+      "physical_execution_claimed": false,
+      "github_manifest_commit": "4f517808d302932b1a01cf887d725ef32c46ef5f",
+      "base44_full_build": "src/lib/3d/neverTearMarsFullBuild.js",
+      "base44_lineage_checkpoint": "6aa71de5e5617d9d930db82c",
+      "base44_lineage_commit": "a6ca40b909e9cdb39bcb24140153bf53dca18450",
+      "base44_build_after_lineage_update": "BLOCKED_WORKSPACE_NO_PACKAGE_JSON",
+      "linear": "RIO-53_TODO"
+    }
   },
   "source_boundaries": {
-    "walkmyplan_structure_geometry": {"role":"STRUCTURE_GEOMETRY_AUTHORITY","plan_id":"aacb32598eb746758d60c8","source_revision":380,"current_aggregate_match":"PASS"},
+    "walkmyplan_structure_geometry": {"role":"STRUCTURE_GEOMETRY_AUTHORITY","plan_id":"aacb32598eb746758d60c8","source_revision":380,"current_aggregate_match":"PASS","research_closed":true},
     "room_registry": {"role":"CURRENT_ROOM_REGISTRY_AUTHORITY","task_id":"AI3D-006","room_count":14},
     "historical_revision_room_snapshot": {"revision":380,"room_count":15,"current_authority":false},
     "adobe": {"role":"NON_CANONICAL_VISUAL_REFERENCE","geometry_truth_eligible":false,"inventory_count":6},
@@ -95,24 +106,23 @@
   "external_sync": {
     "drive_folder_id": "1nywvK1BcLozJg18CdxadKdgZuDO3TRjb",
     "drive_master_doc_id": "1XYJaDFFQAt-htTq2xlg-kWUvO_t0NtJgP5kli0yfuDA",
-    "drive_master_revision": "ANLCKQmrEIq6LvNYyWyt_3JiOL7pzVqsFpTHsBndbUl0lTH1x6qJTfOd3Uo0Eo9MIyJ7aeOpzGS1rd_z3SifyD6rpQMJ8jwdn9puHt2p100",
-    "drive_master_section18": "READBACK_PASS",
     "drive_ai3d009_evidence_file_id": "1SdyIbnRNZXgxViBPVPVffV3iS1ApdCs9",
     "github_repo": "shinnkiou/mukie-anatomy-assets",
     "github_branch": "ai-3d-production-engine-20260913",
-    "github_ai3d009_workflow_head": "93d72d6f0bcba2a5bea73a28f5304a799ff3e8a5",
-    "github_task_queue_sync_commit": "cff071d95b10c5b713062f1dfdbfef1ec4cbfa14",
+    "github_ai3d010_manifest_commit": "4f517808d302932b1a01cf887d725ef32c46ef5f",
+    "github_ai3d010_task_queue_commit": "92644b9c3c58d24ea2a4295a8b193546614d8dcc",
     "linear_project_id": "3720fab3-8557-40a4-b003-a3522269c770",
     "linear_ai3d009": "RIO-52_DONE",
+    "linear_ai3d010": "RIO-53_TODO",
     "supabase_project_id": "vbuokbwglauibabinaqs",
     "supabase_ai3d009_checkpoint": "cp-ai3d009-geometry-authority-9edfcb48f1e18001",
-    "base44_final_checkpoint": "6aa69c2142be75727952f16f",
-    "base44_final_commit": "beff79e21255ea662a26ea28329a3269fdee2790"
+    "base44_ai3d010_lineage_checkpoint": "6aa71de5e5617d9d930db82c"
   },
   "boundary": {
     "continue_csmc_analysis": false,
     "reuse_general_architecture_only": true,
     "copy_private_or_purchased_csmc_data": false,
-    "infer_missing_floorplan_geometry": false
+    "infer_missing_floorplan_geometry": false,
+    "reopen_walkmyplan_geometry_research": false
   }
 }
