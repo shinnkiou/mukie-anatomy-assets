@@ -19,7 +19,8 @@
     "ai3d005_module_assembly_qa": "PASS",
     "ai3d004_physical_qa_gate_preflight": "PASS",
     "ai3d004_evidence_class": "LOGIC_ONLY_NOT_PHYSICAL",
-    "ai3d004_physical_execution_claimed": false
+    "ai3d004_physical_execution_claimed": false,
+    "worker_transport_v2_readback": "PASS"
   },
   "mvp_run": {
     "run_key": "AI3D-CLOUD-PHYSICAL-34738453130",
@@ -45,6 +46,14 @@
     "windows_worker": "ai3d_engine/windows_worker/ai3d_worker.py",
     "windows_blender_action": "ai3d_engine/windows_worker/blender_physical_mvp.py",
     "worker_transport": "ai3d-worker-transport-canary",
+    "worker_transport_source": "ai3d_engine/supabase/functions/ai3d-worker-transport-canary/index.ts",
+    "worker_transport_version": 2,
+    "worker_transport_status": "ACTIVE",
+    "worker_transport_ezbr_sha256": "20982838b8b77b5a49e766705719223be6616470ac082fdf69b9638fdbded7ec",
+    "worker_transport_source_sha256": "5dc757c1d929d4cc153d4fb2f65178276e590dc098473e4c8776b67d41f2862f",
+    "worker_transport_source_commit": "cece5742bcd5c6e23a32fdc334f7461687e4fd31",
+    "worker_transport_post_canary_label_fix": "PASS",
+    "worker_capability_telemetry": ["ai3d_worker_version", "ai3d_contract_version", "ai3d_capabilities", "ai3d_last_seen"],
     "worker_action_allowlist": ["ai3d_blender_physical_mvp_v1"],
     "worker_arbitrary_shell": false,
     "worker_cloud_paths": false,
@@ -62,8 +71,8 @@
     "windows_physical_canary": "NOT_EXECUTED",
     "online_legacy_worker_version": "0.18.2-p0.18.2",
     "online_legacy_worker_eligible_for_ai3d": false,
-    "base44_checkpoint": "6aa65c5f2f886da233da86a9",
-    "base44_commit": "a557978251e69e4018f26fbda52846e4711301a1"
+    "base44_checkpoint": "6aa65dcc818d26c1faa9ab0a",
+    "base44_commit": "806a26ecaea9a9946978fda5ec71ef681d111f00"
   },
   "completed_tasks": {
     "AI3D-001": {
@@ -150,5 +159,5 @@
     "reuse_general_architecture_only": true,
     "copy_private_or_purchased_csmc_data": false
   },
-  "next_action": "AI3D-004 gate preflight is PASS but is logic-only, not physical evidence. Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm it advertises ai3d_blender_physical_mvp_v1 before queueing exactly one physical CANARY. The online 0.18.2-p0.18.2 worker is ineligible. Feed the real physical result, durable provider readback and visual QA through physicalQaGate; promote only on all PASS."
+  "next_action": "AI3D-004 gate preflight is PASS but is logic-only, not physical evidence. Transport v2 is ACTIVE and now persists explicit AI3D capability telemetry. Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm ai3d_worker_version, ai3d_contract_version, ai3d_capabilities including ai3d_blender_physical_mvp_v1, and ai3d_last_seen before queueing exactly one physical CANARY. The online 0.18.2-p0.18.2 legacy worker is ineligible. Feed the real physical result, durable provider readback and visual QA through physicalQaGate; promote only on all PASS."
 }
