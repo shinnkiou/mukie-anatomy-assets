@@ -1,0 +1,37 @@
+{
+  "schema": "never-tear-ai3d-floor-plan-structure-gate-runtime-evidence-v1",
+  "task_id": "AI3D-007",
+  "run_id": "AI3D-007-STRUCTURE-SOURCE-GATE-20260913",
+  "status": "PASS",
+  "artifact_id": "structure-gate-04e0b366cf076c44",
+  "artifact_sha256": "04e0b366cf076c443265530d19bf2f2afa0386514b1110b5f7c8525ac6ce9c46",
+  "evidence_json_sha256": "286d712eed8b20385fdd9ae5a10bf724b26c2ad937af8359a9a5bc00927f8606",
+  "current_source": {
+    "provider": "WALKMYPLAN",
+    "plan_id": "aacb32598eb746758d60c8",
+    "reported_counts": {"walls": 50, "openings": 26, "fixtures": 87, "rooms": 14},
+    "observed_geometry": {"walls_with_geometry": 0, "openings_with_geometry": 0},
+    "gate_status": "HOLD",
+    "promotion": "BLOCK_STRUCTURE_COMPILE",
+    "reasons": ["WALL_GEOMETRY_MISSING", "OPENING_GEOMETRY_MISSING"]
+  },
+  "qa": {
+    "artifact_schema": "PASS",
+    "project_lineage": "PASS",
+    "gate_status_valid": "PASS",
+    "no_inference_policy": "PASS",
+    "artifact_sha_readback": "PASS",
+    "complete_authoritative_fixture": "READY",
+    "adobe_visual_reference_geometry_truth": "REJECTED",
+    "failed_to3d_geometry_truth": "REJECTED_NO_RETRY"
+  },
+  "policy": {
+    "infer_missing_wall_endpoints": false,
+    "infer_room_dimensions_from_area": false,
+    "infer_opening_positions": false,
+    "adobe_visual_reference_can_supply_geometry": false,
+    "failed_to3d_job_can_supply_geometry": false
+  },
+  "github_actions": "NOT_YET_OBSERVED",
+  "next_action": "Acquire authoritative full wall endpoint and opening placement geometry before Structure compilation. Do not infer missing dimensions."
+}
