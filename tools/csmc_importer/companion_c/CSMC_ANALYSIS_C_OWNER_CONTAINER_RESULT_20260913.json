@@ -1,0 +1,22 @@
+{
+  "schema_version":"csmc_analysis_c_owner_container_map_v1",
+  "edge_counts":{"LIVE_RESOLVED_EDGE":2,"SCHEMA_ONLY_EDGE":3,"UNRESOLVED_ROUTE":2},
+  "importer_routes":{
+    "character":{"source":"Canvas3DModelLoader.ModelData","target":"catalog_character_external","target_kind":"catalog_character","semantic_payload_role":"UNRESOLVED"},
+    "scene":{"source":"Manager3DOd.SceneData","target":"scene_external","target_kind":"scene","semantic_payload_role":"UNRESOLVED"}
+  },
+  "schema_only_edges":[
+    "Manager3D.ModelInfoFirstIndex -> ModelInfo3D",
+    "ModelInfo3D.ModelNodeInfoFirstIndex -> ModelNodeInfo3D",
+    "ModelNodeInfo3D.NextIndex -> ModelNodeInfo3D"
+  ],
+  "unresolved_routes":["ModelData3D.Layer3DModelData","Canvas3DModelBank.BankData"],
+  "serializer_owner_claimed":false,
+  "payload_semantics_claimed":false,
+  "synthetic_tests_passed":3,
+  "guardrails":[
+    "Route ownership is not proof of serializer implementation ownership.",
+    "Schema-only legacy relations stay schema-only without live table/row evidence.",
+    "Resolved target kind does not identify mesh/bone/material/index/transform encoding."
+  ]
+}
