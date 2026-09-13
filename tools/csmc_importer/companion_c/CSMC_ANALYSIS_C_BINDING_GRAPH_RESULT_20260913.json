@@ -1,0 +1,32 @@
+{
+  "schema_version": "csmc_analysis_c_binding_graph_result_v1",
+  "run_id": "C-013",
+  "counts": {
+    "route_bindings": 2,
+    "structural_provenance_bindings": 1,
+    "record_family_bindings": 5,
+    "record_to_confirmed_codec_bindings": 0,
+    "record_to_schema_bindings": 0,
+    "record_to_semantic_bindings": 0
+  },
+  "paths": {
+    "character_route_to_record_family": true,
+    "record_to_confirmed_codec": false,
+    "record_to_node_schema": false,
+    "record_to_geometry_or_index": false,
+    "record_to_transform_or_hierarchy": false
+  },
+  "evidence_surfaces": {
+    "counted_be_codec": "active Manager3DOd named BLOB fields",
+    "node_schema": "latent ParamScheme ModelNodeInfo3D",
+    "record_families": "character +965 cross-serialization regime"
+  },
+  "precise_static_gap": "CURRENT_PAYLOAD_BINDING_EDGE",
+  "synthetic_tests_passed": 4,
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false,
+  "rio26_mutation": false,
+  "canonical_repoll": false
+}
