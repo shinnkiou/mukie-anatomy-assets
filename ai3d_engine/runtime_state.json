@@ -10,7 +10,8 @@
     "route_switch_test": "PASS",
     "lint": "PASS",
     "vite_build": "PASS",
-    "physical_render": "PENDING",
+    "webgl_adapter": "IMPLEMENTED_BUILD_PASS",
+    "physical_render": "WEBGL_ADAPTER_IMPLEMENTED_NOT_EXECUTED",
     "visual_qa": "PENDING"
   },
   "mvp_run": {
@@ -20,6 +21,12 @@
     "checkpoint_id": "cp-6a1ce352a7d25268",
     "checkpoint_sha256": "6a1ce352a7d25268018c353e5065131c0a84ddc5393762893749cea637aa34f1",
     "physical_render": false
+  },
+  "implementation": {
+    "production_protocol": "ai3d_engine/src/productionProtocol.js",
+    "webgl_adapter": "ai3d_engine/src/webglProductionAdapter.js",
+    "base44_checkpoint": "6aa61c6660759b6657cc4d4c",
+    "base44_commit": "b58dbdcd9c56bf6db2ec90190f381180f5d0d120"
   },
   "links": {
     "drive_master_doc": "https://docs.google.com/document/d/1XYJaDFFQAt-htTq2xlg-kWUvO_t0NtJgP5kli0yfuDA/edit",
@@ -31,5 +38,5 @@
     "reuse_general_architecture_only": true,
     "copy_private_or_purchased_csmc_data": false
   },
-  "next_action": "Integrate actual WebGL/Blender pixel render evidence into the command API and run visual QA before handler promotion."
+  "next_action": "Run Physical MVP in a real WebGL browser, read back the pixel-render SHA and checkpoint, perform visual QA, and promote the canary handlers only if PASS."
 }
