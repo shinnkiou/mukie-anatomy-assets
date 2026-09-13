@@ -1,0 +1,61 @@
+{
+  "schema_version": "csmc_analysis_c_family_codec_compatibility_v1",
+  "research_run": "C-046",
+  "source_type": "PUBLIC_SAFE_CROSS_LANE_AGGREGATE",
+  "source_drive_id": "1flgIummgLY4MNVMdZ3KW0wU2yD5YKfe7NBY4fi_EIlU",
+  "source_mainline_commit": "5ae93bbc20fb26c62a1629455ed5690164db932a",
+  "families": {
+    "F48_0000110": 7,
+    "F48_0000111": 3,
+    "F48_0001110": 3,
+    "F49_0000111": 3,
+    "F49_1000111": 6
+  },
+  "roles": {
+    "WHOLE_RECORD_Q0": {
+      "surface_ceilings": {"A": 7, "B": 7},
+      "effective_cross_surface_ceiling": 7,
+      "compatible_family_ids": ["F48_0000110", "F48_0000111", "F48_0001110", "F49_0000111", "F49_1000111"],
+      "eliminated_family_ids": [],
+      "compatible_record_count_if_family_wide": 22
+    },
+    "STABLE_PREFIX_Q0": {
+      "surface_ceilings": {"A": 7, "B": 7},
+      "effective_cross_surface_ceiling": 7,
+      "compatible_family_ids": ["F48_0000110", "F48_0000111", "F48_0001110", "F49_0000111", "F49_1000111"],
+      "eliminated_family_ids": [],
+      "compatible_record_count_if_family_wide": 22
+    },
+    "CONTROL_ZONE_Q21": {
+      "surface_ceilings": {"A": 6, "B": 5},
+      "effective_cross_surface_ceiling": 5,
+      "compatible_family_ids": ["F48_0000111", "F48_0001110", "F49_0000111"],
+      "eliminated_family_ids": ["F48_0000110", "F49_1000111"],
+      "compatible_record_count_if_family_wide": 9
+    },
+    "PRESERVED_ISLAND_Q25": {
+      "surface_ceilings": {"A": 6, "B": 6},
+      "effective_cross_surface_ceiling": 6,
+      "compatible_family_ids": ["F48_0000111", "F48_0001110", "F49_0000111", "F49_1000111"],
+      "eliminated_family_ids": ["F48_0000110"],
+      "compatible_record_count_if_family_wide": 15
+    }
+  },
+  "interpretation": {
+    "scope": "CROSS_SURFACE_FAMILY_WIDE_ONLY",
+    "compatibility_is_binding": false,
+    "individual_hits_in_eliminated_families_forbidden": false,
+    "cross_family_recurrence_forbidden": false,
+    "c018_preregistered_scan_surface_changed": false,
+    "reason": "C-021 permits cross-family same-role recurrence and C-018 is preregistered. Aggregate ceilings prune only family-wide scope interpretations, not primary scan cells."
+  },
+  "global_invariants": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "raw_or_private_payload_bytes_used": false,
+    "runtime_dispatch_requested": false,
+    "mainline_mutation_requested": false
+  },
+  "synthetic_tests": {"passed": 9, "failed": 0}
+}
