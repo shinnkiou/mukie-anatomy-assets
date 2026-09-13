@@ -17,6 +17,7 @@
     "drive_sha_readback": "PASS",
     "ai3d003_lineage_runtime_qa": "PASS",
     "ai3d005_module_assembly_qa": "PASS",
+    "ai3d006_floor_plan_intake_qa": "PASS",
     "ai3d004_physical_qa_gate_preflight": "PASS",
     "ai3d004_evidence_class": "LOGIC_ONLY_NOT_PHYSICAL",
     "ai3d004_physical_execution_claimed": false,
@@ -40,6 +41,8 @@
   "implementation": {
     "production_protocol": "ai3d_engine/src/productionProtocol.js",
     "module_assembly": "ai3d_engine/src/moduleAssembly.js",
+    "external_floor_plan_intake": "ai3d_engine/src/externalFloorPlanIntake.js",
+    "external_floor_plan_smoke": "ai3d_engine/scripts/externalFloorPlanIntakeSmoke.mjs",
     "physical_qa_gate": "ai3d_engine/src/physicalQaGate.js",
     "webgl_adapter": "ai3d_engine/src/webglProductionAdapter.js",
     "cloud_physical_runner": "ai3d_engine/cloud_runner/blender_physical_mvp_cpu_v2.py",
@@ -71,8 +74,8 @@
     "windows_physical_canary": "NOT_EXECUTED",
     "online_legacy_worker_version": "0.18.2-p0.18.2",
     "online_legacy_worker_eligible_for_ai3d": false,
-    "base44_checkpoint": "6aa65dcc818d26c1faa9ab0a",
-    "base44_commit": "806a26ecaea9a9946978fda5ec71ef681d111f00"
+    "base44_checkpoint": "6aa6736b28c37c0048b26881",
+    "base44_commit": "611b9115eaa8caaa39fccee2ad14976cfb7fd59f"
   },
   "completed_tasks": {
     "AI3D-001": {
@@ -107,6 +110,33 @@
       "drive_readback": "PASS",
       "supabase_readback": "PASS",
       "linear": "RIO-47_DONE"
+    },
+    "AI3D-006": {
+      "status": "COMPLETE",
+      "route": "WALKMYPLAN_MODULE_REGISTRY",
+      "github_run_id": "34748464426",
+      "github_head_sha": "31f608d1d843bb08c1b9e58163553ba88620d53e",
+      "github_actions_artifact_id": "10314553338",
+      "github_actions_artifact_digest": "sha256:1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28",
+      "drive_file_id": "1kDfnhwfopqRVg4iR0MJVrZ7ocC4edFS6",
+      "drive_zip_sha256": "1cc37b2c792acb6981d54d4c3be4599f2bc6daab14ac0ee11ea1cd4fa9a83c28",
+      "drive_readback": "PASS",
+      "smoke_json_sha256": "8a0969d2e28aeb902edd5ba59992924e761a3fbcd5292b5c86de7fbc5fe7bff2",
+      "artifact_id": "floorplan-8deef39ab59ba414",
+      "artifact_sha256": "8deef39ab59ba41482aa9c24f240c341924a94f7b2ce28f5460f01d4ee1141cd",
+      "module_count": 14,
+      "walkmyplan_plan_id": "aacb32598eb746758d60c8",
+      "walkmyplan_counts": {"walls": 50, "openings": 26, "fixtures": 87, "rooms": 14},
+      "storey_height_m": 3.4,
+      "no_invented_dimensions": true,
+      "adobe_reference_count": 6,
+      "adobe_boundary": "NON_CANONICAL_VISUAL_REFERENCE",
+      "to3d_job": "8b16ab22-ef00-487a-b47f-ee01c947e991_FAILED_NO_RETRY",
+      "checkpoint_id": "cp-ai3d006-floorplan-951c9653824bed58",
+      "supabase_readback": "PASS",
+      "base44_checkpoint": "6aa6736b28c37c0048b26881",
+      "base44_commit": "611b9115eaa8caaa39fccee2ad14976cfb7fd59f",
+      "linear": "RIO-49_DONE"
     }
   },
   "pending_tasks": {
@@ -146,12 +176,14 @@
     "drive_ai3d003_lineage_evidence": "https://drive.google.com/file/d/1SMDn28sYmjoMQDJHSsLYTSk1sRpsk9av/view",
     "drive_ai3d004_gate_evidence": "https://drive.google.com/file/d/1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS/view",
     "drive_ai3d005_module_assembly_evidence": "https://drive.google.com/file/d/19SnIAP7Oy0Pwkoozj7PaPllLbljpYmXX/view",
+    "drive_ai3d006_floor_plan_intake_evidence": "https://drive.google.com/file/d/1kDfnhwfopqRVg4iR0MJVrZ7ocC4edFS6/view",
     "linear_project": "https://linear.app/rioma/project/never-tear-ai-3d-production-engine-2778ac7bc44c",
     "linear_ai3d_001": "https://linear.app/rioma/issue/RIO-43/ai3d-001-production-protocol-mvp-vertical-slice",
     "linear_ai3d_002": "https://linear.app/rioma/issue/RIO-44/ai3d-002-windows-worker-adapter-for-3d-command-api",
     "linear_ai3d_003": "https://linear.app/rioma/issue/RIO-45/ai3d-003-artifact-lineage-and-durable-state",
     "linear_ai3d_004": "https://linear.app/rioma/issue/RIO-46/ai3d-004-physical-render-and-visual-qa-gate",
     "linear_ai3d_005": "https://linear.app/rioma/issue/RIO-47/ai3d-005-module-and-assembly-model",
+    "linear_ai3d_006": "https://linear.app/rioma/issue/RIO-49/ai3d-006-walkmyplan-floor-plan-intake-module-registry",
     "supabase_project_id": "vbuokbwglauibabinaqs"
   },
   "boundary": {
@@ -159,5 +191,5 @@
     "reuse_general_architecture_only": true,
     "copy_private_or_purchased_csmc_data": false
   },
-  "next_action": "AI3D-004 gate preflight is PASS but is logic-only, not physical evidence. Transport v2 is ACTIVE and now persists explicit AI3D capability telemetry. Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm ai3d_worker_version, ai3d_contract_version, ai3d_capabilities including ai3d_blender_physical_mvp_v1, and ai3d_last_seen before queueing exactly one physical CANARY. The online 0.18.2-p0.18.2 legacy worker is ineligible. Feed the real physical result, durable provider readback and visual QA through physicalQaGate; promote only on all PASS."
+  "next_action": "AI3D-006 WalkMyPlan floor-plan intake is COMPLETE. AI3D-004 gate preflight remains PASS but logic-only, not physical evidence. Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm ai3d_worker_version, ai3d_contract_version, ai3d_capabilities including ai3d_blender_physical_mvp_v1, and ai3d_last_seen before queueing exactly one physical CANARY. The online 0.18.2-p0.18.2 legacy worker is ineligible. Feed the real physical result, durable provider readback and visual QA through physicalQaGate; promote only on all PASS."
 }
