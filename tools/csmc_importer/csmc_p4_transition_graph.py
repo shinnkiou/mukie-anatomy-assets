@@ -111,13 +111,21 @@ def analyze(doc: dict) -> dict:
             continue
         seen_pairs.add(key)
         reverse = edge_by_pair[(b, a)]
-        sa, sb = support.get(a, 0), support.get(b, 0)
-        dominant = a if sa >= sb else b
-        sparse = b if dominant == a else a
-        ratio = 0.0 if support.get(dominant, 0) == 0 else support.get(sparse, 0) / support[dominant]
+        sa, sb = support.get(a), support.get(b)
+        support_known = sa is not None and sb is not None and max(sa, sb) > 0
+        if support_known:
+            dominant = a if sa >= sb else b
+            sparse = b if dominant == a else a
+            ratio = support[sparse] / support[dominant]
+        else:
+            dominant = None
+            sparse = None
+            ratio = None
         net_bytes = int(forward[0]["net_relative_size_change_bytes"]) + int(reverse[0]["net_relative_size_change_bytes"])
         sparse_excursion = (
-            ratio <= 0.10
+            support_known
+            and ratio is not None
+            and ratio <= 0.10
             and net_bytes == 0
             and not forward[0]["complete_cross_serialization_extinction"]
             and not reverse[0]["complete_cross_serialization_extinction"]
@@ -160,7 +168,7 @@ def analyze(doc: dict) -> dict:
         "valid": True,
         "container_route": doc["container_route"],
         "node_deltas_qwords": sorted(nodes),
-        "anchor_support": {str(k): support.get(k, 0) for k in sorted(nodes)},
+        "anchor_support": {str(k): support[k] for k in sorted(support)},
         "transition_count": len(transitions),
         "class_counts": dict(sorted(class_counts.items())),
         "reversible_pairs": reversible_pairs,
@@ -183,7 +191,7 @@ def fixture() -> dict:
     return {
         "schema_version": SCHEMA,
         "container_route": "character",
-        "anchor_support": {"194": 6, "195": 187, "197": 685, "4692559": 5, "4693615": 7, "4697174": 13},
+        "anchor_support": {"194": 6, "195": 187, "197": 685},
         "transitions": [
             {"boundary_id": "BND_197_TO_195", "from_delta_qwords": 197, "to_delta_qwords": 195, "clip_gap_qwords": 380, "csmc_gap_qwords": 378, "net_relative_size_change_bytes": -16, "complete_cross_serialization_extinction": True, "structural_class": "LOCAL_LENGTH_CHANGING_CHILD_CANDIDATE"},
             {"boundary_id": "BND_195_TO_194", "from_delta_qwords": 195, "to_delta_qwords": 194, "clip_gap_qwords": 5090, "csmc_gap_qwords": 5089, "net_relative_size_change_bytes": -8, "complete_cross_serialization_extinction": False, "structural_class": "SPARSE_EXCURSION_BOUNDARY"},
