@@ -1,0 +1,82 @@
+{
+  "schema_version": "csmc_analysis_companion_c_followup_v1",
+  "isolation": {
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "mainline_mutation": false,
+    "rio26_mutation": false,
+    "canonical_repoll": false
+  },
+  "C-007": {
+    "title": "Repeated count+array grammar distribution",
+    "field_count": 7,
+    "exact_fit_count": 7,
+    "count_distribution": {"3": 3, "4": 1, "6": 3},
+    "encoding_distribution": {"be_f32": 1, "be_f64": 6},
+    "joint_distribution": {"3:be_f64": 3, "4:be_f64": 1, "6:be_f32": 1, "6:be_f64": 2},
+    "serialized_size_distribution": {"28": 4, "36": 1, "52": 2},
+    "ambiguous_counts": [6],
+    "colliding_serialized_sizes_bytes": [28],
+    "semantic_promotion_count": 0
+  },
+  "C-008": {
+    "title": "NodeName / ModelNodeInfo / NextIndex relation",
+    "evidence_level": "SCHEMA_ONLY",
+    "current_target_live_ModelNodeInfo3D": false,
+    "descriptor": {
+      "count": "ModelInfo3D.ModelNodeInfoCount",
+      "first_index": "ModelInfo3D.ModelNodeInfoFirstIndex"
+    },
+    "node_record": {
+      "table": "ModelNodeInfo3D",
+      "name_property": "NodeName TEXT",
+      "next_link": "NextIndex INTEGER"
+    },
+    "supported_topology": "count + first-index seed + linked-next node chain with per-node name property",
+    "contiguous_array_proven": false,
+    "sentinel_or_termination_rule_proven": false
+  },
+  "C-009": {
+    "title": "Quaternion candidate independent evidence",
+    "distinct_evidence_surfaces": 2,
+    "surface_a": "active Manager3DOd.MultiViewPresetCameraRotate counted BE-f64 count4 = [1,0,0,0]",
+    "surface_b": "latent ParamScheme ModelNodeInfo3D NodeRotationR + NodeRotationVX/VY/VZ REAL fields",
+    "shared_interpretation": "scalar-plus-vector four-component rotation is quaternion-consistent",
+    "node_byte_layout_proven": false,
+    "current_scene_payload_mapping_proven": false,
+    "component_convention_fully_proven": false
+  },
+  "C-010": {
+    "title": "Matrix/index/normalized-weight existing-data evidence",
+    "matrix4x4_direct_evidence": 0,
+    "mesh_index_direct_evidence": 0,
+    "normalized_weight_direct_evidence": 0,
+    "clarifications": [
+      "ModelNodeInfoFirstIndex/NextIndex are SQL topology indices and are not mesh-index-buffer evidence.",
+      "Transform/rotation/translation/BLOB names do not establish a 4x4 matrix layout.",
+      "DessindollBoneInfo naming does not establish normalized skin weights or sum-to-one behavior."
+    ],
+    "semantic_promotion_count": 0
+  },
+  "C-011": {
+    "title": "Record family vs owner/container position correlation",
+    "record_family_count": 5,
+    "record_instance_count": 22,
+    "coarse_route_correlation": {
+      "status": "SUPPORTED_BY_PROVENANCE",
+      "route": "character",
+      "source_field": "Canvas3DModelLoader.ModelData",
+      "target_kind": "catalog_character",
+      "comparison_surface": "clip catalog_character <-> saved CSMC character"
+    },
+    "scene_route_sampled_for_record_families": false,
+    "internal_section_owner_identified": false,
+    "family_to_supergroup_slot_correlation": "UNRESOLVED",
+    "local_grouping": {
+      "complete_five_record_supergroups": 4,
+      "blocks_per_supergroup": 242,
+      "bytes_per_supergroup": 1936
+    },
+    "minimal_hierarchy": "character external container -> unresolved internal +965 regime -> semantics-free record family -> unresolved child payload zones"
+  }
+}
