@@ -7,10 +7,10 @@ This directory is a deliberately small, public-safe review surface extracted fro
 Provide reusable guardrails without importing the side lane's full historical research tree or enabling runtime behavior.
 
 Included:
-- `csmc_analysis_c_handoff_contract.py` — rejects handoff states that imply automatic merge, semantic promotion, Blender emit, runtime/MODELER/Worker actions, RIO-26 mutation, or private payload publication.
+- `csmc_analysis_c_handoff_contract.py` — rejects handoff states that omit or violate required non-mutation declarations, including automatic merge/integration, semantic promotion, Blender emit, runtime/MODELER/Worker actions, RIO-26 mutation, or private payload publication.
 - `csmc_analysis_c_pipeline_contract.py` — separates intake, structural state, codec binding, semantic confirmation, mesh readiness, and scene readiness.
 - `csmc_analysis_c_parser_skeleton.py` — structural parser state builder that keeps codec catalog entries separate from semantic bindings and blocks Blender geometry output until geometry and index are independently confirmed with evidence IDs.
-- `test_companion_c_review_contracts.py` — regression tests for the non-mutation and semantic-gate invariants.
+- `test_companion_c_review_contracts.py` — regression tests for fail-closed handoff validation, non-mutation, and semantic-gate invariants.
 
 ## Explicit non-goals
 
@@ -40,11 +40,6 @@ Static research should resume only after one of the declared unlock inputs exist
 
 ## Verification
 
-The integration-review contract suite was executed independently before opening the draft PR:
-
-```text
-Ran 4 tests
-OK
-```
+The integration-review contract suite now contains **10 tests**, including regression coverage for missing top-level guardrails and malformed isolation counters. GitHub Actions also runs the standalone handoff and pipeline self-tests.
 
 This branch is intended for review only. Do not enable auto-merge.
