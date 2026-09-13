@@ -1,8 +1,11 @@
 # SPDX-License-Identifier: MIT
 """Bounded Blender action for NEVER TEAR AI3D Windows Worker canary.
 
-This script is invoked only by the local AI3D worker with a locally-written,
-strictly structured plan JSON. It never executes cloud-supplied code or paths.
+The cloud plan is expressed in the same Three.js Y-up coordinate contract used
+by the Base44/WebGL route. This worker maps it explicitly to Blender Z-up,
+executes only the allowlisted physical MVP action, saves a PNG, re-opens the
+durable PNG for decoded-pixel hashing, and emits bounded QA/checkpoint evidence.
+It never executes cloud-supplied code, executable paths, shell, or URLs.
 """
 from __future__ import annotations
 
@@ -20,6 +23,7 @@ from mathutils import Vector
 
 SCHEMA = "never-tear-ai3d-worker-render-v1"
 ACTION = "ai3d_blender_physical_mvp_v1"
+COORDINATE_CONTRACT = "THREE_Y_UP_TO_BLENDER_Z_UP_V1"
 HEX = set("0123456789abcdefABCDEF")
 
 
@@ -58,6 +62,23 @@ def vec3(value: object, low: float, high: float) -> tuple[float, float, float]:
     if not isinstance(value, list) or len(value) != 3:
         raise ValueError("vec3 required")
     return tuple(bounded_number(v, low, high) for v in value)  # type: ignore[return-value]
+
+
+def three_point_to_blender(v: tuple[float, float, float]) -> tuple[float, float, float]:
+    # Right-handed mapping: Three X/Y/Z -> Blender X/-Z/Y.
+    return (v[0], -v[2], v[1])
+
+
+def three_size_to_blender(v: tuple[float, float, float]) -> tuple[float, float, float]:
+    return (v[0], v[2], v[1])
+
+
+def three_euler_xyz_to_blender_for_mvp(v: tuple[float, float, float]) -> tuple[float, float, float]:
+    # The bounded MVP permits only Three Y-axis rotation. Under the mapping it
+    # becomes Blender +Z rotation with the same sign.
+    if abs(v[0]) > 1e-12 or abs(v[2]) > 1e-12:
+        raise ValueError("MVP permits only Three Y-axis rotation")
+    return (0.0, 0.0, v[1])
 
 
 def load_plan(path: Path) -> dict:
@@ -111,8 +132,10 @@ def load_plan(path: Path) -> dict:
 
 def hex_to_linear_rgba(hex_color: str) -> tuple[float, float, float, float]:
     srgb = [int(hex_color[i : i + 2], 16) / 255.0 for i in (1, 3, 5)]
+
     def linear(c: float) -> float:
         return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
     return (linear(srgb[0]), linear(srgb[1]), linear(srgb[2]), 1.0)
 
 
@@ -125,7 +148,13 @@ def reset_scene() -> None:
     bpy.ops.object.delete(use_global=False)
 
 
-def add_area_light(name: str, location: tuple[float, float, float], target: tuple[float, float, float], energy: float, size: float) -> None:
+def add_area_light(
+    name: str,
+    location: tuple[float, float, float],
+    target: tuple[float, float, float],
+    energy: float,
+    size: float,
+) -> None:
     data = bpy.data.lights.new(name=name, type="AREA")
     data.energy = energy
     data.shape = "DISK"
@@ -136,13 +165,27 @@ def add_area_light(name: str, location: tuple[float, float, float], target: tupl
     look_at(obj, target)
 
 
-def build_scene(plan: dict) -> tuple[bpy.types.Object, bpy.types.Object]:
+def build_scene(plan: dict) -> tuple[bpy.types.Object, bpy.types.Object, dict]:
     reset_scene()
     o = plan["object"]
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=o["position"], rotation=o["rotation"])
+    c = plan["camera"]
+
+    mapped = {
+        "position": three_point_to_blender(o["position"]),
+        "size": three_size_to_blender(o["size"]),
+        "rotation": three_euler_xyz_to_blender_for_mvp(o["rotation"]),
+        "camera": three_point_to_blender(c["position"]),
+        "target": three_point_to_blender(c["target"]),
+    }
+
+    bpy.ops.mesh.primitive_cube_add(
+        size=1.0,
+        location=mapped["position"],
+        rotation=mapped["rotation"],
+    )
     box = bpy.context.object
     box.name = o["name"]
-    box.dimensions = o["size"]
+    box.dimensions = mapped["size"]
     bpy.context.view_layer.objects.active = box
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -154,8 +197,11 @@ def build_scene(plan: dict) -> tuple[bpy.types.Object, bpy.types.Object]:
     bsdf.inputs["Metallic"].default_value = o["material"]["metallic"]
     box.data.materials.append(mat)
 
-    # Ground plane is local implementation detail, never cloud-addressable.
-    bpy.ops.mesh.primitive_plane_add(size=20.0, location=(o["position"][0], 0.0, o["position"][2]))
+    # Three Y=0 is the logical floor; after conversion this is Blender Z=0.
+    bpy.ops.mesh.primitive_plane_add(
+        size=20.0,
+        location=(mapped["position"][0], mapped["position"][1], 0.0),
+    )
     ground = bpy.context.object
     ground.name = "AI3D_MVP_Ground"
     gmat = bpy.data.materials.new("AI3D_Ground_Material")
@@ -165,18 +211,18 @@ def build_scene(plan: dict) -> tuple[bpy.types.Object, bpy.types.Object]:
     gbsdf.inputs["Roughness"].default_value = 0.9
     ground.data.materials.append(gmat)
 
-    c = plan["camera"]
     camera_data = bpy.data.cameras.new("AI3D_MVP_Camera")
     camera = bpy.data.objects.new("AI3D_MVP_Camera", camera_data)
     bpy.context.scene.collection.objects.link(camera)
-    camera.location = c["position"]
+    camera.location = mapped["camera"]
     camera.data.lens = c["lens_mm"]
-    look_at(camera, c["target"])
+    look_at(camera, mapped["target"])
     bpy.context.scene.camera = camera
 
-    add_area_light("AI3D_Key", (4.5, 7.0, 4.5), c["target"], 900.0, 4.0)
-    add_area_light("AI3D_Fill", (-4.0, 3.0, 1.0), c["target"], 500.0, 3.0)
-    add_area_light("AI3D_Rim", (3.0, 4.0, -7.0), c["target"], 650.0, 2.5)
+    # Lights are local implementation detail in Blender coordinates.
+    add_area_light("AI3D_Key", (4.5, -4.5, 7.0), mapped["target"], 900.0, 4.0)
+    add_area_light("AI3D_Fill", (-4.0, -1.0, 3.0), mapped["target"], 500.0, 3.0)
+    add_area_light("AI3D_Rim", (3.0, 7.0, 4.0), mapped["target"], 650.0, 2.5)
 
     world = bpy.context.scene.world or bpy.data.worlds.new("AI3D_World")
     bpy.context.scene.world = world
@@ -184,11 +230,24 @@ def build_scene(plan: dict) -> tuple[bpy.types.Object, bpy.types.Object]:
     background = world.node_tree.nodes.get("Background")
     background.inputs["Color"].default_value = (0.018, 0.022, 0.03, 1.0)
     background.inputs["Strength"].default_value = 0.22
-    return box, camera
+    return box, camera, mapped
 
 
 def tuples_close(actual, expected, tolerance: float = 1e-5) -> bool:
     return all(abs(float(a) - float(b)) <= tolerance for a, b in zip(actual, expected))
+
+
+def decoded_png_pixel_sha(png: Path, width: int, height: int) -> str:
+    decoded = bpy.data.images.load(str(png), check_existing=False)
+    try:
+        if tuple(decoded.size) != (width, height):
+            raise RuntimeError(f"decoded PNG size mismatch: {tuple(decoded.size)}")
+        pixels = array("f", decoded.pixels[:])
+        if len(pixels) != width * height * 4:
+            raise RuntimeError(f"decoded pixel count mismatch: {len(pixels)}")
+        return sha256_bytes(pixels.tobytes())
+    finally:
+        bpy.data.images.remove(decoded)
 
 
 def main() -> None:
@@ -198,8 +257,9 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     if plan_path.parent != output_dir:
         raise RuntimeError("plan must be inside the worker-owned job directory")
+
     plan = load_plan(plan_path)
-    box, camera = build_scene(plan)
+    box, camera, mapped = build_scene(plan)
 
     scene = bpy.context.scene
     r = plan["render"]
@@ -209,6 +269,7 @@ def main() -> None:
     scene.render.resolution_percentage = 100
     scene.render.image_settings.file_format = "PNG"
     scene.render.image_settings.color_mode = "RGBA"
+    scene.render.film_transparent = False
     scene.render.filepath = str(output_dir / "ai3d_physical_mvp.png")
     scene.view_settings.look = "AgX - Medium High Contrast"
     bpy.ops.render.render(write_still=True)
@@ -216,34 +277,36 @@ def main() -> None:
     png = Path(scene.render.filepath)
     if not png.is_file() or png.stat().st_size <= 0:
         raise RuntimeError("render PNG missing")
-    render_result = bpy.data.images.get("Render Result")
-    if render_result is None:
-        raise RuntimeError("Render Result missing")
-    pixels = array("f", [0.0]) * (r["width"] * r["height"] * 4)
-    render_result.pixels.foreach_get(pixels)
-    raw_pixel_sha = sha256_bytes(pixels.tobytes())
+    raw_pixel_sha = decoded_png_pixel_sha(png, r["width"], r["height"])
     png_sha = sha256_file(png)
 
     mat = box.data.materials[0]
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    ground_clearance = float(box.location.z - box.dimensions.z / 2.0)
     checks = {
         "object_exists": bpy.data.objects.get("MVP_Physical_Box") is not None,
-        "position_equals": tuples_close(box.location, plan["object"]["position"]),
-        "rotation_equals": tuples_close(box.rotation_euler, plan["object"]["rotation"]),
-        "dimensions_equals": tuples_close(box.dimensions, plan["object"]["size"]),
+        "mapped_position_equals": tuples_close(box.location, mapped["position"]),
+        "mapped_rotation_equals": tuples_close(box.rotation_euler, mapped["rotation"]),
+        "mapped_dimensions_equals": tuples_close(box.dimensions, mapped["size"]),
+        "logical_floor_contact": abs(ground_clearance) <= 1e-5,
         "material_roughness_equals": abs(float(bsdf.inputs["Roughness"].default_value) - plan["object"]["material"]["roughness"]) <= 1e-6,
         "material_metallic_equals": abs(float(bsdf.inputs["Metallic"].default_value) - plan["object"]["material"]["metallic"]) <= 1e-6,
-        "camera_position_equals": tuples_close(camera.location, plan["camera"]["position"]),
+        "camera_position_equals": tuples_close(camera.location, mapped["camera"]),
         "png_exists": png.is_file() and png.stat().st_size > 0,
+        "decoded_pixel_sha_distinct_evidence": len(raw_pixel_sha) == 64 and raw_pixel_sha != png_sha,
         "background_mode": bool(bpy.app.background),
     }
     automated_qa = "PASS" if all(checks.values()) else "FAIL"
+
     checkpoint_state = {
         "action": ACTION,
-        "plan": plan,
+        "coordinate_contract": COORDINATE_CONTRACT,
+        "logical_plan": plan,
+        "mapped_blender": {k: list(v) for k, v in mapped.items()},
         "render": {
             "png_sha256": png_sha,
             "raw_pixel_sha256": raw_pixel_sha,
+            "raw_pixel_format": "RGBA_FLOAT32_DECODED_PNG",
             "renderer": f"Blender {bpy.app.version_string} / EEVEE Next",
             "width": r["width"],
             "height": r["height"],
@@ -258,9 +321,11 @@ def main() -> None:
         "action": ACTION,
         "status": automated_qa,
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "coordinate_contract": COORDINATE_CONTRACT,
         "png_file": png.name,
         "png_sha256": png_sha,
         "raw_pixel_sha256": raw_pixel_sha,
+        "raw_pixel_format": "RGBA_FLOAT32_DECODED_PNG",
         "renderer": f"Blender {bpy.app.version_string} / EEVEE Next",
         "blender_version": bpy.app.version_string,
         "width": r["width"],
@@ -273,7 +338,10 @@ def main() -> None:
         "physical_render": True,
         "canary_promoted": False,
     }
-    (output_dir / "result.json").write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    (output_dir / "result.json").write_text(
+        json.dumps(result, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
     print("AI3D_WORKER_RESULT=" + json.dumps(result, sort_keys=True), flush=True)
     if automated_qa != "PASS":
         raise SystemExit(31)
