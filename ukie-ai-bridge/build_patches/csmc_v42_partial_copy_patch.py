@@ -57,20 +57,12 @@ def patch_action() -> None:
     old = '("region_base", "region_size", "offset", "type", "type_raw", "protect", "requested_bytes", "win32_error")'
     new = '("region_base", "region_size", "offset", "type", "type_raw", "protect", "requested_bytes", "returned_bytes", "win32_error")'
     text = replace_once(text, old, new, "temporal returned_bytes propagation")
-    text = replace_once(
-        text,
-        '"observer_change": "bounded_temporal_resampling_same_predicates",',
-        '"observer_change": "error_partial_copy_returned_bytes_salvage_only",',
-        "aggregate observer change",
-    )
-    # The manifest contains the same literal a second time after the aggregate
-    # replacement above; replace exactly that remaining occurrence.
-    text = replace_once(
-        text,
-        '"observer_change": "bounded_temporal_resampling_same_predicates",',
-        '"observer_change": "error_partial_copy_returned_bytes_salvage_only",',
-        "manifest observer change",
-    )
+    marker = '"observer_change": "bounded_temporal_resampling_same_predicates",'
+    replacement = '"observer_change": "error_partial_copy_returned_bytes_salvage_only",'
+    count = text.count(marker)
+    if count != 2:
+        raise SystemExit(f"observer_change markers: expected exactly two occurrences, got {count}")
+    text = text.replace(marker, replacement, 2)
     ACTION.write_text(text, encoding="utf-8")
 
 
