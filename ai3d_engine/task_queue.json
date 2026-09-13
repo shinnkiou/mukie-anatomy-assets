@@ -1,13 +1,8 @@
 {
   "schema": "never-tear-ai3d-task-queue-v1",
   "project_key": "never_tear_ai3d_engine",
-  "priority_order": [
-    "BLOCKED_FIX",
-    "QA_FAIL_FIX",
-    "ACTIVE",
-    "HIGH",
-    "NORMAL"
-  ],
+  "updated_at": "2026-09-13T17:14:30+09:00",
+  "priority_order": ["BLOCKED_FIX", "QA_FAIL_FIX", "ACTIVE", "HIGH", "NORMAL"],
   "tasks": [
     {
       "task_id": "AI3D-001",
@@ -25,15 +20,13 @@
         "drive_sha_readback": "PASS",
         "coordinate_contract": "THREE_Y_UP_TO_BLENDER_Z_UP_V1"
       },
-      "artifacts": [
-        {
-          "artifact_id": "blender-render-7bc5b7bca3cd3384",
-          "png_sha256": "7bc5b7bca3cd33844b4da57a13176a550f130aca36aa7f81b34c514707c7ddb2",
-          "raw_pixel_sha256": "9cf0345bac55a1e5c4b481bc8a8e11a402ddc05f72d1866335832591f7bf4bc4",
-          "drive_file_id": "1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R",
-          "github_run_id": "34738453130"
-        }
-      ],
+      "artifacts": [{
+        "artifact_id": "blender-render-7bc5b7bca3cd3384",
+        "png_sha256": "7bc5b7bca3cd33844b4da57a13176a550f130aca36aa7f81b34c514707c7ddb2",
+        "raw_pixel_sha256": "9cf0345bac55a1e5c4b481bc8a8e11a402ddc05f72d1866335832591f7bf4bc4",
+        "drive_file_id": "1lJakPaQ7hmF-bxcO9t0CIuiMoZ_oQ34R",
+        "github_run_id": "34738453130"
+      }],
       "checkpoint_id": "cp-ai3d001-visualpass-7eb045faac51e35c",
       "next_action": "COMPLETE. Continue AI3D-002."
     },
@@ -43,9 +36,7 @@
       "priority": "HIGH",
       "status": "ACTIVE",
       "stage": "IMPLEMENT",
-      "dependencies": [
-        "AI3D-001"
-      ],
+      "dependencies": ["AI3D-001"],
       "qa": {
         "corrected_packaging_run": "34743230600",
         "corrected_packaging": "PASS",
@@ -62,15 +53,13 @@
         "online_legacy_worker_version": "0.18.2-p0.18.2",
         "online_legacy_worker_eligible": false
       },
-      "artifacts": [
-        {
-          "artifact_id": "worker-package-f06f0a122e2f24e2",
-          "drive_file_id": "1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx",
-          "sha256": "f06f0a122e2f24e28620ebdce7ff13c17e6e3bb49e27ee202a3e8f1c7498e03b",
-          "github_run_id": "34743230600",
-          "github_actions_artifact_id": "10312598839"
-        }
-      ],
+      "artifacts": [{
+        "artifact_id": "worker-package-f06f0a122e2f24e2",
+        "drive_file_id": "1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx",
+        "sha256": "f06f0a122e2f24e28620ebdce7ff13c17e6e3bb49e27ee202a3e8f1c7498e03b",
+        "github_run_id": "34743230600",
+        "github_actions_artifact_id": "10312598839"
+      }],
       "checkpoint_id": "cp-ai3d002-package-a9a0cc5bcbdb6103",
       "next_action": "Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm capability ai3d_blender_physical_mvp_v1 before queueing exactly one physical CANARY. Do not queue the old P0.18.2 worker."
     },
@@ -80,9 +69,7 @@
       "priority": "HIGH",
       "status": "COMPLETE",
       "stage": "COMPLETE",
-      "dependencies": [
-        "AI3D-001"
-      ],
+      "dependencies": ["AI3D-001"],
       "qa": {
         "lineage_runtime_qa": "PASS",
         "github_run_id": "34746031705",
@@ -97,14 +84,12 @@
         "supabase_readback": "PASS",
         "linear": "RIO-45_DONE"
       },
-      "artifacts": [
-        {
-          "artifact_id": "lineage-render-45df38f352bb0829",
-          "drive_file_id": "1SMDn28sYmjoMQDJHSsLYTSk1sRpsk9av",
-          "github_run_id": "34746031705",
-          "github_actions_artifact_id": "10313728057"
-        }
-      ],
+      "artifacts": [{
+        "artifact_id": "lineage-render-45df38f352bb0829",
+        "drive_file_id": "1SMDn28sYmjoMQDJHSsLYTSk1sRpsk9av",
+        "github_run_id": "34746031705",
+        "github_actions_artifact_id": "10313728057"
+      }],
       "checkpoint_id": "cp-8034a2400197dc64",
       "next_action": "COMPLETE. AI3D-005 unblocked."
     },
@@ -114,11 +99,34 @@
       "priority": "HIGH",
       "status": "READY",
       "stage": "PLAN",
-      "dependencies": [
-        "AI3D-001",
-        "AI3D-002"
-      ],
-      "next_action": "Wait for AI3D-002 physical Windows CANARY PASS, then wire/promote physical render evidence and visual QA gate."
+      "dependencies": ["AI3D-001", "AI3D-002"],
+      "qa": {
+        "physical_qa_gate_preflight": "PASS",
+        "github_run_id": "34747109176",
+        "github_head_sha": "95b5dc317145a3aff03fd7b0c42d2473b3fa0014",
+        "github_actions_artifact_id": "10313839392",
+        "github_actions_artifact_digest": "sha256:aba766e09630d77db3c5fbcb8b62923d3ed895ede706e42c0f185d4d13106321",
+        "drive_file_id": "1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS",
+        "evidence_sha256": "12d92e326ac119edf970077e76512dfe7a795c39e9b664c51a23329d5e0fc910",
+        "drive_readback": "PASS",
+        "supabase_readback": "PASS",
+        "evidence_class": "LOGIC_ONLY_NOT_PHYSICAL",
+        "physical_execution_claimed": false,
+        "valid_complete_evidence_promotes": true,
+        "pending_visual_holds": true,
+        "provider_hash_mismatch_holds": true,
+        "legacy_worker_holds": true,
+        "virtual_route_holds": true
+      },
+      "artifacts": [{
+        "artifact_id": "physical-qa-gate-smoke-12d92e326ac119ed",
+        "drive_file_id": "1gVHQn8sokkwahzGsQIOSWfK2Hxx2rFMS",
+        "sha256": "12d92e326ac119edf970077e76512dfe7a795c39e9b664c51a23329d5e0fc910",
+        "github_run_id": "34747109176",
+        "github_actions_artifact_id": "10313839392"
+      }],
+      "checkpoint_id": "cp-ai3d004-gate-12d92e326ac119ed",
+      "next_action": "Wait for AI3D-002 physical Windows CANARY PASS. Then evaluate the real physical worker result + durable provider readback + visual QA through physicalQaGate. PROMOTE only on all PASS."
     },
     {
       "task_id": "AI3D-005",
@@ -126,9 +134,7 @@
       "priority": "NORMAL",
       "status": "COMPLETE",
       "stage": "COMPLETE",
-      "dependencies": [
-        "AI3D-003"
-      ],
+      "dependencies": ["AI3D-003"],
       "qa": {
         "module_ids": "PASS",
         "socket_transform_metadata": "PASS",
@@ -148,14 +154,12 @@
         "supabase_readback": "PASS",
         "linear": "RIO-47_DONE"
       },
-      "artifacts": [
-        {
-          "artifact_id": "assembly-3506ef9c9ed984f6",
-          "drive_file_id": "19SnIAP7Oy0Pwkoozj7PaPllLbljpYmXX",
-          "github_run_id": "34746370948",
-          "github_actions_artifact_id": "10314167472"
-        }
-      ],
+      "artifacts": [{
+        "artifact_id": "assembly-3506ef9c9ed984f6",
+        "drive_file_id": "19SnIAP7Oy0Pwkoozj7PaPllLbljpYmXX",
+        "github_run_id": "34746370948",
+        "github_actions_artifact_id": "10314167472"
+      }],
       "checkpoint_id": "cp-ai3d005-module-d1b26b164d3ae210",
       "next_action": "COMPLETE. No further autonomous task is unblocked until AI3D-002 companion capability gate passes; then continue AI3D-004."
     }
