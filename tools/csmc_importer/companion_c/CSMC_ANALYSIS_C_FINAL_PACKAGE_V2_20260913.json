@@ -1,0 +1,36 @@
+{
+  "schema_version": "csmc_analysis_c_final_package_v2",
+  "package_id": "CSMC_ANALYSIS_COMPANION_C_FINAL_V2_20260913",
+  "covered_runs": "C-001..C-034",
+  "research_state": "EXHAUSTED_FOR_NON_DUPLICATIVE_STATIC_ANALYSIS",
+  "handoff_state": "REFERENCE_ONLY_PREPARED",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion_count": 0,
+  "blender_mesh_emit_ready": false,
+  "blender_scene_emit_ready": false,
+  "nearest_missing_edge": "E1_PLUS965_TO_CONFIRMED_CODEC",
+  "base_final_package": "CSMC_ANALYSIS_C_FINAL_PACKAGE_20260913.json",
+  "research_manifest": "CSMC_ANALYSIS_C_PACKAGE_MANIFEST_20260913.json",
+  "exhaustion_certificate": "CSMC_ANALYSIS_C_FIXED_SNAPSHOT_EXHAUSTION_20260913.json",
+  "handoff_validator": "csmc_analysis_c_handoff_contract.py",
+  "handoff_result": "CSMC_ANALYSIS_C_HANDOFF_CONTRACT_RESULT_20260913.json",
+  "consumer_action_matrix": "CSMC_ANALYSIS_C_CONSUMER_ACTION_MATRIX_20260913.json",
+  "future_unlock_inputs": [
+    "I1_ISOLATED_PLUS965_STATIC_REF",
+    "I2_PUBLIC_SAFE_POSITIONAL_AGGREGATE",
+    "I3_INTERPRETABLE_CONTROLLED_PAIR_OR_LABELED_DIFFERENTIAL",
+    "I4_CURRENT_MODEL_NODE_MAPPING_ARTIFACT"
+  ],
+  "research_resume_policy": "Resume static research only when one of the declared unlock inputs becomes available.",
+  "handoff_policy": "Reference-only use is safe. Selective code reuse or PR preparation requires explicit authorization and review. No automatic integration.",
+  "isolation": {
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "canonical_repoll_after_initial_snapshot": false,
+    "public_repository_contains_private_payload": false,
+    "automatic_integration": false
+  }
+}
