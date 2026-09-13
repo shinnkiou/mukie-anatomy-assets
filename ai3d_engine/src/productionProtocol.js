@@ -67,6 +67,17 @@ export function validateProductionCommand(command) {
   assertString(command.op, 'op');
   if (!AI3D_OPS.includes(command.op)) throw new Error(`unsupported op: ${command.op}`);
   if (!isPlainObject(command.params)) throw new Error('params must be an object');
+  if (command.lineage != null) {
+    if (!isPlainObject(command.lineage)) throw new Error('lineage must be an object');
+    if (command.lineage.parent_artifact_id != null) assertString(command.lineage.parent_artifact_id, 'lineage.parent_artifact_id');
+    if (command.lineage.source_artifact_ids != null) {
+      if (!Array.isArray(command.lineage.source_artifact_ids)
+        || command.lineage.source_artifact_ids.some((value) => typeof value !== 'string' || !value.trim())) {
+        throw new Error('lineage.source_artifact_ids must be an array of non-empty strings');
+      }
+    }
+    if (command.lineage.module_id != null) assertString(command.lineage.module_id, 'lineage.module_id');
+  }
 
   const routes = command.routes ?? ['WEBGL'];
   if (!Array.isArray(routes) || routes.length < 1 || routes.length > 3 || routes.some((x) => typeof x !== 'string' || !x)) {
@@ -96,7 +107,12 @@ export function validateProductionCommand(command) {
   }
   if (command.op === 'CHECKPOINT_SAVE') assertString(command.params.name, 'params.name');
 
-  return { ...command, routes: [...routes], params: { ...command.params } };
+  return {
+    ...command,
+    routes: [...routes],
+    params: { ...command.params },
+    lineage: command.lineage ? structuredClone(command.lineage) : undefined,
+  };
 }
 
 export function createProductionState(seed = {}) {
@@ -182,6 +198,25 @@ export async function executeProductionPlan({ plan, adapter, initialState, onEve
       }
 
       if (TERMINAL_OK.has(result?.status)) {
+        if (result.artifact) {
+          const paramsSha256 = await sha256Hex(command.params);
+          result = {
+            ...result,
+            artifact: {
+              ...result.artifact,
+              project_key: state.project_key,
+              task_id: state.task_id,
+              run_id: state.run_id,
+              command_id: command.command_id,
+              operation: command.op,
+              route: result.artifact.route || route,
+              parent_artifact_id: command.lineage?.parent_artifact_id || null,
+              source_artifact_ids: [...(command.lineage?.source_artifact_ids || [])],
+              module_id: command.lineage?.module_id || null,
+              params_sha256: paramsSha256,
+            },
+          };
+        }
         mergeResultIntoState(state, result);
         emit({ type: 'COMMAND_PASS', command_id: command.command_id, op: command.op, route });
         success = true;
