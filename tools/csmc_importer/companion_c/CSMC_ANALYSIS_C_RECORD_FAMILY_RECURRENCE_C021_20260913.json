@@ -1,0 +1,21 @@
+{
+  "schema_version": "csmc_analysis_c_record_family_recurrence_v1",
+  "run_id": "C-021",
+  "record_family_sizes": [7, 3, 3, 3, 6],
+  "records_total": 22,
+  "same_side_role_pair_count": 231,
+  "within_joint_family_pair_count": 45,
+  "cross_joint_family_pair_count": 186,
+  "within_joint_family_fraction": 0.19480519480519481,
+  "cross_joint_family_fraction": 0.8051948051948052,
+  "policy": {
+    "baseline_binding": ">=2 exact fits in distinct records for the same side+structural role",
+    "family_local_support": ">=2 such fits within the same joint (length_blocks,preserve_signature) family",
+    "cross_family_support": ">=2 such fits spanning distinct joint families",
+    "same_family_required_for_baseline": false
+  },
+  "semantic_promotion_count": 0,
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "mainline_mutation": false
+}
