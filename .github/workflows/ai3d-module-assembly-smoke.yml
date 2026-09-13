@@ -1,0 +1,45 @@
+name: NEVER TEAR AI3D Module Assembly Smoke
+
+on:
+  push:
+    branches:
+      - ai-3d-production-engine-20260913
+    paths:
+      - 'ai3d_engine/src/moduleAssembly.js'
+      - 'ai3d_engine/src/productionProtocol.js'
+      - 'ai3d_engine/scripts/ai3dModuleAssemblySmoke.mjs'
+      - '.github/workflows/ai3d-module-assembly-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  module-assembly-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run AI3D-005 module assembly smoke
+        run: node ai3d_engine/scripts/ai3dModuleAssemblySmoke.mjs
+
+      - name: Hash evidence
+        shell: bash
+        run: |
+          sha256sum artifacts/ai3d_module_assembly/module_assembly_smoke_result.json | tee artifacts/ai3d_module_assembly/provider_readback.sha256
+          cat artifacts/ai3d_module_assembly/module_assembly_smoke_result.json
+
+      - name: Upload module assembly evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai3d-module-assembly-smoke-evidence
+          path: artifacts/ai3d_module_assembly/
+          if-no-files-found: error
+          retention-days: 30
