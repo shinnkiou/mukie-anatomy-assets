@@ -39,16 +39,32 @@
       "stage": "IMPLEMENT",
       "dependencies": ["AI3D-001"],
       "qa": {
-        "previous_windows_packaging_run": "34738248556",
-        "previous_windows_packaging": "PASS",
+        "corrected_packaging_run": "34743230600",
+        "corrected_packaging": "PASS",
         "source_selftest": "PASS",
         "packaged_selftest": "PASS",
         "coordinate_mapping_commit": "4d5512650107d815746ab4e43ebe390a8f0c09ca",
-        "corrected_packaging_run": "34743230600",
-        "corrected_packaging": "IN_PROGRESS",
-        "physical_windows_canary": "NOT_EXECUTED"
+        "package_artifact_id": "worker-package-f06f0a122e2f24e2",
+        "package_sha256": "f06f0a122e2f24e28620ebdce7ff13c17e6e3bb49e27ee202a3e8f1c7498e03b",
+        "package_drive_file_id": "1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx",
+        "package_drive_readback": "PASS",
+        "exe_sha256": "53595f20432f1a586ddd654ec9d3bdb7c37a93f3ad1b468a181dda91246ec625",
+        "package_checkpoint_id": "cp-ai3d002-package-a9a0cc5bcbdb6103",
+        "physical_windows_canary": "NOT_EXECUTED",
+        "online_legacy_worker_version": "0.18.2-p0.18.2",
+        "online_legacy_worker_eligible": false
       },
-      "next_action": "Wait for corrected packaging run 34743230600. If PASS, download/hash-verify ZIP and execute one isolated physical CANARY with the separate AI3D companion Worker; do not widen or queue the old P0.18.2 worker."
+      "artifacts": [
+        {
+          "artifact_id": "worker-package-f06f0a122e2f24e2",
+          "drive_file_id": "1p8f9gOzRGcl6NMa87Sr-6pDI0JiOHUKx",
+          "sha256": "f06f0a122e2f24e28620ebdce7ff13c17e6e3bb49e27ee202a3e8f1c7498e03b",
+          "github_run_id": "34743230600",
+          "github_actions_artifact_id": "10312598839"
+        }
+      ],
+      "checkpoint_id": "cp-ai3d002-package-a9a0cc5bcbdb6103",
+      "next_action": "Install/start the verified separate AI3D companion Worker on the paired Windows device. Confirm capability ai3d_blender_physical_mvp_v1 before queueing one physical CANARY. Do not queue the old P0.18.2 worker."
     },
     {
       "task_id": "AI3D-003",
