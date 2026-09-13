@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    {"id":"clip","type":"container","format":"CSFCHUNK","state":"LIVE"},
+    {"id":"Canvas3DModelLoader.ModelData","type":"sql_route","state":"LIVE"},
+    {"id":"Manager3DOd.SceneData","type":"sql_route","state":"LIVE"},
+    {"id":"catalog_character_external","type":"external_payload","state":"LIVE","kind":"catalog_character","data2":true},
+    {"id":"scene_external","type":"external_payload","state":"LIVE","kind":"scene","data2":true},
+    {"id":"Manager3D.ModelInfoFirstIndex","type":"latent_schema_field","state":"SCHEMA_ONLY"},
+    {"id":"ModelInfo3D","type":"latent_schema_table","state":"SCHEMA_ONLY"},
+    {"id":"ModelInfo3D.ModelNodeInfoFirstIndex","type":"latent_schema_field","state":"SCHEMA_ONLY"},
+    {"id":"ModelNodeInfo3D","type":"latent_schema_table","state":"SCHEMA_ONLY"},
+    {"id":"ModelNodeInfo3D.NextIndex","type":"latent_schema_field","state":"SCHEMA_ONLY"},
+    {"id":"ModelData3D.Layer3DModelData","type":"route_candidate","state":"UNRESOLVED"},
+    {"id":"Canvas3DModelBank.BankData","type":"route_candidate","state":"UNRESOLVED"}
+  ],
+  "edges": [
+    {"level":"LIVE_RESOLVED_EDGE","source":"Canvas3DModelLoader.ModelData","relation":"external_ref_resolves_to","target":"catalog_character_external","target_kind":"catalog_character","importer_route":"character","schema_only":false},
+    {"level":"LIVE_RESOLVED_EDGE","source":"Manager3DOd.SceneData","relation":"external_ref_resolves_to","target":"scene_external","target_kind":"scene","importer_route":"scene","schema_only":false},
+    {"level":"SCHEMA_ONLY_EDGE","source":"Manager3D.ModelInfoFirstIndex","relation":"first_index_to","target":"ModelInfo3D","schema_only":true},
+    {"level":"SCHEMA_ONLY_EDGE","source":"ModelInfo3D.ModelNodeInfoFirstIndex","relation":"first_index_to","target":"ModelNodeInfo3D","schema_only":true},
+    {"level":"SCHEMA_ONLY_EDGE","source":"ModelNodeInfo3D.NextIndex","relation":"next_index_to","target":"ModelNodeInfo3D","schema_only":true},
+    {"level":"UNRESOLVED_ROUTE","source":"ModelData3D.Layer3DModelData","relation":"external_ref_unknown","target":"UNRESOLVED","schema_only":false},
+    {"level":"UNRESOLVED_ROUTE","source":"Canvas3DModelBank.BankData","relation":"external_ref_unknown","target":"UNRESOLVED","schema_only":false}
+  ]
+}
