@@ -21,7 +21,7 @@ ACTION = "ai3d_structure_module_v1"
 JOB_KEY = "AI3D-013-PHYSICAL-STRUCTURE-CANARY-002"
 COMMAND_ID = "AI3D-013-STRUCTURE-CANARY-002-NEVER-TEAR"
 RUN_ID = JOB_KEY
-EDGE_URL = "https://vbuokbwglauibabinaqs.supabase.co/functions/v1/ai3d-worker-transport-structure-canary"
+EDGE_URL = "https://vbuokbwglauibabinaqs.supabase.co/functions/v1/ai3d-worker-transport-structure-canary-v2"
 ALLOWED_ACTIONS = frozenset({ACTION})
 
 # Reuse the reviewed v0.2.0 validators/executor, but bind them to the new
@@ -143,6 +143,8 @@ def self_test() -> int:
         failures.append("old canary identity reused")
     if ALLOWED_ACTIONS != frozenset({"ai3d_structure_module_v1"}):
         failures.append("allowlist widened")
+    if not EDGE_URL.endswith("/ai3d-worker-transport-structure-canary-v2"):
+        failures.append("v2 transport not isolated")
     try:
         structure.sanitize_plan(structure._valid_plan())
     except Exception as exc:
@@ -155,6 +157,7 @@ def self_test() -> int:
         "allowed_actions": sorted(ALLOWED_ACTIONS),
         "completion_identity_attached": True,
         "failure_reporting_attached": True,
+        "isolated_transport_v2": True,
         "arbitrary_shell": False,
         "status": "PASS" if not failures else "FAIL",
         "failures": failures,
