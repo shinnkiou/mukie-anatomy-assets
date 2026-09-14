@@ -1,0 +1,40 @@
+name: NEVER TEAR AI3D Central Corridor Surface Preflight
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ai3d_engine/data/central_corridor_surface_binding_contract_v1.json"
+      - "ai3d_engine/data/central_corridor_surface_assignment_v1.json"
+      - "ai3d_engine/data/ai3d010_existing_asset_reuse_inventory.json"
+      - "ai3d_engine/scripts/ai3dCentralCorridorSurfacePreflightSmoke.mjs"
+      - ".github/workflows/ai3d-central-corridor-surface-preflight.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai3d-central-corridor-surface-preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  surface-preflight-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node version
+        run: node --version
+
+      - name: Deterministic surface binding QA
+        run: node ai3d_engine/scripts/ai3dCentralCorridorSurfacePreflightSmoke.mjs
+
+      - name: Upload preflight evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: AI3D-012-surface-preflight-${{ github.run_id }}
+          path: ai3d_engine/evidence/ai3d012_surface_preflight_evidence.json
+          if-no-files-found: error
+          retention-days: 14
