@@ -1,0 +1,92 @@
+{
+  "schema": "never-tear-ai3d-module-production-preflight-sync-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-010",
+  "status": "READY",
+  "stage": "PLAN",
+  "qa_status": "PASS",
+  "evidence_class": "PREFLIGHT_LOGIC_ONLY_NOT_PHYSICAL",
+  "source_authority": {
+    "provider": "WALKMYPLAN",
+    "plan_id": "aacb32598eb746758d60c8",
+    "revision": 380,
+    "geometry_sha256": "0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb",
+    "production_plan_id": "structure-plan-83389de2d8016fb6",
+    "production_plan_sha256": "83389de2d8016fb6dc1ec043befd071d8c937b162c6dbf479a9d19582b3e5313",
+    "latest_observed_revision": 423,
+    "post_380_geometry_drift_observed": false,
+    "geometry_research_closed": true
+  },
+  "module_plan": {
+    "module_id": "central_corridor_structure_base",
+    "module_plan_id": "module-plan-7d0ef550473d76e6",
+    "module_plan_sha256": "7d0ef550473d76e6cbacf5e285f81cb0152787e29034d524bd8b946f2ad9707a",
+    "wall_count": 13,
+    "opening_count": 13,
+    "geometry_command_count": 65,
+    "qa_command_count": 1,
+    "execution_command_count": 66,
+    "connection_socket_count": 13
+  },
+  "blast_overlay": {
+    "module_id": "blast_junction_damage_overlay",
+    "base_module": "central_corridor_structure_base",
+    "primary_source_wall_ids": [10027,10032,10009],
+    "critical_opening_ids": [10049,10054,10205],
+    "existing_assets_reused": true
+  },
+  "qa": {
+    "exact_authority_ids": true,
+    "exact_socket_coordinates": true,
+    "exact_compiler_subset": true,
+    "no_duplicate_commands": true,
+    "blast_overlay_is_subset_of_base": true,
+    "physical_gate_preserved": true,
+    "physical_execution_claimed": false
+  },
+  "github": {
+    "script_commit": "6c3a5feb9f6828a1c4211ec4c23ed473cda01212",
+    "workflow_commit": "121e3e3bb6fdcd68cbde3453012c6d576ae17807",
+    "run_id": "34800524342",
+    "job_id": "103842124318",
+    "actions_artifact_id": "10331845561",
+    "artifact_zip_sha256": "c16fb5898758e08aa635248949cbabd638d4fc38d0a478b79e1b8a70ceb98497",
+    "evidence_sha256": "ed1c93408431d25ab8be491e94c807ec79d9760e42a1468c422e3d9500d50476"
+  },
+  "drive": {
+    "evidence_file_id": "1hSSh1JrpzFxoIX58Au6AJKlapbjMxbKr",
+    "exact_sha_readback": "PASS"
+  },
+  "base44": {
+    "checkpoint_id": "6aa762357b07e6d8fcabcc67",
+    "commit": "a3595188bf1914b927476ec98b6f2f091b5a0be4",
+    "readback": "PASS"
+  },
+  "supabase": {
+    "checkpoint_id": "cp-ai3d010-module-preflight-c16fb5898758e08a",
+    "task_status": "READY",
+    "task_stage": "PLAN",
+    "readback": "PASS"
+  },
+  "linear": {
+    "issue": "RIO-53",
+    "status": "Todo",
+    "blocked_by": ["RIO-44","RIO-46"]
+  },
+  "reference_boundaries": {
+    "adobe_asset_count": 6,
+    "adobe_role": "NON_CANONICAL_VISUAL_REFERENCE",
+    "to3d_job_id": "8b16ab22-ef00-487a-b47f-ee01c947e991",
+    "to3d_status": "FAILED_NO_RETRY"
+  },
+  "physical_gate": {
+    "legacy_worker_version": "0.18.2-p0.18.2",
+    "legacy_worker_protocol": "ukie_worker_v1",
+    "legacy_worker_eligible": false,
+    "required_capability": "ai3d_blender_physical_mvp_v1",
+    "capability_advertised": false,
+    "ai3d_worker_jobs_count": 0,
+    "canary_queued": false
+  },
+  "next_action": "Observe the verified separate AI3D companion. Queue exactly one physical CANARY only after ai3d_blender_physical_mvp_v1 is advertised; then run AI3D-004 real Physical QA. After both pass, execute module-plan-7d0ef550473d76e6 before Blast Junction overlay integration."
+}
