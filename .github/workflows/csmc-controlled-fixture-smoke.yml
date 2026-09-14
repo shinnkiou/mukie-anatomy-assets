@@ -11,9 +11,13 @@ on:
       - 'tools/csmc_importer/test_csmc_controlled_evidence_ir_synthetic.py'
       - 'tools/csmc_importer/csmc_import_intake.py'
       - 'tools/csmc_importer/test_csmc_import_intake_synthetic.py'
+      - 'tools/csmc_importer/csmc_controlled_phase_class_probe.py'
+      - 'tools/csmc_importer/test_csmc_controlled_phase_class_probe_synthetic.py'
       - 'tools/csmc_importer/CSMC_CONTROLLED_FIXTURE_MAINLINE_FINDINGS_20260914.md'
       - 'tools/csmc_importer/CSMC_CONTROLLED_FIXTURE_PUBLIC_INDEX_20260914.json'
       - 'tools/csmc_importer/CSMC_IMPORT_INTAKE_V01_20260914.md'
+      - 'tools/csmc_importer/CSMC_CONTROLLED_PHASE_CLASS_FINDINGS_20260914.md'
+      - 'tools/csmc_importer/CSMC_CONTROLLED_PHASE_CLASS_AGGREGATE_20260914.json'
       - '.github/workflows/csmc-controlled-fixture-smoke.yml'
   workflow_dispatch:
 
@@ -33,7 +37,9 @@ jobs:
             tools/csmc_importer/csmc_controlled_evidence_ir.py \
             tools/csmc_importer/test_csmc_controlled_evidence_ir_synthetic.py \
             tools/csmc_importer/csmc_import_intake.py \
-            tools/csmc_importer/test_csmc_import_intake_synthetic.py
+            tools/csmc_importer/test_csmc_import_intake_synthetic.py \
+            tools/csmc_importer/csmc_controlled_phase_class_probe.py \
+            tools/csmc_importer/test_csmc_controlled_phase_class_probe_synthetic.py
       - name: Run controlled envelope synthetic tests
         working-directory: tools/csmc_importer
         run: python test_csmc_controlled_envelope_synthetic.py
@@ -43,3 +49,6 @@ jobs:
       - name: Run fail-closed importer intake integration tests
         working-directory: tools/csmc_importer
         run: python test_csmc_import_intake_synthetic.py
+      - name: Run controlled phase-class synthetic tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_controlled_phase_class_probe_synthetic.py
