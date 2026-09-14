@@ -1,0 +1,27 @@
+name: CSMC Companion C C065 targeted simple96 reconciliation
+
+on:
+  push:
+    branches:
+      - csmc-analysis-companion-c-20260913
+    paths:
+      - 'tools/csmc_importer/companion_c/csmc_analysis_c_targeted_simple96_reconcile_c065.py'
+      - 'tools/csmc_importer/companion_c/test_csmc_analysis_c_targeted_simple96_reconcile_c065.py'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_TARGETED_SIMPLE96_RECONCILIATION_C065_20260914.json'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_RUN065_TARGETED_SIMPLE96_RECONCILIATION_20260914.md'
+      - '.github/workflows/csmc-companion-c-c065.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  c065-fail-closed:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run C065 reconciliation tests
+        working-directory: tools/csmc_importer/companion_c
+        run: python -m unittest -v test_csmc_analysis_c_targeted_simple96_reconcile_c065.py

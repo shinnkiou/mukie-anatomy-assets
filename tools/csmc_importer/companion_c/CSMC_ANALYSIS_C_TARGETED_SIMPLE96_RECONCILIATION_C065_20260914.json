@@ -1,0 +1,57 @@
+{
+  "run_id": "C-065",
+  "date": "2026-09-14",
+  "classification": "TARGETED_SIMPLE_96B_INSERTION_RECONCILED_RETURN_TO_PAUSE",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "source": {
+    "mainline_branch": "csmc-importer-experimental-20260902",
+    "mainline_head": "874a5d3f9a9d302b1c599ccc188f5527b87366e6",
+    "aggregate_commit": "2ba1bd94b0cf8d35864eba11e12bffc7d35ccae4",
+    "source_supabase_row": 173,
+    "source_base44_record": "6aa7b9545e8a9e7d244ced7c",
+    "source_drive_findings_id": "12Kt6y1VfUIluSTkD-xhuKCIw6KdUzcTZ",
+    "source_drive_aggregate_id": "1l0QDmynelYf7ISC639gmgv4aH7VMa355"
+  },
+  "targeted_test": {
+    "classification": "TARGETED_SIMPLE_96B_INSERTION_FAMILY_REJECTED",
+    "family": "SIMPLE_96B_SINGLE_INSERTION_BEFORE_COMMON_BLOCK",
+    "fixtures": ["CSMC_F06_CUBE_MAT2", "CSMC_F07_TWO_CUBES"],
+    "delete_from": "F07_PRE_COMMON",
+    "delete_length_bytes": 96,
+    "exact_equality_required": true,
+    "tolerance": 0,
+    "multi_delete_allowed": false,
+    "scopes": [
+      {"scope": "FULL_PRE_COMMON", "hits": 0},
+      {"scope": "TRAILING_2048_PLUS_INSERTION", "hits": 0, "shorter_bytes": 2048, "longer_bytes": 2144}
+    ]
+  },
+  "preserved_source": {
+    "triple_common_exact_bytes": 7392,
+    "pre_common_shift_bytes": {"F06_minus_F03": 88, "F07_minus_F03": 184, "F07_minus_F06": 96},
+    "render_part_residual_candidate": "LEVEL_4_REFINED_NOT_PROMOTED"
+  },
+  "frontier_decision": "RETURN_TO_PAUSED_WAITING_NEW_INDEPENDENT_EVIDENCE",
+  "resume_only_on": [
+    "READ_ONLY_F02_MODELER_MUTATION_ORACLE",
+    "PROOF_GRADE_EXPLICIT_SERIALIZER_FIELD_READ_OR_DESTINATION_DATA_FLOW",
+    "GENUINELY_INDEPENDENT_CONSTRAINT_AXIS"
+  ],
+  "semantic_state": {
+    "geometry": "UNRESOLVED",
+    "index_topology": "UNRESOLVED",
+    "serializer_field_read": "UNRESOLVED",
+    "controlled_fixture_to_consumer_match": "UNRESOLVED"
+  },
+  "semantic_promotion_count": 0,
+  "blender_emit_ready": false,
+  "runtime_dispatch": false,
+  "modeler_actions": 0,
+  "worker_actions": 0,
+  "canary_actions": 0,
+  "control_gate_actions": 0,
+  "rio26_mutations": 0,
+  "mainline_mutations": 0,
+  "automatic_integration": false,
+  "raw_private_bytes_published": false
+}
