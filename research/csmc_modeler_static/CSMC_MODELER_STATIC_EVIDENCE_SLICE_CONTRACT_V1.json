@@ -1,0 +1,86 @@
+{
+  "schema": "csmc_modeler_static_evidence_slice_v1",
+  "lane": "MODELER_CONSUMER_SIDE_STATIC_ANALYSIS",
+  "purpose": "Accept only public-safe direct consumer-side static evidence that can close or materially narrow one SECOND PASS edge.",
+  "binary_identity": {
+    "product": "CLIP STUDIO MODELER",
+    "version": "1.10.13",
+    "exe_sha256_required": "2EBE2D90F8609496CB2E81A7C9DEFAE4E851479B8E5DB76EB9DD8EC05D943150"
+  },
+  "accepted_evidence_classes": [
+    "EXPLICIT_CSMC_HANDLER_ENTRY",
+    "EXPLICIT_EXTERNALCHUNK_OFFSET_LOOKUP",
+    "EXPLICIT_MODELDATA_LOOKUP",
+    "EXPLICIT_CANVAS3D_LOAD_ENTRY",
+    "EXPLICIT_SERIALIZER_FIELD_READ",
+    "EXPLICIT_INTERNAL_MODEL_CONSTRUCTION",
+    "CONTROLLED_FIXTURE_TO_CONSUMER_MATCH"
+  ],
+  "minimum_direct_edge": {
+    "required": true,
+    "allowed_kinds": [
+      "DIRECT_CALL",
+      "DIRECT_READ",
+      "DIRECT_WRITE",
+      "EXPLICIT_REGISTRY_LOOKUP",
+      "EXPLICIT_FACTORY_SELECTION",
+      "EXPLICIT_FIELD_ACCESS",
+      "READER_WRITER_SYMMETRY",
+      "DIRECT_DATA_FLOW"
+    ]
+  },
+  "public_safe_fields": [
+    "evidence_id",
+    "evidence_class",
+    "confidence",
+    "exe_sha256",
+    "caller_va",
+    "callee_va",
+    "function_va",
+    "class_or_template",
+    "field_label",
+    "read_or_write_primitive_va",
+    "width_bytes",
+    "endianness",
+    "count_or_length_source",
+    "destination_summary",
+    "upstream_edge_summary",
+    "downstream_edge_summary",
+    "controlled_fixture_ref",
+    "negative_control",
+    "public_safe_pseudocode",
+    "provenance_hash"
+  ],
+  "forbidden_public_fields": [
+    "raw_exe_bytes",
+    "raw_dll_bytes",
+    "raw_decompiler_dump",
+    "raw_disassembly_dump",
+    "private_csmc_payload",
+    "purchased_model_bytes",
+    "credentials",
+    "license_or_activation_data"
+  ],
+  "confidence_rules": {
+    "CONFIRMED": "At least one direct executable call/read/write/registry/field edge with provenance-bound addresses and no contradictory control-flow evidence.",
+    "STRONG": "Multiple connected call/data-flow edges plus independent controlled evidence, without a missing bridge on the claimed relation.",
+    "CANDIDATE": "String or RTTI proximity, one unbound indirect xref, or capability evidence without direct consumer binding.",
+    "REJECTED": "UI-only, dead resource, unreachable/irrelevant path, or contradicted by a negative control."
+  },
+  "semantic_guard": {
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_dispatch": false,
+    "candidate_is_not_fact": true,
+    "fixture_match_requires_both_sides": true
+  },
+  "isolation": {
+    "modeler_process_mutation": false,
+    "hook_injection_patch": false,
+    "save_trigger": false,
+    "worker_mutation": false,
+    "rio26_mutation": false,
+    "mainline_branch_mutation": false,
+    "production_or_stable_mutation": false
+  }
+}
