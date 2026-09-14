@@ -1,0 +1,42 @@
+{
+  "schema_version": "csmc_mainline_c050_reconciliation_v1",
+  "corpus_zip_sha256": "be6132ef83959167ffd19218810e099f0bd164714fbd1ec4770f9296b38643b6",
+  "source_lane": "CSMC_ANALYSIS_COMPANION_C",
+  "source_branch": "csmc-analysis-companion-c-20260913",
+  "source_head": "dd58c29c504c54f00e3d2506204b8097d5b5aef9",
+  "source_run": "C-050",
+  "source_result_path": "tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_RUN050_CONTROLLED_FIXTURE_RESULT_20260914.json",
+  "source_report_path": "tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_RUN050_CONTROLLED_FIXTURE_REPORT_20260914.md",
+  "raw_private_bytes_published": false,
+  "accepted_candidates": [
+    {
+      "candidate_semantic": "render_part_cardinality",
+      "candidate_id": "TAIL_2456_RENDER_PART_CARDINALITY_CANDIDATE",
+      "period_bytes": 2456,
+      "period_qwords": 307,
+      "relationship": "cadence_count = 2 + render_part_count",
+      "controlled_fixture_matches": 13,
+      "controlled_fixture_total": 13,
+      "negative_controls": true,
+      "independent_vroid_consistency": true,
+      "vroid_known_render_parts": 8,
+      "vroid_observed_cadence": 10,
+      "confidence_level": 4,
+      "validation_status": "REFERENCE_VERIFIED_CANDIDATE",
+      "semantic_promotion": false
+    }
+  ],
+  "rejected_or_deferred": [
+    "direct material field binding",
+    "vertex stream confirmation",
+    "index stream confirmation",
+    "UV field confirmation",
+    "bone field confirmation",
+    "weight field confirmation",
+    "Blender emit",
+    "runtime policy change"
+  ],
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion_count": 0,
+  "blender_emit": "BLOCKED"
+}
