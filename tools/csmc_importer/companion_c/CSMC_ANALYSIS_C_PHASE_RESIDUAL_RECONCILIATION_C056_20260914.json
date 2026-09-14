@@ -1,0 +1,66 @@
+{
+  "schema_version": "csmc_analysis_c_phase_residual_reconciliation_c056_v1",
+  "run_id": "C-056",
+  "date_jst": "2026-09-14",
+  "classification": "PHASE_LOCALIZED_RESIDUAL_DIFFERENTIAL_CANDIDATE",
+  "source": {
+    "controlled_fixture_zip_sha256": "be6132ef83959167ffd19218810e099f0bd164714fbd1ec4770f9296b38643b6",
+    "c050_side_head": "dd58c29c504c54f00e3d2506204b8097d5b5aef9",
+    "mainline_phase_head": "1f47d9fad49d074fc199bca27291f96a32b4c01a",
+    "mainline_phase_findings_drive_id": "1Jj6DVeTjp8S0wXOzm55NpL1TdaZoSiCm",
+    "mainline_phase_aggregate_drive_id": "1GboKxGxYiM8IUrkht11HbL2jsHARpDle"
+  },
+  "c050_residual_reconciliation": {
+    "cadence_qwords": 307,
+    "f03_to_f06_total_delta_qwords": 320,
+    "f03_to_f06_residual_qwords": 13,
+    "f03_to_f07_total_delta_qwords": 332,
+    "f03_to_f07_residual_qwords": 25,
+    "residual_difference_qwords": 12
+  },
+  "phase_pair_f06_f07": {
+    "logical_mod8_a": 1,
+    "logical_mod8_b": 1,
+    "same_logical_mod8": true,
+    "qword_count_a": 2564,
+    "qword_count_b": 2576,
+    "payload_qword_delta": 12,
+    "longest_run_start_a": 445,
+    "longest_run_start_b": 457,
+    "invariant_run_start_delta_qwords": 12,
+    "longest_run_qwords": 2118,
+    "total_matching_qwords": 2118,
+    "trailing_qwords_after_longest_a": 1,
+    "trailing_qwords_after_longest_b": 1
+  },
+  "accepted_structural_statement": "For the same-mod F06/F07 comparison, the 12-qword difference between the C-050 feature-specific residuals equals both the full stored-payload qword delta and the shift of the giant exact invariant run start; the 2118-qword invariant run and one-qword tail remain equal-sized. Therefore this 12-qword differential is structurally localized before the giant invariant run for this pair.",
+  "not_accepted": [
+    "the 12-qword prefix delta is material metadata",
+    "the 12-qword prefix delta is object metadata",
+    "material and object serialization are separated",
+    "owner/consumer binding is confirmed",
+    "I3_VALID is reached",
+    "semantic promotion is authorized",
+    "Blender emission is authorized"
+  ],
+  "next_evidence_use": "Use the already preregistered C-051 same-identity material/object controls to test competing explanations of this phase-localized prefix differential; do not treat C-051 predictions as observations.",
+  "verification": {
+    "self_tests_passed": 10,
+    "self_tests_failed": 0
+  },
+  "isolation": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false,
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "automatic_integration": false,
+    "raw_private_payload_publication": false
+  }
+}
