@@ -1,0 +1,121 @@
+{
+  "schema": "never-tear-ai3d-central-corridor-surface-binding-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-012",
+  "module_id": "MARS_CENTRAL_CORRIDOR",
+  "status": "LOGIC_READY_NOT_PHYSICAL",
+  "evidence_class": "DETERMINISTIC_SURFACE_BINDING_PREFLIGHT_NOT_PHYSICAL",
+  "structure_authority": {
+    "provider": "WalkMyPlan",
+    "plan_id": "aacb32598eb746758d60c8",
+    "authority_revision": 380,
+    "current_revision": 423,
+    "post_authority_wall_or_opening_edits": 0,
+    "geometry_sha256": "0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb",
+    "module_plan_id": "module-plan-7d0ef550473d76e6",
+    "wall_count": 13,
+    "opening_count": 13,
+    "storey_height_m": 3.4
+  },
+  "source_lineage": {
+    "base44_app_id": "6a2ae58cc6b153727abb83f1",
+    "full_build_path": "src/lib/3d/neverTearMarsFullBuild.js",
+    "surface_library_path": "src/lib/3d/neverTearMarsSurface.js",
+    "base44_checkpoint_observed": "6aa788831b241eb5537c0a25",
+    "github_existing_asset_inventory": "ai3d_engine/data/ai3d010_existing_asset_reuse_inventory.json",
+    "github_surface_assignment": "ai3d_engine/data/central_corridor_surface_assignment_v1.json"
+  },
+  "hard_invariants": {
+    "structure_geometry_mutation": false,
+    "delete_existing_assets": false,
+    "regenerate_existing_assets_by_default": false,
+    "reuse_existing_assets_first": true,
+    "preserve_existing_pbr": true,
+    "no_baked_lighting": true,
+    "uniform_random_damage": false,
+    "whole_base_blackening": false,
+    "adobe_geometry_truth_eligible": false,
+    "to3d_failed_job_geometry_truth_eligible": false,
+    "physical_execution_claimed": false,
+    "canary_promoted": false
+  },
+  "zone_rule": {
+    "basis": "corridor world-X distance toward east Blast Junction",
+    "A": "x >= 67",
+    "B": "60 <= x < 67",
+    "C": "50 <= x < 60",
+    "D": "x < 50",
+    "interpretation": "qualitative surface severity only; not exact pressure or temperature metrology"
+  },
+  "bindings": [
+    {"id":"door_frame","selector":{"semantic_role":"DOOR_FRAME","name_prefix":"HERO_DOORFRAME_"},"material_family":"paintedSteel","surface_asset":"NT-BLD-025-door-frame-wear-v1","implementation":"applyDoorFrameWearSurface","zone_mode":"A/B/C/D by world-X"},
+    {"id":"door_status_lamp","selector":{"semantic_role":"DOOR_STATUS_LAMP","name_prefix":"HERO_DOOR_LAMP_"},"material_family":"paintedSteel","surface_asset":"NT-BLD-025-door-status-lamp-lens-housing-v1","implementation":"applyDoorStatusLampSurface","zone_mode":"A/B/C/D by world-X","preserve_status_tint":true,"no_baked_glow":true},
+    {"id":"wall_service_panel","selector":{"semantic_role":"WALL_SERVICE_PANEL","name_prefixes":["HERO_WALL_PANEL_S_","HERO_WALL_PANEL_N_"]},"material_family":"paintedSteel","surface_asset":"NT-BLD-025-wall-service-panel-pbr-v1","implementation":"applyWallServicePanelSurface","zone_mode":"A/B/C/D by world-X","preserve_authored_tint":true},
+    {"id":"tray_support","selector":{"semantic_role":"TRAY_SUPPORT","name_prefix":"HERO_TRAY_SUPPORT_"},"material_family":"bareSteel","surface_asset":"NT-BLD-025-tray-support-bare-steel-v1","implementation":"applyTraySupportSurface","zone_mode":"A/B/C/D by world-X"},
+    {"id":"ceiling_light","selector":{"semantic_role":"CEILING_LIGHT","name_prefix":"HERO_CEILING_LIGHT_"},"material_family":"emissive","surface_asset":"NT-BLD-025-ceiling-light-lens-housing-v1","implementation":"applyCeilingLightSurface","zone_mode":"A/B/C/D by world-X","separate_emission_mask":true,"preserve_point_lights":true,"no_baked_glow":true},
+    {"id":"overhead_duct","selector":{"name":"HERO_CORRIDOR_OVERHEAD_DUCT","semantic_role":"OVERHEAD_DUCT"},"material_family":"bareSteel","surface_asset":"NT-BLD-025-overhead-duct-longitudinal-pbr-v1","implementation":"applyOverheadDuctSurface","zone_mode":"D-C-B longitudinal","uv_rule":"local-x -> U","geometry_preserved":true},
+    {"id":"cable_tray","selector":{"name":"HERO_CORRIDOR_CABLE_TRAY","semantic_role":"CABLE_TRAY"},"material_family":"bareSteel","surface_asset":"NT-BLD-025-cable-tray-longitudinal-pbr-v1","implementation":"applyCableTraySurface","zone_mode":"D-C-B longitudinal","uv_rule":"local-x -> U","geometry_preserved":true},
+    {"id":"conduit_clip","selector":{"semantic_role":"CONDUIT_CLIP","name_prefix":"HERO_PROP_CONDUIT_CLIP_"},"material_family":"bareSteel","surface_asset":"NT-BLD-025-conduit-clip-pbr-v1","implementation":"applyConduitClipSurface","zone_mode":"D/C/B by world-X"},
+    {"id":"vent_grille_frame","selector":{"name":"HERO_PROP_VENT_FRAME","semantic_role":"VENT_FRAME"},"material_family":"bareSteel","surface_asset":"NT-BLD-025-vent-grille-pbr-v1","implementation":"applyVentGrilleSurface","zone_mode":"B"},
+    {"id":"vent_grille_slats","selector":{"semantic_role":"VENT_SLAT","name_prefix":"HERO_PROP_VENT_SLAT_"},"material_family":"paintedSteel","surface_asset":"NT-BLD-025-vent-grille-pbr-v1","implementation":"applyVentGrilleSurface","zone_mode":"B"},
+    {"id":"intercom_body","selector":{"name":"HERO_PROP_INTERCOM_BODY","semantic_role":"INTERCOM_BODY"},"material_family":"paintedSteel","surface_asset":"NT-BLD-025-intercom-assembly-pbr-v1","implementation":"applyIntercomSurface","zone_mode":"D"},
+    {"id":"intercom_handset","selector":{"name":"HERO_PROP_INTERCOM_HANDSET","semantic_role":"INTERCOM_HANDSET"},"material_family":"rubber","surface_asset":"NT-BLD-025-intercom-assembly-pbr-v1","implementation":"applyIntercomSurface","zone_mode":"D"},
+    {"id":"intercom_grille","selector":{"name":"HERO_PROP_INTERCOM_GRILLE","semantic_role":"INTERCOM_GRILLE"},"material_family":"bareSteel","surface_asset":"NT-BLD-025-intercom-assembly-pbr-v1","implementation":"applyIntercomSurface","zone_mode":"D"},
+    {"id":"intercom_keys","selector":{"semantic_role":"INTERCOM_KEY","name_prefix":"HERO_PROP_INTERCOM_KEY_"},"material_family":"plastic","surface_asset":"NT-BLD-025-intercom-assembly-pbr-v1","implementation":"applyIntercomSurface","zone_mode":"D"},
+    {"id":"blast_surviving_fasteners","selector":{"semantic_role":"SURVIVING_PANEL_FASTENER","name_prefix":"DMG024_PANEL_BOLT_"},"material_family":"bareSteel","surface_asset":"NT-BLD-025-surviving-fastener-pbr-v1","implementation":"applySurvivingFastenerSurface","zone_mode":"A"},
+    {"id":"blast_bulkhead_frame","selector":{"semantic_role":"BLAST_BULKHEAD_FRAME","names":["HERO_BLAST_BULKHEAD_POST_S","HERO_BLAST_BULKHEAD_POST_N","HERO_BLAST_BULKHEAD_LINTEL"]},"material_family":"bareSteel","surface_asset":"NT-BLD-025-bulkhead-frame-pbr-v1","implementation":"applyBulkheadFrameSurface","zone_mode":"B"}
+  ],
+  "verified_legacy_localized_surface_assets": [
+    "NT-BLD-025-blast-painted-steel-rust-edge-v1",
+    "NT-BLD-025-damaged-emergency-light-lens-v1",
+    "NT-BLD-025-blast-floor-dust-ash-v1",
+    "NT-BLD-025-ruptured-service-pipe-v1",
+    "NT-BLD-025-soot-char-deposit-v1"
+  ],
+  "surface_execution_order": [
+    "applyScorchedCableInsulationSurface",
+    "applySpalledConcreteFractureSurface",
+    "applyExposedRebarOxidationSurface",
+    "applyNeverTearMarsSurface",
+    "addHeroCorridorBlastFinish",
+    "applyDamagedEmergencyLightSurface",
+    "applyBlastFloorDustAshSurface",
+    "applyRupturedServicePipeSurface",
+    "applyRustStreakDepositSurface",
+    "applySootCharDepositSurface",
+    "applyBlastDebrisSurface",
+    "applyDoorFrameWearSurface",
+    "applyDoorStatusLampSurface",
+    "applyWallServicePanelSurface",
+    "applyTraySupportSurface",
+    "applyCeilingLightSurface",
+    "applyOverheadDuctSurface",
+    "applyCableTraySurface",
+    "applyConduitClipSurface",
+    "applyVentGrilleSurface",
+    "applyIntercomSurface",
+    "applySurvivingFastenerSurface",
+    "applyBulkheadFrameSurface"
+  ],
+  "blast_damage_causal_order": [
+    "blast_pressure",
+    "heat",
+    "fire",
+    "structural_failure",
+    "electrical_failure",
+    "secondary_fire"
+  ],
+  "promotion_gates": [
+    "AI3D-002 physical CANARY PASS",
+    "AI3D-004 real Physical QA PASS",
+    "Central Corridor physical Structure Module QA PASS"
+  ],
+  "external_boundaries": {
+    "adobe_reference_count": 6,
+    "adobe_role": "NON_CANONICAL_VISUAL_REFERENCE",
+    "to3d_job_id": "8b16ab22-ef00-487a-b47f-ee01c947e991",
+    "to3d_status": "FAILED_OUTPUT_NULL_NO_RETRY",
+    "walkmyplan_current_revision": 423
+  },
+  "next_action": "Run deterministic smoke QA on this contract. If PASS, mark AI3D-012 preflight COMPLETE while preserving physical promotion HOLD. Execute the binding only after AI3D-002, AI3D-004 and Central Corridor physical Structure Module QA all PASS."
+}
