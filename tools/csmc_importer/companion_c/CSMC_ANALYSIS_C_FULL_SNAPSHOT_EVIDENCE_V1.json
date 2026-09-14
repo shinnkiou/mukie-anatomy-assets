@@ -1,0 +1,508 @@
+{
+  "baseline": {
+    "c068_commit": "1bb705c6fedd59bcf9174f72e642a39ad7391e2d",
+    "previous_companion_head": "0121fa9187d11a9578945ed2522787911fc8b3c4",
+    "previous_latest_numbered_run": "C-068"
+  },
+  "classification": "FULL_SNAPSHOT_DIRECT_CHUNK_SQLITE_CONSUMER_CHAIN_CONFIRMED_SEMANTICS_UNPROMOTED",
+  "competing_hypotheses": [
+    {
+      "A": "CHNKSQLi is an embedded SQLite index/database carrying the authoritative ExternalChunk map.",
+      "B": "CHNKSQLi is an auxiliary cache/staging database and not the authoritative target payload index.",
+      "id": "H-CHNKSQLI-AUTH",
+      "kill_A": "Show SELECT Offset path never controls a payload seek/read or that CHNKSQLi is rebuilt only as disposable cache.",
+      "kill_B": "Decompile 0x140d175d0 and show SELECT Offset result directly controls cursor/CHNKExta payload positioning used by the downstream model-data path.",
+      "supports_A": [
+        "0x140d15a90 directly copies a CHNKSQLi-delimited block into a writer/database object.",
+        "Same routine creates and clears ExternalChunk(ExternalID,Offset).",
+        "Sibling functions have direct INSERT/SELECT ExternalChunk xrefs."
+      ],
+      "supports_B": [
+        "No .csmc literal/dispatch binding is present in snapshot.",
+        "No direct ModelData/Canvas3DModelLoader lookup edge from this island is proved."
+      ]
+    },
+    {
+      "A": "The CHNKExta record key is the SQLite ExternalID.",
+      "B": "CHNKExta key is a different identifier/hash and SQL ExternalID is independently derived.",
+      "id": "H-KEY-EXTERNALID",
+      "kill_A": "Decompile INSERT path and show first SQL placeholder derives from another value.",
+      "kill_B": "Show direct dataflow from CHNKExta key bytes through formatting to the ExternalID placeholder.",
+      "supports_A": [
+        "CHNKExta and ExternalChunk operations occupy the same narrow chunk-management island.",
+        "FIRST PASS established a provisional CHNKExta key-bearing record form."
+      ],
+      "supports_B": [
+        "Current snapshot lacks body-level dataflow for INSERT formatting.",
+        "Proximity is not identity."
+      ]
+    },
+    {
+      "A": "ODDPresetVertexArray Coordinate/Normal/UV specializations consume mesh attribute arrays relevant to target ModelData.",
+      "B": "They are preset/editor/cache serializers not reached by the target CSMC load path.",
+      "id": "H-VERTEXARRAY",
+      "kill_A": "Prove the importer specializations are reachable only from a non-target format/editor path.",
+      "kill_B": "Prove Canvas3DModelLoader/ModelData reaches one specialization and bind its read primitive, count/length and destination.",
+      "supports_A": [
+        "Typed ODCChunkCellImporterT specializations exist for Coordinate, Normal, UV and NextLinkIndex.",
+        "ODDPresetMesh has VertexArray, FaceArray and MaterialData specializations."
+      ],
+      "supports_B": [
+        "No direct CSMC/ModelData -> these vtable methods edge is shown.",
+        "Names can reflect editor data structures rather than target-file semantics."
+      ]
+    },
+    {
+      "A": "ODDEditPresetHalfEdge VertexIndex participates in mesh-topology indexing.",
+      "B": "It is an editor half-edge/object-reference ID and not a render/triangle index stream.",
+      "id": "H-HALFEDGE-INDEX",
+      "kill_A": "Show downstream destination never reaches mesh/polygon/index construction.",
+      "kill_B": "Show direct downstream flow into render-mesh/polygon/index construction and controlled index-count behavior.",
+      "supports_A": [
+        "Same type carries VertexIndex, PointIndex, LineIndex and FaceIndex."
+      ],
+      "supports_B": [
+        "PairID/PostID and EditPreset context are equally consistent with graph/editor topology."
+      ]
+    },
+    {
+      "A": "ODDPresetSkin WeightInfo corresponds to skinning weights consumed with bones/bind matrices.",
+      "B": "It is preset/editor metadata not used by the target runtime skin consumer.",
+      "id": "H-WEIGHTINFO",
+      "kill_A": "Show WeightInfo importer is unreachable from target load path or feeds non-skin metadata only.",
+      "kill_B": "Bind WeightInfo reader to a weight-array destination and downstream bone/skin-cluster construction.",
+      "supports_A": [
+        "ODDPresetSkin jointly specializes BoneName, MeshName, WeightInfo and BindMatrix."
+      ],
+      "supports_B": [
+        "No direct construction edge to CrMDocObjBone was found."
+      ]
+    }
+  ],
+  "controlled_fixture_predictions": [
+    {
+      "falsifies": "Offsets fail to shift as predicted, or 0x140d175d0 output is shown not to control a seek/read.",
+      "id": "CF-EXT-OFFSET-01",
+      "precondition": "Structural IR independently shows a physical byte delta before a later external record while earlier record locations are unchanged.",
+      "prediction": "If ExternalChunk.Offset is a physical seek position, later affected offsets shift by exactly the cumulative preceding physical delta; earlier offsets do not.",
+      "scope": "F01-F07 / R01-R05 / V01, only pairs satisfying precondition",
+      "teacher_values_used": false
+    },
+    {
+      "falsifies": "SQL ExternalID changes independently of the key or INSERT body proves another source.",
+      "id": "CF-CHNK-ID-01",
+      "precondition": "A 40-byte key-like region and payload relocation/change can be independently localized.",
+      "prediction": "Under H-KEY-EXTERNALID, unchanged key bytes imply unchanged SQL ExternalID even if Offset changes; a controlled key change should alter ExternalID iff that key feeds the placeholder.",
+      "scope": "Any controlled pair with isolated CHNKExta key/payload difference",
+      "teacher_values_used": false
+    },
+    {
+      "falsifies": "Direct reader stays fixed despite a bound change, or the changed value never reaches the bound/cursor path.",
+      "id": "CF-BOUND-READ-01",
+      "precondition": "Upstream prefix is held constant while one validated boundary/length changes.",
+      "prediction": "A length-delimited consumer changes loop/skip bounds at that boundary; a fixed-size reader does not.",
+      "scope": "Any existing controlled pair with independently validated length/boundary shift",
+      "teacher_values_used": false
+    }
+  ],
+  "counterexamples": [
+    {
+      "claim_rejected": "CLIP_STUDIO_3D_DATA2 string xref is itself a direct consumer entry",
+      "classification": "REJECTED",
+      "evidence": "Only xref is 0x140025c00; direct call graph shows no callers and only static string construction plus atexit registration.",
+      "id": "NEG-DATA2-01"
+    },
+    {
+      "claim_rejected": "ModelInfo3D / ModelNodeInfo3D names alone establish a consumer path",
+      "classification": "REJECTED",
+      "evidence": "Their observed xrefs are static initializer functions with no direct callers in the exported graph.",
+      "id": "NEG-MODELINFO-01"
+    },
+    {
+      "claim_rejected": "Chunk/registration island already has a direct graph bridge to CrM vertex/bone/UV construction",
+      "classification": "CANDIDATE",
+      "evidence": "Directed search across exported call_edges found 0 direct paths to the 15 source-tagged construction functions; indirect dispatch remains possible.",
+      "id": "NEG-CONSTRUCT-01"
+    }
+  ],
+  "created_at": "2026-09-14T23:18:45+09:00",
+  "destination_construction": {
+    "negative_control": {
+      "caveat": "Indirect/virtual dispatch can be absent from the exported direct call graph. This result blocks promotion but does not reject a future construction bridge.",
+      "classification": "NO_DIRECT_PATH_OBSERVED_NOT_SEMANTIC_REJECTION",
+      "direct_paths_found": 0,
+      "sources": [
+        "0x140d15a90",
+        "0x140d175d0",
+        "0x140d17e20",
+        "0x140d15700",
+        "0x141657970",
+        "0x1416578e0",
+        "0x141657540",
+        "0x141657e60",
+        "0x140d45d30",
+        "0x141657140",
+        "0x141656a80"
+      ],
+      "targets": {
+        "CrMDocObjBone.cpp": [
+          "0x1409abc60",
+          "0x1409ac640"
+        ],
+        "CrMDocObjUV.cpp": [
+          "0x140959650"
+        ],
+        "CrMVertex.cpp": [
+          "0x14097e4f0",
+          "0x14097e920",
+          "0x14097ea00",
+          "0x14097fae0",
+          "0x14097fe20",
+          "0x140980790",
+          "0x1409809e0",
+          "0x140981460",
+          "0x1409816a0",
+          "0x1409818b0",
+          "0x140981d80",
+          "0x140982080"
+        ]
+      }
+    },
+    "status": "UNRESOLVED"
+  },
+  "direct_consumer_edges": [
+    {
+      "classification": "CONFIRMED",
+      "from": "0x141657970",
+      "id": "EDGE-C069-01",
+      "kind": "direct_call",
+      "meaning": "Opaque caller directly enters the newly inspected chunk/SQLite consumer routine.",
+      "to": "0x140d15a90"
+    },
+    {
+      "classification": "CONFIRMED",
+      "id": "EDGE-C069-02",
+      "key_addresses": [
+        "0x1408c27c0",
+        "0x1408c2f40",
+        "0x1408c2d90",
+        "0x1408c2dc0",
+        "0x1408c17d0",
+        "0x140d1de70"
+      ],
+      "kind": "body_dataflow",
+      "markers": [
+        "CSFCHUNK",
+        "CHNKExta",
+        "CHNKSQLi"
+      ],
+      "meaning": "8-byte marker read/check -> repeated confirmed BE-u64 reads -> cursor skip/read -> CHNKSQLi bounded transfer -> SQLite ExternalChunk table creation/deletion occur in one decompiled routine.",
+      "within": "0x140d15a90"
+    },
+    {
+      "classification": "CONFIRMED",
+      "id": "EDGE-C069-03",
+      "kind": "registration",
+      "meaning": "Direct registration pairs include ModelData -> Canvas3DModelLoader, BankData -> Canvas3DModelBank, SceneData -> Manager3DOd, Layer3DModelData -> ModelData3D via 0x141657140; 0x141657140 directly calls 0x141656a80.",
+      "within": "0x140d45d30"
+    }
+  ],
+  "externalchunk_sqlite_island": [
+    {
+      "classification": "CONFIRMED",
+      "evidence": [
+        "CREATE TABLE IF NOT EXISTS ExternalChunk(ExternalID BLOB, Offset INTEGER)",
+        "DELETE FROM ExternalChunk",
+        "CSFCHUNK/CHNKExta/CHNKSQLi marker checks",
+        "confirmed BE-u64 primitive calls"
+      ],
+      "function": "0x140d15a90"
+    },
+    {
+      "caller": "0x141657e60",
+      "classification": "CANDIDATE",
+      "evidence": [
+        "Direct xref to INSERT INTO ExternalChunk VALUES('%s',%s)",
+        "direct call to BE-u64 writer thunk"
+      ],
+      "function": "0x140d15700",
+      "missing": "targeted decompile/body dataflow from CHNKExta key to SQL placeholders"
+    },
+    {
+      "caller": "0x1416578e0",
+      "classification": "CANDIDATE",
+      "evidence": [
+        "Direct xref to SELECT Offset FROM ExternalChunk WHERE ExternalID='%s'",
+        "calls BE-u64 reader, bounded-read, compare and cursor-advance family"
+      ],
+      "function": "0x140d175d0",
+      "missing": "decompiled result flow proving SELECT Offset result controls physical seek/read"
+    },
+    {
+      "caller": "0x141657540",
+      "classification": "CANDIDATE",
+      "evidence": [
+        "Direct xref to INSERT INTO ExternalChunk VALUES('%s',%s)",
+        "calls BE-u64 reader and writer families"
+      ],
+      "function": "0x140d17e20",
+      "missing": "targeted decompile/body dataflow"
+    }
+  ],
+  "independence_contract": {
+    "allowed_prior_context": [
+      "pre-C069 FIRST PASS confirmed reader/writer anchors",
+      "preexisting F02 structural map row190 / Drive 1ylpWtRvGUVP2AHcelhZay7uH73Yo6GAL"
+    ],
+    "cross_lane_compare_only_after_seal": true,
+    "mainline_mutation": false,
+    "mainline_new_full_snapshot_results_read": false
+  },
+  "oracle_discrimination_map": {
+    "canonical_order_changed": false,
+    "canonical_sentinel9": [
+      "M01",
+      "M10",
+      "M13",
+      "M14",
+      "M15",
+      "M18",
+      "M22",
+      "M23",
+      "M30"
+    ],
+    "physical_status": "0/30 PENDING_MANUAL_ORACLE",
+    "proposal_only": [
+      {
+        "mutations": [
+          "M13",
+          "M14",
+          "M15"
+        ],
+        "question": "Does the direct consumer change at the variable→invariant boundary?",
+        "snapshot_link": "Generic sequential length/cursor reader family only; no proof that F02 DATA2 binds to 0x140d15a90."
+      },
+      {
+        "mutations": [
+          "M01",
+          "M10"
+        ],
+        "question": "Is variable-prefix consumption uniform?",
+        "snapshot_link": "Would distinguish one uniform bounded reader from partitioned subranges after a direct DATA2 binding exists."
+      },
+      {
+        "mutations": [
+          "M18"
+        ],
+        "question": "Is invariant interior consumed by the same bounded loop?",
+        "snapshot_link": "Generic reader-loop discriminator; no semantics."
+      },
+      {
+        "mutations": [
+          "M22",
+          "M23",
+          "M30"
+        ],
+        "question": "Does logical end differ from framing remainder?",
+        "snapshot_link": "Useful against length-delimited cursor/skip hypotheses; canonical order retained."
+      }
+    ]
+  },
+  "provenance": {
+    "extractor_sha256": "f5ad7813efbbc6be4879eaf59fcc02e1ae33623b338e4015bc28f93357bc70cd",
+    "fresh_disposable_project": true,
+    "ghidra": "12.1.3",
+    "inventory": {
+      "artifact_bad_hash": 0,
+      "artifact_inventory_entries": 195,
+      "artifact_missing": 0,
+      "artifact_verified": 195,
+      "call_edges": 267088,
+      "functions_tsv_rows": 75721,
+      "string_xrefs": 34233,
+      "strings": 29886,
+      "summary_function_count": 76803,
+      "symbols": 669282,
+      "target_keyword_hits": 1715,
+      "targeted_decompile_files": 180
+    },
+    "modeler": "CLIP STUDIO MODELER 1.10.13",
+    "modeler_exe_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+    "modeler_runtime_started": false,
+    "private_output": true,
+    "snapshot_file": "CSMC_FULL_SNAPSHOT_20260914_214659.zip",
+    "snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342"
+  },
+  "questions_for_mainline": [
+    "DQ-EXT-01",
+    "DQ-EXT-02",
+    "DQ-LOAD-01",
+    "DQ-F02-BND-01",
+    "DQ-F02-TERM-01"
+  ],
+  "questions_for_modeler_static": [
+    "DQ-SER-01",
+    "DQ-SER-02",
+    "DQ-WGT-01",
+    "DQ-DATA2-01",
+    "DQ-CONSTRUCT-01"
+  ],
+  "reader_families": [
+    {
+      "address": "0x1408c2d90 -> 0x1408c26e0",
+      "basis": "FIRST PASS confirmed primitive; Full Snapshot directly calls thunk in 0x140d15a90 and sibling chunk functions.",
+      "classification": "CONFIRMED",
+      "role": "BE-u64 reader"
+    },
+    {
+      "address": "0x1408c1960 -> 0x1408c1650",
+      "basis": "FIRST PASS confirmed primitive; Full Snapshot call graph places it in ExternalChunk INSERT-side functions 0x140d15700 and 0x140d17e20.",
+      "classification": "CONFIRMED",
+      "role": "BE-u64 writer"
+    },
+    {
+      "address": "0x1408c27c0",
+      "basis": "Repeated decompiled calls use (cursor,dst,count), including 8-byte markers, 16-byte value, and CHNKSQLi transfer blocks.",
+      "classification": "STRONG",
+      "role": "bounded byte read/copy from input cursor"
+    },
+    {
+      "address": "0x1408c2dc0",
+      "basis": "In 0x140d15a90 it immediately follows BE-u64 length reads.",
+      "classification": "STRONG",
+      "role": "cursor advance/skip by length"
+    },
+    {
+      "address": "0x1408c2f40",
+      "basis": "Branches on comparison of 8-byte buffers against CSFCHUNK/CHNK* marker strings.",
+      "classification": "STRONG",
+      "role": "bounded marker compare/check"
+    },
+    {
+      "address": "0x1408c0d40",
+      "basis": "Targeted decompile allocates when capacity < requested size, copies prior bytes, updates logical length, returns inline/heap data pointer.",
+      "classification": "CONFIRMED",
+      "role": "buffer resize/reserve with copy-on-write behavior; returns data base"
+    },
+    {
+      "address": "0x1408c17d0",
+      "basis": "0x140d15a90 reads bounded blocks from input then passes same block/length to this function.",
+      "classification": "STRONG",
+      "role": "output write/copy in CHNKSQLi transfer loop"
+    },
+    {
+      "address": "0x1408c2db0",
+      "basis": "Call placement only; no targeted body in snapshot.",
+      "classification": "CANDIDATE",
+      "role": "remaining-length/availability query"
+    }
+  ],
+  "run_id": "C-069",
+  "schema_version": "csmc_analysis_c_full_snapshot_evidence_v1",
+  "serializer_rtti_candidates": {
+    "classification": "CANDIDATE",
+    "items": [
+      {
+        "fields": {
+          "Coordinate": "0x1417e9468",
+          "NextLinkIndex": "0x1417e9500",
+          "Normal": "0x1417e94c0",
+          "UV": "0x1417e94e0"
+        },
+        "type": "ODDPresetVertexArray"
+      },
+      {
+        "fields": {
+          "FaceIndex": "0x1417e4990",
+          "LineIndex": "0x1417e4970",
+          "PairID": "0x1417e49e8",
+          "PointIndex": "0x1417e4950",
+          "PostID": "0x1417e4a40",
+          "VertexIndex": "0x1417e48f8"
+        },
+        "type": "ODDEditPresetHalfEdge"
+      },
+      {
+        "fields": {
+          "BindMatrix": "0x1417e8af8",
+          "BoneName": "0x1417e8a60",
+          "MeshName": "0x1417e8ab8",
+          "WeightInfo": "0x1417e8ad8"
+        },
+        "type": "ODDPresetSkin"
+      },
+      {
+        "fields": {
+          "FaceArray": "0x1417e8020",
+          "Location": "0x1417e7fa8",
+          "MaterialData": "0x1417e8078",
+          "Name": "0x1417e7f30",
+          "NodeName": "0x1417e7f88",
+          "VertexArray": "0x1417e7fc8"
+        },
+        "type": "ODDPresetMesh"
+      },
+      {
+        "fields": {
+          "VertexIndex": "0x1417eaff0"
+        },
+        "type": "ODDFaceData"
+      },
+      {
+        "fields": {
+          "EdgeID": "0x1417e41a8",
+          "MaterialIndex": "0x1417e4220",
+          "PointCount": "0x1417e4200"
+        },
+        "type": "ODDEditPresetFaceData"
+      },
+      {
+        "fields": {
+          "Index": "0x1417e3e00",
+          "IsGroup": "0x1417e3da8",
+          "Location": "0x1417e3d68",
+          "Name": "0x1417e3d10",
+          "StateFlag": "0x1417e3d88"
+        },
+        "type": "ODDEditPresetMeshNode"
+      }
+    ],
+    "note": "Typed importer RTTI/vftable presence is not a field-read proof or CSMC binding."
+  },
+  "status": {
+    "blender_emit_ready": false,
+    "c069_authorized": true,
+    "c069_trigger": [
+      "new direct consumer edge",
+      "new independently testable controlled predictions"
+    ],
+    "controlled_fixture_to_consumer_match": "UNRESOLVED",
+    "cross_lane_compare_status": "READY_FOR_CROSS_LANE_COMPARE",
+    "explicit_canvas3d_load_entry": "UNRESOLVED",
+    "explicit_csmc_handler_entry": "UNRESOLVED",
+    "explicit_externalchunk_offset_lookup": "CANDIDATE",
+    "explicit_internal_model_construction": "UNRESOLVED",
+    "explicit_modeldata_lookup": "UNRESOLVED",
+    "explicit_serializer_field_read": "UNRESOLVED",
+    "mainline_mutations": 0,
+    "mainline_new_snapshot_results_read": false,
+    "modeler_runtime_actions": 0,
+    "physical_oracle": "0/30 PENDING_MANUAL_ORACLE",
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "rio26_mutations": 0,
+    "runtime_dispatch": false,
+    "semantic_promotion_count": 0,
+    "worker_canary_actions": 0
+  },
+  "unresolved": [
+    ".csmc exact dispatch/handler",
+    "ExternalChunk SELECT result -> physical seek/payload read",
+    "CHNKExta key -> ExternalID identity",
+    "ModelData runtime lookup",
+    "Canvas3DModelLoader load entry",
+    "direct serializer field read with width/endian/count/destination",
+    "serializer -> internal construction edge",
+    "controlled fixture -> consumer proof-grade match",
+    "geometry/index/UV/material/bone/weight semantics"
+  ]
+}
