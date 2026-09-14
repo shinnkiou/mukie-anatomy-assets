@@ -1,0 +1,36 @@
+{
+  "schema": "never-tear-ai3d-diagnostic-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-010",
+  "classification": "BASE44_SANDBOX_FILE_API_SHELL_FILESYSTEM_DESYNC",
+  "observed_utc": "2026-09-14T03:59:11Z",
+  "base44_app_id": "6a2ae58cc6b153727abb83f1",
+  "file_api": {
+    "root_package_json_visible": true,
+    "package_json_size_bytes": 3259,
+    "package_json_readback": "PASS",
+    "source_readback": "PASS"
+  },
+  "shell": {
+    "command": "npm run build",
+    "cwd": "/workspace",
+    "exit_code": 254,
+    "error_class": "ENOENT",
+    "error_path": "/workspace/package.json",
+    "workspace_listing": "EMPTY"
+  },
+  "qa_interpretation": {
+    "base44_shell_build_pass_claimed": false,
+    "source_failure_claimed": false,
+    "geometry_failure_claimed": false,
+    "physical_execution_claimed": false,
+    "ai3d010_module_preflight_remains": "PASS",
+    "ai3d011_staged_runtime_qa_remains": "PASS_NOT_PROMOTED"
+  },
+  "retry_policy": {
+    "same_shell_route_retried_indefinitely": false,
+    "decision": "STOP_REPEATING_BASE44_SHELL_ROUTE",
+    "alternate_qa_route": "GITHUB_ACTIONS_STAGED_BLENDER"
+  },
+  "next_action": "Treat Base44 shell build verification as unavailable due connector sandbox file/shell desynchronization. Preserve file-API source readback. Do not use this as a substitute for the AI3D-002 physical Windows companion CANARY or AI3D-004 physical QA gate."
+}
