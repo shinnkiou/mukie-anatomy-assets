@@ -23,7 +23,12 @@ jobs:
             tools/csmc_importer/importer_lab/csmc_importer_lab_policy.py \
             tools/csmc_importer/importer_lab/csmc_importer_lab_manifest.py \
             tools/csmc_importer/importer_lab/csmc_importer_lab_runner.py \
-            tools/csmc_importer/importer_lab/test_csmc_importer_lab_m0_m1_synthetic.py
+            tools/csmc_importer/importer_lab/test_csmc_importer_lab_m0_m1_synthetic.py \
+            tools/csmc_importer/importer_lab/csmc_render_part_residual_probe.py \
+            tools/csmc_importer/importer_lab/test_csmc_render_part_residual_probe_synthetic.py
       - name: Run M0/M1 synthetic acceptance
         working-directory: tools/csmc_importer/importer_lab
         run: python test_csmc_importer_lab_m0_m1_synthetic.py
+      - name: Run render-part residual synthetic coverage
+        working-directory: tools/csmc_importer/importer_lab
+        run: python test_csmc_render_part_residual_probe_synthetic.py
