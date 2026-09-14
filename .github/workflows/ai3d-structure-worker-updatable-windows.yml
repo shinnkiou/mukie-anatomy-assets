@@ -1,0 +1,193 @@
+name: AI3D Structure Worker Stable Launcher Channel
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ai3d-013-structure-canary-20260914
+    paths:
+      - 'ai3d_engine/windows_worker/ai3d_structure_worker_launcher.py'
+      - 'ai3d_engine/windows_worker/ai3d_structure_worker_current.py'
+      - 'ai3d_engine/windows_worker/ai3d_structure_worker_v023.py'
+      - 'ai3d_engine/windows_worker/ai3d_structure_worker_v021.py'
+      - 'ai3d_engine/windows_worker/ai3d_structure_worker.py'
+      - 'ai3d_engine/windows_worker/ai3d_worker.py'
+      - 'ai3d_engine/windows_worker/blender_structure_module_canary.py'
+      - 'ai3d_engine/windows_worker/blender_structure_module_canary_v023.py'
+      - '.github/workflows/ai3d-structure-worker-updatable-windows.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-test-publish:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pinned build dependency
+        shell: pwsh
+        run: python -m pip install --disable-pip-version-check pyinstaller==6.11.1
+
+      - name: Syntax and fail-closed self-tests
+        shell: pwsh
+        run: |
+          python -m py_compile ai3d_engine/windows_worker/ai3d_worker.py
+          python -m py_compile ai3d_engine/windows_worker/ai3d_structure_worker.py
+          python -m py_compile ai3d_engine/windows_worker/ai3d_structure_worker_v021.py
+          python -m py_compile ai3d_engine/windows_worker/ai3d_structure_worker_v023.py
+          python -m py_compile ai3d_engine/windows_worker/ai3d_structure_worker_current.py
+          python -m py_compile ai3d_engine/windows_worker/ai3d_structure_worker_launcher.py
+          python ai3d_engine/windows_worker/ai3d_structure_worker_current.py --self-test
+          python ai3d_engine/windows_worker/ai3d_structure_worker_launcher.py --self-test
+
+      - name: Build stable worker binary
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --onefile --console `
+            --name NEVER_TEAR_AI3D_STRUCTURE_WORKER `
+            --paths ai3d_engine/windows_worker `
+            --add-data "ai3d_engine/windows_worker/blender_structure_module_canary.py;." `
+            --add-data "ai3d_engine/windows_worker/blender_structure_module_canary_v023.py;." `
+            ai3d_engine/windows_worker/ai3d_structure_worker_current.py
+
+      - name: Build stable launcher binary
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --onefile --console `
+            --name NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER `
+            ai3d_engine/windows_worker/ai3d_structure_worker_launcher.py
+
+      - name: Build fixed release-channel manifest and bootstrap package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $worker = 'dist/NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe'
+          $launcher = 'dist/NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe'
+          $workerHash = (Get-FileHash $worker -Algorithm SHA256).Hash.ToLower()
+          $workerSize = (Get-Item $worker).Length
+          $launcherHash = (Get-FileHash $launcher -Algorithm SHA256).Hash.ToLower()
+          $workerVersion = (python -c "import sys; sys.path.insert(0, 'ai3d_engine/windows_worker'); import ai3d_structure_worker_current as m; print(m.WORKER_VERSION)").Trim()
+          $channel = [ordered]@{
+            schema_version = 'never-tear-ai3d-structure-worker-channel-v1'
+            channel = 'ai3d-structure-canary'
+            capability = 'ai3d_structure_module_v1'
+            release_tag = 'ai3d-structure-worker-canary-channel'
+            asset_name = 'NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe'
+            worker_version = $workerVersion
+            sha256 = $workerHash
+            size_bytes = $workerSize
+            min_launcher_version = '0.1.0'
+            source_commit = $env:GITHUB_SHA
+          }
+          $channel | ConvertTo-Json | Set-Content -Encoding utf8 AI3D_STRUCTURE_WORKER_CHANNEL_V1.json
+          "$workerHash  NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe" | Set-Content -Encoding ascii NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt
+          "$launcherHash  NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe" | Set-Content -Encoding ascii NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.sha256.txt
+
+          New-Item -ItemType Directory -Force bootstrap/seed | Out-Null
+          Copy-Item $launcher bootstrap/NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe
+          Copy-Item $worker bootstrap/seed/NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe
+          Copy-Item AI3D_STRUCTURE_WORKER_CHANNEL_V1.json bootstrap/seed/AI3D_STRUCTURE_WORKER_CHANNEL_V1.json
+          Copy-Item NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.sha256.txt bootstrap/
+          Copy-Item NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt bootstrap/seed/
+
+          @'
+          @echo off
+          setlocal
+          cd /d "%~dp0"
+          powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $lh=(Get-Content 'NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.sha256.txt').Split()[0].ToLower(); $la=(Get-FileHash 'NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe' -Algorithm SHA256).Hash.ToLower(); if($lh -ne $la){throw 'launcher SHA256 mismatch'}; $wh=(Get-Content 'seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt').Split()[0].ToLower(); $wa=(Get-FileHash 'seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe' -Algorithm SHA256).Hash.ToLower(); if($wh -ne $wa){throw 'worker SHA256 mismatch'}; Write-Host ('SHA256 PASS launcher='+$la+' worker='+$wa)"
+          if errorlevel 1 exit /b 23
+          exit /b 0
+          '@ | Set-Content -Encoding ascii bootstrap/VERIFY_BOOTSTRAP_SHA256.bat
+
+          @'
+          @echo off
+          setlocal
+          cd /d "%~dp0"
+          call VERIFY_BOOTSTRAP_SHA256.bat || exit /b %errorlevel%
+          set TARGET=%LOCALAPPDATA%\UKIE_AI_BRIDGE\ai3d\structure_canary\launcher
+          if not exist "%TARGET%" mkdir "%TARGET%"
+          if not exist "%TARGET%\seed" mkdir "%TARGET%\seed"
+          copy /Y NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe "%TARGET%\NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe" >nul
+          copy /Y seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe "%TARGET%\seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe" >nul
+          copy /Y seed\AI3D_STRUCTURE_WORKER_CHANNEL_V1.json "%TARGET%\seed\AI3D_STRUCTURE_WORKER_CHANNEL_V1.json" >nul
+          copy /Y seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt "%TARGET%\seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt" >nul
+          powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=[Environment]::GetFolderPath('StartMenu')+'\Programs\NEVER TEAR AI3D Structure Worker CANARY.lnk'; $s=(New-Object -ComObject WScript.Shell).CreateShortcut($p); $s.TargetPath='%TARGET%\NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe'; $s.WorkingDirectory='%TARGET%'; $s.Save(); Write-Host ('Stable shortcut: '+$p)"
+          if errorlevel 1 exit /b 23
+          echo Installed one-time stable launcher: %TARGET%
+          echo Future worker repairs are downloaded and SHA/self-test verified by this launcher.
+          echo Start Menu: NEVER TEAR AI3D Structure Worker CANARY
+          exit /b 0
+          '@ | Set-Content -Encoding ascii bootstrap/INSTALL_NEVER_TEAR_AI3D_STRUCTURE_WORKER_ONCE.bat
+
+          @'
+          NEVER TEAR AI3D Structure Worker — one-time stable launcher
+
+          This package replaces the repeated version-specific ZIP install loop.
+
+          One-time install:
+          1. Close the currently running version-specific Structure Worker console.
+          2. Run VERIFY_BOOTSTRAP_SHA256.bat.
+          3. Run INSTALL_NEVER_TEAR_AI3D_STRUCTURE_WORKER_ONCE.bat.
+          4. From then on, use only the stable Start Menu shortcut:
+             NEVER TEAR AI3D Structure Worker CANARY
+
+          Update security boundary:
+          - fixed GitHub repository and fixed release-channel tag only
+          - manifest cannot provide a URL, path, command or script
+          - fixed worker asset name and fixed ai3d_structure_module_v1 capability
+          - SHA-256 and packaged worker --self-test must PASS before activation
+          - side-by-side release store and atomic current.json switch
+          - update failure keeps the last locally verified worker
+          - no semantic/capability promotion is performed by the launcher
+
+          A newly published worker is picked up on the next launch of the same shortcut.
+          No new ZIP extraction/install is needed for normal worker revisions.
+          '@ | Set-Content -Encoding utf8 bootstrap/README.txt
+
+          Compress-Archive -Path bootstrap/* -DestinationPath NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip -Force
+          $bootstrapHash=(Get-FileHash NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip -Algorithm SHA256).Hash.ToLower()
+          "$bootstrapHash  NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip" | Set-Content -Encoding ascii NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip.sha256.txt
+
+      - name: Verify packaged binaries before publishing channel
+        shell: pwsh
+        run: |
+          dist/NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe --self-test
+          dist/NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe --self-test
+          bootstrap/VERIFY_BOOTSTRAP_SHA256.bat
+
+      - name: Publish fixed GitHub release channel
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tag = 'ai3d-structure-worker-canary-channel'
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --prerelease --title 'AI3D Structure Worker CANARY channel' --notes 'Fixed fail-closed update channel for the one-time Structure Worker launcher.'
+            if ($LASTEXITCODE -ne 0) { throw 'release create failed' }
+          }
+          gh release upload $tag --repo $env:GITHUB_REPOSITORY --clobber `
+            dist/NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe `
+            AI3D_STRUCTURE_WORKER_CHANNEL_V1.json `
+            NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt `
+            NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip `
+            NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip.sha256.txt
+          if ($LASTEXITCODE -ne 0) { throw 'release upload failed' }
+
+      - name: Upload CI evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1
+          path: |
+            NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip
+            NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip.sha256.txt
+            AI3D_STRUCTURE_WORKER_CHANNEL_V1.json
+            NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt
+          if-no-files-found: error
+          retention-days: 30
