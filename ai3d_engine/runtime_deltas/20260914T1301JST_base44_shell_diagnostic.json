@@ -1,0 +1,37 @@
+{
+  "schema": "never-tear-ai3d-runtime-delta-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-010",
+  "supersedes": {
+    "field": "ready_tasks.AI3D-010.base44_build_after_lineage_update",
+    "old_value": "BLOCKED_WORKSPACE_NO_PACKAGE_JSON"
+  },
+  "current": {
+    "base44_file_api_package_json_readback": "PASS",
+    "base44_shell_build_verification": "UNAVAILABLE_BASE44_SANDBOX_FILE_SHELL_DESYNC",
+    "base44_shell_workspace_state": "EMPTY_WORKSPACE",
+    "base44_shell_build_exit_code": 254,
+    "base44_shell_build_error": "ENOENT_/workspace/package.json",
+    "source_failure_claimed": false,
+    "geometry_failure_claimed": false,
+    "physical_execution_claimed": false
+  },
+  "durable_refs": {
+    "github_diagnostic_commit": "8468307d1069819ad59b484c399f1ae9b84642ea",
+    "github_diagnostic_blob_sha": "0d5a9aaef3c97c864b34e1580e39516adb9c32c2",
+    "base44_checkpoint": "6aa7722c1e38cf6281786214",
+    "base44_commit": "5601a426b18c59e7053ee92bb1d899816eb52299",
+    "supabase_checkpoint": "cp-ai3d010-base44-desync-b5808ad0d4f2892f",
+    "supabase_run": "AI3D-BASE44-DESYNC-20260914T1301JST",
+    "drive_master_revision": "ANLCKQk7Zq8NhjIKai-WA66QNgwXgLfgNXgL7--IpsUNYFvkAJBJO_umXMq3RBjKI5HTMkBWvwR6exbzYJ-pSuv21qzXc7YypH0yCzxlLro",
+    "drive_master_section24": "READBACK_PASS",
+    "linear_issue": "RIO-53"
+  },
+  "physical_gate": {
+    "required_capability": "ai3d_blender_physical_mvp_v1",
+    "companion_capability_advertised": false,
+    "ai3d_worker_jobs_count": 0,
+    "canary_queued": false
+  },
+  "next_action": "Keep AI3D-010 READY. Do not repeat the Base44 shell route. Start the verified separate AI3D companion, require capability advertisement, queue exactly one AI3D-002 physical CANARY, then run AI3D-004 real Physical QA before considering physical AI3D-010 production."
+}
