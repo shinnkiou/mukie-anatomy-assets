@@ -1,0 +1,22 @@
+{
+  "schema": "never-tear-ai3d-supabase-deployment-manifest-v1",
+  "task_id": "AI3D-013",
+  "canary_generation": 3,
+  "worker_version": "0.2.2-ai3d-structure-gatefix",
+  "job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-003",
+  "command_id": "AI3D-013-STRUCTURE-CANARY-003-NEVER-TEAR",
+  "claim_rpc": "ai3d_claim_structure_canary_job_v3",
+  "migration_name": "ai3d_structure_canary_v3_claim",
+  "edge_function": "ai3d-worker-transport-structure-canary-v3",
+  "edge_function_id": "1acc99b5-3bb6-4a4a-98d0-454a9493c6e0",
+  "edge_bundle_sha256": "53378f5a7f62814d2d0fc99bc64f51e272eafe8a518826ab2b85234465ac47ea",
+  "github_sql_mirror_status": "BLOCKED_BY_CONNECTOR_SAFETY_CHECK",
+  "authoritative_runtime_source": "SUPABASE_APPLIED_MIGRATION_AND_ACTIVE_EDGE_FUNCTION",
+  "safety": {
+    "max_attempts": 1,
+    "physical_concurrency": 1,
+    "arbitrary_shell": false,
+    "production_plan_allowed": false,
+    "promotion_before_visual_qa": false
+  }
+}
