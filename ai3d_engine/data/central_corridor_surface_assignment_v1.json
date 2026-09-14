@@ -1,0 +1,50 @@
+{
+  "schema": "never-tear-ai3d-surface-assignment-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-012",
+  "module_id": "MARS_CENTRAL_CORRIDOR",
+  "status": "PREFLIGHT_READY_NOT_PHYSICAL",
+  "structure_authority": {
+    "provider": "WalkMyPlan",
+    "revision": 380,
+    "geometry_sha256": "0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb",
+    "module_plan_id": "module-plan-7d0ef550473d76e6",
+    "wall_count": 13,
+    "opening_count": 13
+  },
+  "policy": {
+    "structure_geometry_mutation": false,
+    "reuse_existing_assets_first": true,
+    "delete_existing_assets": false,
+    "uniform_random_damage": false,
+    "whole_base_blackening": false,
+    "adobe_geometry_truth_eligible": false,
+    "physical_execution_claimed": false
+  },
+  "surface_layers": [
+    {"layer":"BASE_STRUCTURE","target":"authoritative corridor walls/opening reveals","material_family":"painted industrial metal / sealed structural surface","damage_mode":"none until overlay"},
+    {"layer":"SERVICE_SYSTEMS","target":"ducts,cable trays,supports,coolant/water/air pipes","material_family":"existing verified service materials","damage_mode":"preserve existing localized variants"},
+    {"layer":"WAYFINDING","target":"hazard strips,door frames,status lamps","material_family":"existing corridor visual language","damage_mode":"localized only"},
+    {"layer":"LIGHTING","target":"corridor lights,emergency lighting","material_family":"existing verified lighting assets","damage_mode":"Blast Junction overlay may replace localized instances"},
+    {"layer":"DAMAGE_OVERLAY","target":"Blast Junction dependency subset only","material_family":"existing localized damage assets","damage_mode":"causal/localized; no uniform blackening"}
+  ],
+  "verified_localized_surface_assets": [
+    "NT-BLD-025-blast-painted-steel-rust-edge-v1",
+    "NT-BLD-025-damaged-emergency-light-lens-v1",
+    "NT-BLD-025-blast-floor-dust-ash-v1",
+    "NT-BLD-025-ruptured-service-pipe-v1",
+    "NT-BLD-025-soot-char-deposit-v1"
+  ],
+  "preserve_prefixes": {
+    "central_corridor": ["HERO_CORRIDOR_"],
+    "blast_junction": ["DMG024_","HERO_BLAST_"]
+  },
+  "qa_requirements_before_surface_promotion": [
+    "AI3D-002 physical CANARY PASS",
+    "AI3D-004 real Physical QA PASS",
+    "Central Corridor Structure Module QA PASS",
+    "material assignments remain subordinate to Structure Geometry Authority",
+    "Blast Junction damage remains localized and causally layered"
+  ],
+  "next_action": "Keep as surface preflight only. After AI3D-002 and AI3D-004 pass and Central Corridor Structure Module QA passes, bind existing verified corridor/service materials first, then integrate localized Blast Junction damage assets and run material/render/visual QA."
+}
