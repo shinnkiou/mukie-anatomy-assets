@@ -1,0 +1,40 @@
+name: CSMC segment IR smoke
+
+on:
+  push:
+    branches:
+      - csmc-importer-experimental-20260902
+    paths:
+      - 'tools/csmc_importer/csmc_pair_invariant_evidence.py'
+      - 'tools/csmc_importer/csmc_controlled_segment_ir.py'
+      - 'tools/csmc_importer/test_csmc_controlled_segment_ir_synthetic.py'
+      - 'tools/csmc_importer/csmc_p4_next_evidence_gate.py'
+      - 'tools/csmc_importer/test_csmc_p4_next_evidence_gate_synthetic.py'
+      - 'tools/csmc_importer/CSMC_CONTROLLED_SEGMENT_IR_FINDINGS_20260914.md'
+      - 'tools/csmc_importer/CSMC_CONTROLLED_SEGMENT_IR_AGGREGATE_20260914.json'
+      - 'tools/csmc_importer/CSMC_SCOUT_REFERENCE_INTEGRATION_20260914.md'
+      - '.github/workflows/csmc-segment-ir-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  synthetic-segment-ir-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile segment IR and gate
+        run: |
+          python -m py_compile \
+            tools/csmc_importer/csmc_pair_invariant_evidence.py \
+            tools/csmc_importer/csmc_controlled_segment_ir.py \
+            tools/csmc_importer/test_csmc_controlled_segment_ir_synthetic.py \
+            tools/csmc_importer/csmc_p4_next_evidence_gate.py \
+            tools/csmc_importer/test_csmc_p4_next_evidence_gate_synthetic.py
+      - name: Run controlled segment IR synthetic tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_controlled_segment_ir_synthetic.py
+      - name: Run next-evidence gate v3 synthetic tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_p4_next_evidence_gate_synthetic.py
