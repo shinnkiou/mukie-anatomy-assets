@@ -19,6 +19,45 @@ This file is the public-safe restart pointer. Historical detail remains in the c
 - checkpoint MD SHA-256: `025dd8ccb2b783f8119a4c937db0228a7e44f0b54989b2ccf5a25116c876866c`
 - checkpoint JSON SHA-256: `c6d335a09acc1594a0244645833450d7c8adab0e1ed9ef5ef4d6f3c4863873cb`
 
+Supabase writes were unavailable during the latest reconciliation because the connector safety layer blocked SQL execution. Therefore row218 remains the canonical pointer; this is intentional and not evidence loss.
+
+## Supplemental row220 reconciliation — 2026-09-15
+
+A later independently sealed Companion packet exists at Supabase row `220` / Base44 `6aa814d1558760c2d7131e48` / GitHub `239c1a265c2b96ffa765b62b813bd7af53f356fe`.
+
+Important identity rule:
+- row209 and row220 both use logical run name `C-069`;
+- their sealed hashes differ;
+- preserve both provenance chains;
+- do **not** count row220 as a second numbered run;
+- disambiguate by Supabase row/date/hash and do not silently merge them.
+
+Two additional direct structural facts are admitted as scope-aware falsification constraints only:
+
+- C03 `CONTAINER_16B_FIELD_READ_CONFIRMED`: at `0x140d15a90`, object-relative `param_1+0x1e` is ensured/resized to exactly 16 bytes by `0x1408c0d40` and `0x1408c27c0` transfers exactly 16 bytes into it. Scope: `CSFCHUNK_CONTAINER_FIELD`. Meaning remains unresolved.
+- C04 `CHNKSQLI_LENGTH_BOUNDED_STREAM_COPY_CONFIRMED`: after CHNKSQLi validation, a decoded u64 byte length drives `remaining -> min(remaining,capacity) -> exact transfer -> remaining decrement`. Scope: `CHNKSQLI_CONTAINER_TRANSFER`.
+
+Scope firewall:
+- C03/C04 do not prove ExternalID, UUID, checksum, ModelData serializer width/endian/count, geometry, index, UV, material, bone, weight, or internal construction;
+- the 16-byte read cannot answer `DQ-SER-WIDTH-01`;
+- the CHNKSQLi BE-u64 length cannot answer ModelData serializer width/endian/count;
+- typed `ODCChunkCellImporterT` RTTI remains architecture-only until loader reachability is proven.
+
+Question alignment only:
+- Companion row220 DQ-02 aligns with `DQ-BRIDGE-LOADER-SER-01`;
+- Companion row220 DQ-03 aligns only after bridge admission with `DQ-SER-WIDTH-01`;
+- alignment does not import an answer or change semantic confidence.
+
+Durability:
+- GitHub reconciliation commit `3f28c584578ba46c16e3871609ec0fbc9e425a43`
+- GitHub `CSMC_CONSUMER_CONSTRAINT_PACK_V2.json` commit `cd67bbcfb5fab6c120c16fee24c34e37ddc88b08`
+- Drive reconciliation Doc `1Pu8o__Jl7gjPNfXTKWVByKkLC9NkvDoE2PtDIF8PpAc`
+- Base44 reconciliation `6aa81967dcd48ddc72ee893f`
+- Linear RIO-48 `81a75f8d-a874-44c2-a88b-fcfcbe494728`
+- Linear RIO-58 `0d959f35-3593-4a96-afd9-a0b0bb37d1eb`
+- Linear RIO-56 `69fb99fd-3de1-4760-b9d2-b2244f3bc921`
+- Linear RIO-59 `1bfab1ff-21fd-49ea-8efc-160c2227063b`
+
 ## Campaign state retained from row217
 
 The semantic-binding campaign localized the next proof gap but did not close it.
@@ -92,7 +131,8 @@ F02 Sentinel-9 remains:
 
 - complete Mainline 04 handoff Drive: `1nqRrIWiUP9vYcxam1lG9OFa3AH95JnQj`
 - complete handoff SHA-256: `a36be2381b64ac0c759b7f959cf0653124277a64064698d575c922db7354bcca`
-- canonical C-069: Supabase row `209`; duplicate row213 is audit-only
+- older sealed C-069: Supabase row `209`; duplicate row213 is audit-only
+- supplemental sealed C-069 packet: row `220`, explicitly reconciled above, not a second numbered run
 - consumer-constrained phase: row `210`
 - V12: row `211`
 - Mainline04 complete pointer: row `212`
@@ -106,7 +146,7 @@ Confirmed architecture anchors remain:
 - `EXPLICIT_EXTERNALCHUNK_OFFSET_LOOKUP` at `0x140d175d0`
 - `EXPLICIT_MODELDATA_LOOKUP` / C02 at `0x140d45d30`
 
-C-069 BE-u64 reads remain scoped to the CHNKSQLi/ExternalChunk corridor and are not ModelData serializer width evidence without the provenance bridge.
+C-069 container BE-u64 reads remain scoped to the CHNKSQLi/ExternalChunk/container corridor and are not ModelData serializer width evidence without the provenance bridge.
 
 ## Next action
 
