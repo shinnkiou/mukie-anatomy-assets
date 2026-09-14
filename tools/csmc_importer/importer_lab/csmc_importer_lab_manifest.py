@@ -5,7 +5,9 @@ from hashlib import sha256
 import json
 from typing import Any, Mapping
 
-SCHEMA_VERSION = "csmc_importer_lab_manifest_v0_1"
+from csmc_importer_lab_policy import assert_candidate_family_open
+
+SCHEMA_VERSION = "csmc_importer_lab_manifest_v0_2"
 ALLOWED_ENGINE_MODES = {"SYNTHETIC_ONLY", "PRIVATE_EVALUATOR"}
 ALLOWED_REGION_CLASSES = {
     "SYNTHETIC_REGION",
@@ -41,7 +43,7 @@ FORBIDDEN_KEYS = {
     "blender_ready",
 }
 CANONICAL_PARAMETER_KEYS = (
-    "engine_mode", "region_class", "region_id", "anchor_id", "relative_offset",
+    "engine_mode", "candidate_family", "region_class", "region_id", "anchor_id", "relative_offset",
     "count_source", "count_type", "endianness", "element_type", "stride", "components",
     "grouping", "relationship", "candidate_semantic", "preprocess",
 )
@@ -56,6 +58,7 @@ class HypothesisManifest:
     hypothesis_id: str
     generation: int
     engine_mode: str
+    candidate_family: str
     region_class: str
     region_id: str
     anchor_id: str
@@ -100,6 +103,10 @@ class HypothesisManifest:
             raise ManifestError("generation must be >=0")
         if self.engine_mode not in ALLOWED_ENGINE_MODES:
             raise ManifestError("invalid engine_mode")
+        try:
+            assert_candidate_family_open(self.candidate_family)
+        except ValueError as exc:
+            raise ManifestError(str(exc)) from exc
         if self.region_class not in ALLOWED_REGION_CLASSES:
             raise ManifestError("invalid region_class")
         if self.endianness not in ALLOWED_ENDIANNESS:
