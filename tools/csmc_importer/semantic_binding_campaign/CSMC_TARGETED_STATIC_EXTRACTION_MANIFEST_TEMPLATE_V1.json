@@ -1,0 +1,63 @@
+{
+  "schema_version": "csmc_targeted_static_extraction_manifest_v1",
+  "request_id": "CSMC_TARGETED_STATIC_EXTRACTION_REQUEST_V1_20260914",
+  "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+  "baseline_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+  "extraction_tool": "__REQUIRED_TOOL_NAME__",
+  "extraction_tool_version": "__REQUIRED_TOOL_VERSION__",
+  "generated_at": "__REQUIRED_ISO8601_TIMESTAMP__",
+  "private_analysis_archive": true,
+  "publication_allowed": false,
+  "functions": [
+    {"va":"0x140f62d20","decompile_present":false,"instruction_listing_present":false,"xrefs_exported":false,"decompile_sha256":"__64_HEX_REQUIRED__","instruction_listing_sha256":"__64_HEX_REQUIRED__","private_output":true},
+    {"va":"0x140f64600","decompile_present":false,"instruction_listing_present":false,"xrefs_exported":false,"decompile_sha256":"__64_HEX_REQUIRED__","instruction_listing_sha256":"__64_HEX_REQUIRED__","private_output":true},
+    {"va":"0x140f650c0","decompile_present":false,"instruction_listing_present":false,"xrefs_exported":false,"decompile_sha256":"__64_HEX_REQUIRED__","instruction_listing_sha256":"__64_HEX_REQUIRED__","private_output":true},
+    {"va":"0x140f622f0","decompile_present":false,"instruction_listing_present":false,"xrefs_exported":false,"decompile_sha256":"__64_HEX_REQUIRED__","instruction_listing_sha256":"__64_HEX_REQUIRED__","private_output":true},
+    {"va":"0x140f63200","decompile_present":false,"instruction_listing_present":false,"xrefs_exported":false,"decompile_sha256":"__64_HEX_REQUIRED__","instruction_listing_sha256":"__64_HEX_REQUIRED__","private_output":true},
+    {"va":"0x140f635d0","decompile_present":false,"instruction_listing_present":false,"xrefs_exported":false,"decompile_sha256":"__64_HEX_REQUIRED__","instruction_listing_sha256":"__64_HEX_REQUIRED__","private_output":true}
+  ],
+  "vtable_interval_exports": [
+    {
+      "label":"PW3DModelDataLoader",
+      "start_va":"0x14195fad0",
+      "end_va_exclusive":"0x14195fb18",
+      "pointer_width_bytes":8,
+      "slots":[
+        {"offset":0,"raw_value":"__REQUIRED__"},{"offset":8,"raw_value":"__REQUIRED__"},{"offset":16,"raw_value":"__REQUIRED__"},
+        {"offset":24,"raw_value":"__REQUIRED__"},{"offset":32,"raw_value":"__REQUIRED__"},{"offset":40,"raw_value":"__REQUIRED__"},
+        {"offset":48,"raw_value":"__REQUIRED__"},{"offset":56,"raw_value":"__REQUIRED__"},{"offset":64,"raw_value":"__REQUIRED__"}
+      ]
+    },
+    {
+      "label":"PWCanvas3DModelLoader",
+      "start_va":"0x1417f6d30",
+      "end_va_exclusive":"0x1417f6d78",
+      "pointer_width_bytes":8,
+      "slots":[
+        {"offset":0,"raw_value":"__REQUIRED__"},{"offset":8,"raw_value":"__REQUIRED__"},{"offset":16,"raw_value":"__REQUIRED__"},
+        {"offset":24,"raw_value":"__REQUIRED__"},{"offset":32,"raw_value":"__REQUIRED__"},{"offset":40,"raw_value":"__REQUIRED__"},
+        {"offset":48,"raw_value":"__REQUIRED__"},{"offset":56,"raw_value":"__REQUIRED__"},{"offset":64,"raw_value":"__REQUIRED__"}
+      ]
+    }
+  ],
+  "factory_trace": {
+    "root_va":"0x141656a80",
+    "resolution_status":"NO_PROVENANCE_BOUND_RESOLUTION",
+    "edges":[],
+    "negative_control":"__REQUIRED_SEARCH_SCOPE_AND_NEGATIVE_CONTROL__"
+  },
+  "conditional_resolution": {
+    "0x141658300":{"triggered":false,"function_export_present":false},
+    "0x1416586f0":{"triggered":false,"function_export_present":false}
+  },
+  "guards": {
+    "semantic_promotion":false,
+    "blender_emit":false,
+    "runtime_dispatch":false,
+    "modeler_runtime_started":false,
+    "save_triggered":false,
+    "hook_or_patch":false,
+    "f02_runtime_observation":false,
+    "proprietary_executable_embedded":false
+  }
+}
