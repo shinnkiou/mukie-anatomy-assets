@@ -1,0 +1,29 @@
+name: CSMC Companion C F02 oracle structural contrast prereg
+
+on:
+  push:
+    branches:
+      - csmc-analysis-companion-c-20260913
+    paths:
+      - 'tools/csmc_importer/companion_c/csmc_analysis_c_f02_oracle_structural_contrast_prereg.py'
+      - 'tools/csmc_importer/companion_c/test_csmc_analysis_c_f02_oracle_structural_contrast_prereg.py'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_F02_ORACLE_STRUCTURAL_CONTRAST_PREREG_20260914.md'
+      - '.github/workflows/csmc-companion-c-f02-oracle-contrast-prereg.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile preregistered structural contrast evaluator
+        run: python -m py_compile tools/csmc_importer/companion_c/csmc_analysis_c_f02_oracle_structural_contrast_prereg.py
+      - name: Run fail-closed preregistration tests
+        working-directory: tools/csmc_importer/companion_c
+        run: python -m unittest test_csmc_analysis_c_f02_oracle_structural_contrast_prereg.py -v
