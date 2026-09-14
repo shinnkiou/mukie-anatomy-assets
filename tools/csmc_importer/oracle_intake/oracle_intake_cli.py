@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from completion_gate import validate_physical_completion_gate
 from oracle_intake import (
     OracleIntakeRejected,
     SOURCE_MANIFEST_SHA256,
@@ -45,21 +46,28 @@ def main() -> int:
         )
 
     observation, observation_sha = read_json_with_raw_sha256(args.observation)
+    require_complete = not args.partial
     result = validate_oracle_observation(
         source_manifest,
         computed_source_sha,
         observation,
-        require_complete=not args.partial,
+        require_complete=require_complete,
+    )
+    completion_gate = validate_physical_completion_gate(
+        observation,
+        result,
+        require_complete=require_complete,
     )
 
     projection = public_safe_projection(observation)
     projection_sha = canonical_sha256(projection)
     receipt = {
-        "schema_version": "csmc_f02_mutation_oracle_intake_receipt_v1",
+        "schema_version": "csmc_f02_mutation_oracle_intake_receipt_v2",
         "source_manifest_raw_sha256": computed_source_sha,
         "observation_raw_sha256": observation_sha,
         "public_projection_canonical_sha256": projection_sha,
         "validation": result,
+        "physical_completion_gate": completion_gate,
         "semantic_promotion": False,
         "blender_emit": False,
         "diagnostic_only": True,
