@@ -1,0 +1,110 @@
+{
+  "schema_version": "csmc_analysis_c_next_control_preregistration_c051_v1",
+  "run": "C-051",
+  "date": "2026-09-14",
+  "question": "What minimum same-identity controlled fixtures can discriminate render-part cardinality semantics and isolate UV presence and weight-value representation without touching MODELER/runtime?",
+  "source_state": {
+    "c050_companion_head": "dd58c29c504c54f00e3d2506204b8097d5b5aef9",
+    "mainline_c050_reconciliation_drive_id": "1NOsp4mJtN3qpn8TsKOo3zI0GMoR02aV6",
+    "mainline_render_part_level": 4,
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0
+  },
+  "preregistered_fixtures": [
+    {
+      "id": "MAT3_ALLUSED",
+      "file_stem": "CSMC_C051_MAT3_ALLUSED",
+      "family": "material",
+      "internal_identity_group": "MAT3",
+      "mesh_objects": 1,
+      "material_slots": 3,
+      "used_material_partitions": 3,
+      "prediction": {"render_part_cadence": 5}
+    },
+    {
+      "id": "MAT3_ONEUSED",
+      "file_stem": "CSMC_C051_MAT3_ONEUSED",
+      "family": "material",
+      "internal_identity_group": "MAT3",
+      "mesh_objects": 1,
+      "material_slots": 3,
+      "used_material_partitions": 1,
+      "discriminator": {
+        "cadence_5": "DEFINED_SLOT_OR_SERIALIZED_PART_COUNT_SUPPORTED",
+        "cadence_3": "USED_PARTITION_COUNT_SUPPORTED",
+        "other": "MATERIAL_CARDINALITY_MODEL_UNRESOLVED"
+      }
+    },
+    {
+      "id": "THREE_CUBES",
+      "file_stem": "CSMC_C051_THREE_CUBES",
+      "family": "object",
+      "mesh_objects": 3,
+      "material_slots": 0,
+      "prediction": {"render_part_cadence": 5}
+    },
+    {
+      "id": "UV_OFF",
+      "file_stem": "CSMC_C051_UV_OFF",
+      "family": "uv",
+      "internal_identity_group": "UV01",
+      "uv_layers": 0,
+      "prediction": {"render_part_cadence": 3}
+    },
+    {
+      "id": "UV_ON",
+      "file_stem": "CSMC_C051_UV_ON",
+      "family": "uv",
+      "internal_identity_group": "UV01",
+      "uv_layers": 1,
+      "prediction": {"render_part_cadence": 3}
+    },
+    {
+      "id": "W50_50",
+      "file_stem": "CSMC_C051_W50_50",
+      "family": "weight_scalar",
+      "internal_identity_group": "WPAIR",
+      "bones": 2,
+      "vertices": 8,
+      "weight_assignments": 16,
+      "weights": [0.5, 0.5],
+      "prediction": {"render_part_cadence": 3}
+    },
+    {
+      "id": "W25_75",
+      "file_stem": "CSMC_C051_W25_75",
+      "family": "weight_scalar",
+      "internal_identity_group": "WPAIR",
+      "bones": 2,
+      "vertices": 8,
+      "weight_assignments": 16,
+      "weights": [0.25, 0.75],
+      "prediction": {"render_part_cadence": 3}
+    }
+  ],
+  "acceptance_policy": {
+    "outer_framing_rule": "stored_length = align8(logical_length)+8",
+    "allowed_public_observations": [
+      "fixture_id",
+      "logical_length",
+      "stored_length",
+      "cadence_count",
+      "same_offset_changed_qwords",
+      "changed_region_count",
+      "notes"
+    ],
+    "raw_private_bytes_publication": false,
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_dispatch": false,
+    "mainline_mutation": false,
+    "rio26_mutation": false
+  },
+  "why_new": {
+    "material": "Separates material slot definitions from used material partitions, which C-050 could not distinguish.",
+    "object": "Tests the C-050 2+render-part formula at object count 3 instead of extrapolating from only 1 and 2 objects.",
+    "uv": "Repairs the F03/F05 confound by explicitly deleting UV in OFF and explicitly creating UV in ON while keeping internal mesh identity stable.",
+    "weight": "Repairs the R04/R05 confound by holding assignment cardinality and group membership fixed while changing only weight values."
+  },
+  "status": "PREREGISTERED_NOT_ACQUIRED"
+}
