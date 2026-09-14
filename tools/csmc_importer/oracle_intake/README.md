@@ -33,6 +33,21 @@ Every observation row must bind to the preregistered variant ID, payload-relativ
 
 A full oracle is exactly 30 observations. Partial checkpoints may be validated only when explicitly requested and remain classified as partial.
 
+`oracle_intake_cli.py` is the recommended intake path because it computes the **raw file SHA-256 of the source manifest itself** before parsing and refuses the observation if that digest is not the preregistered manifest digest. This closes the gap where a caller could otherwise pass an unverified manifest object together with a separately supplied digest string.
+
+Example after observations exist:
+
+```bash
+cd tools/csmc_importer/oracle_intake
+python oracle_intake_cli.py \
+  /path/to/CSMC_F02_SINGLE_BYTE_XOR01_30_PUBLIC_MANIFEST_20260914.json \
+  /path/to/CSMC_F02_MUTATION_ORACLE_30_V1_OBSERVED.json \
+  --public-out /path/to/oracle_public_projection.json \
+  --receipt-out /path/to/oracle_intake_receipt.json
+```
+
+For an explicitly incomplete checkpoint only, add `--partial`. The CLI never opens MODELER, never edits CSMC, and never generates a new mutation.
+
 ## Public/private boundary
 
 A public-safe projection may include offsets, regions, hashes, load/visual/error classifications, timing, screenshot/view hashes, and observation provenance. Raw private CSMC bytes and raw byte-before/byte-after values are removed from the public projection.
