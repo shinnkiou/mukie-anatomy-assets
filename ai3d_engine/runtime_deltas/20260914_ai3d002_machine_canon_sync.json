@@ -1,0 +1,48 @@
+{
+  "schema_version": "never-tear-ai3d-runtime-delta-v1",
+  "recorded_at_jst": "2026-09-14T14:30:22+09:00",
+  "task_id": "AI3D-002",
+  "change": "MACHINE_CANON_SYNC_AFTER_AUTO_ARM_CLOSURE",
+  "status": "ACTIVE_WAITING_PHYSICAL_COMPANION_START",
+  "physical_gate": {
+    "verified_companion_seen": false,
+    "legacy_worker_version": "0.18.2-p0.18.2",
+    "legacy_worker_protocol": "ukie_worker_v1",
+    "legacy_worker_eligible": false,
+    "ai3d_worker_jobs_count": 0,
+    "ai3d_worker_events_count": 0,
+    "canary_queued": false,
+    "auto_arm_gate": "INSTALLED_WAITING_VERIFIED_COMPANION_HEARTBEAT",
+    "required_worker_version": "0.1.0-ai3d-canary",
+    "required_contract_version": "never-tear-ai3d-worker-v1",
+    "required_capability": "ai3d_blender_physical_mvp_v1",
+    "fixed_job_key": "AI3D-002-PHYSICAL-CANARY-001",
+    "max_attempts": 1
+  },
+  "canonical_refs": {
+    "auto_arm_migration_commit": "0eaceeeba7b2f4128bbd46b570e8cd72e96e612d",
+    "auto_arm_runtime_delta_commit": "fcc5e0f51d3758f2e880ef8e7e095394023df924",
+    "auto_arm_closure_commit": "627b4cdbbb83cb496cdf3376c454057a8c0a3a42",
+    "drive_master_section25": "READBACK_PASS",
+    "drive_master_revision": "ANLCKQlDf60Yh0VHph2E57hu_bwWOjLNio08Hi5rrfzpfyLPr6Gk6ZvJ2oe1F3DaR9SjT2P6A15UGWCqsBjvozTC0ogP-q9eeDZ_A5Kdh68",
+    "base44_prior_closure_checkpoint": "6aa782cb64859114d79c12e4",
+    "base44_prior_closure_commit": "493b75cd7bce7d6fe167be81c49c0d02143dc900",
+    "base44_machine_canon_checkpoint": "6aa786deef105df923750343",
+    "base44_machine_canon_commit": "a07f28f917753062d9eac94ca29fca85387cf037",
+    "linear_closure_comment": "489fe554-4101-4d98-9f1e-796d810bedb9",
+    "supabase_auto_arm_run": "AI3D-002-AUTO-ARM-20260914T1403JST"
+  },
+  "structure_state": {
+    "geometry_research_closed": true,
+    "geometry_authority_task": "AI3D-009",
+    "geometry_authority_revision": 380,
+    "geometry_authority_sha256": "0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb",
+    "current_room_registry_task": "AI3D-006",
+    "current_room_registry_count": 14,
+    "next_structure_task": "AI3D-010",
+    "staged_worker_task": "AI3D-011",
+    "staged_worker_physical_execution_claimed": false
+  },
+  "physical_execution_claimed": false,
+  "next_action": "Physically start the verified AI3D companion. The qualifying heartbeat will auto-queue exactly one AI3D-002 CANARY. Observe claim/lease/heartbeat, provider PNG SHA readback, automated QA and visual QA; only then evaluate AI3D-004 and any physical AI3D-010 promotion."
+}
