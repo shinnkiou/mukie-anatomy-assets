@@ -1,0 +1,72 @@
+{
+  "schema_version": "csmc_analysis_c_c056_name_literal_reconciliation_c058_v1",
+  "run_id": "C-058",
+  "date_jst": "2026-09-14",
+  "classification": "C056_PREFIX_PLAINTEXT_NAME_EXPLANATION_REJECTED",
+  "source": {
+    "controlled_fixture_zip_sha256": "be6132ef83959167ffd19218810e099f0bd164714fbd1ec4770f9296b38643b6",
+    "c056_side_head": "c16b981b0df66bf674a6f6041ab26876b5447676",
+    "mainline_name_probe_head": "684c210f933803b16b80f5ba6dcb56186a162223",
+    "mainline_name_findings_drive_id": "1CULtcjqzUpHyPmG9YHZSAv3y_1RfreIf",
+    "mainline_name_aggregate_drive_id": "1uPek8ajbYZBOQlGp92WM5X_5RS_sLHIA"
+  },
+  "c056_localization": {
+    "fixture_a": "CSMC_F06_CUBE_MAT2",
+    "fixture_b": "CSMC_F07_TWO_CUBES",
+    "localized_delta_qwords": 12,
+    "location": "VARIABLE_PREFIX_BEFORE_GIANT_INVARIANT_RUN",
+    "semantic_binding": "UNRESOLVED",
+    "i3_valid": false
+  },
+  "name_literal_negative_control": {
+    "fixture_count": 12,
+    "teacher_identifier_count": 53,
+    "encodings": ["ascii", "utf-16le", "utf-16be"],
+    "search_surfaces": ["sqlite_file_bytes", "character_blob_bytes"],
+    "literal_searches_total": 318,
+    "sqlite_file_literal_occurrences_total": 0,
+    "character_blob_literal_occurrences_total": 0,
+    "f06_teacher_identifier_count": 4,
+    "f06_literal_occurrences": 0,
+    "f07_teacher_identifier_count": 5,
+    "f07_literal_occurrences": 0,
+    "name_metadata_region_confirmed": false
+  },
+  "accepted_statement": "The C-056 localized F06/F07 12-qword variable-prefix differential is not explained by direct plaintext copies of the preregistered known F06/F07 teacher identifiers in ASCII, UTF-16LE, or UTF-16BE on either the full SQLite file or character-BLOB search surfaces.",
+  "still_open": [
+    "transformed/compressed/encoded/hashed/remapped identity metadata",
+    "Modeler-generated identities",
+    "non-name structural fields",
+    "material-related serialization",
+    "object-related serialization",
+    "other unresolved owner/consumer explanations"
+  ],
+  "not_accepted": [
+    "names are absent from the serialization",
+    "the 12-qword prefix delta is material metadata",
+    "the 12-qword prefix delta is object metadata",
+    "identity/name confounding is fully removed",
+    "I3_VALID is reached",
+    "semantic promotion is authorized",
+    "Blender emission is authorized"
+  ],
+  "verification": {
+    "self_tests_passed": 10,
+    "self_tests_failed": 0
+  },
+  "isolation": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false,
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "automatic_integration": false,
+    "raw_private_payload_publication": false
+  }
+}
