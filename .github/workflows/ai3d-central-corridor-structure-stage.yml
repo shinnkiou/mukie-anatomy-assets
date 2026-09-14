@@ -1,0 +1,177 @@
+name: NEVER TEAR AI3D Central Corridor Structure Stage
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ai-3d-production-engine-20260913
+    paths:
+      - 'ai3d_engine/windows_worker/blender_structure_module_stage.py'
+      - 'ai3d_engine/scripts/ai3dMarsModulePreflightSmoke.mjs'
+      - 'ai3d_engine/data/walkmyplan_revision380_geometry_recovery.json'
+      - 'ai3d_engine/data/mars_structure_module_execution_v1.json'
+      - 'ai3d_engine/src/floorPlanStructureCompiler.js'
+      - 'ai3d_engine/src/floorPlanStructureGate.js'
+      - 'ai3d_engine/src/productionProtocol.js'
+      - '.github/workflows/ai3d-central-corridor-structure-stage.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai3d-central-corridor-structure-stage-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  staged-structure-blender:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      BLENDER_VERSION: '4.2.23'
+      BLENDER_ARCHIVE: 'blender-4.2.23-linux-x64.tar.xz'
+      BLENDER_DIR: 'blender-4.2.23-linux-x64'
+      STAGE_DIR: 'ai3d_engine/artifacts/central_corridor_structure_stage'
+      PREFLIGHT_DIR: 'ai3d_engine/artifacts/mars_module_preflight_stage'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Static Python syntax and policy scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile ai3d_engine/windows_worker/blender_structure_module_stage.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('ai3d_engine/windows_worker/blender_structure_module_stage.py')
+          text = p.read_text(encoding='utf-8')
+          forbidden = ['shell=True', 'subprocess.', 'urllib', 'requests.', 'http://', 'https://', 'os.system', 'eval(', 'exec(']
+          found = [token for token in forbidden if token in text]
+          assert not found, found
+          assert 'ACTION = "ai3d_structure_module_v1"' in text
+          assert 'physical_execution_claimed": False' in text
+          print({'syntax':'PASS','policy_scan':'PASS','bytes':p.stat().st_size})
+          PY
+
+      - name: Generate exact AI3D-010 module plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${PREFLIGHT_DIR}" "${STAGE_DIR}"
+          mkdir -p "${PREFLIGHT_DIR}" "${STAGE_DIR}"
+          node ai3d_engine/scripts/ai3dMarsModulePreflightSmoke.mjs "${PREFLIGHT_DIR}"
+          test -s "${PREFLIGHT_DIR}/central_corridor_module_plan.json"
+
+      - name: Download and verify Blender 4.2.23
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://download.blender.org/release/Blender4.2"
+          curl --fail --location --retry 3 --retry-delay 3 --output "${BLENDER_ARCHIVE}" "${BASE}/${BLENDER_ARCHIVE}"
+          curl --fail --location --retry 3 --retry-delay 3 --output "blender-${BLENDER_VERSION}.sha256" "${BASE}/blender-${BLENDER_VERSION}.sha256"
+          sha256sum --check "blender-${BLENDER_VERSION}.sha256" --ignore-missing | tee "${STAGE_DIR}/download-verification.txt"
+          tar -xf "${BLENDER_ARCHIVE}"
+          test -x "${BLENDER_DIR}/blender"
+          "${BLENDER_DIR}/blender" --version | tee "${STAGE_DIR}/blender-version.txt"
+
+      - name: Execute staged Central Corridor Structure plan in Blender
+        shell: bash
+        run: |
+          set -euo pipefail
+          "${BLENDER_DIR}/blender" \
+            --factory-startup \
+            --background \
+            --python ai3d_engine/windows_worker/blender_structure_module_stage.py \
+            -- \
+            --plan "${PREFLIGHT_DIR}/central_corridor_module_plan.json" \
+            --output "${STAGE_DIR}" \
+            2>&1 | tee "${STAGE_DIR}/blender-stage.log"
+
+      - name: Validate staged evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path('ai3d_engine/artifacts/central_corridor_structure_stage')
+          result_path = root / 'structure_module_stage_result.json'
+          manifest_path = root / 'manifest.json'
+          png_path = root / 'central_corridor_structure_stage.png'
+          blend_path = root / 'central_corridor_structure_stage.blend'
+          result = json.loads(result_path.read_text(encoding='utf-8'))
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+
+          assert result['schema_version'] == 'never-tear-ai3d-structure-module-stage-result-v1', result
+          assert result['project_key'] == 'never_tear_ai3d_engine', result
+          assert result['task_id'] == 'AI3D-011', result
+          assert result['source_task_id'] == 'AI3D-010', result
+          assert result['action'] == 'ai3d_structure_module_v1', result
+          assert result['status'] == 'PASS', result
+          assert result['evidence_class'] == 'VIRTUAL_GITHUB_ACTIONS_BLENDER_NOT_PHYSICAL', result
+          assert result['module_plan_id'] == 'module-plan-7d0ef550473d76e6', result
+          assert result['module_plan_sha256'] == '7d0ef550473d76e6cbacf5e285f81cb0152787e29034d524bd8b946f2ad9707a', result
+          assert result['source_geometry_sha256'] == '0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb', result
+          assert result['command_count'] == 66, result
+          assert result['wall_count'] == 13, result
+          assert result['opening_boolean_count'] == 13, result
+          assert all(result['checks'].values()), result['checks']
+          assert result['physical_execution_claimed'] is False, result
+          assert result['canary_promoted'] is False, result
+          assert result['promotion_allowed'] is False, result
+          assert result['visual_qa'] == 'PENDING', result
+          assert png_path.is_file() and png_path.stat().st_size > 0
+          assert blend_path.is_file() and blend_path.stat().st_size > 0
+
+          sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+          assert sha(png_path) == result['render']['png_sha256']
+          assert sha(blend_path) == result['blend_sha256']
+          assert manifest['physical_execution_claimed'] is False
+          assert manifest['evidence_class'] == result['evidence_class']
+          assert manifest['files'][png_path.name]['sha256'] == sha(png_path)
+          assert manifest['files'][blend_path.name]['sha256'] == sha(blend_path)
+          assert manifest['files'][result_path.name]['sha256'] == sha(result_path)
+          print(json.dumps({
+            'status':'PASS',
+            'evidence_class': result['evidence_class'],
+            'module_plan_id': result['module_plan_id'],
+            'command_count': result['command_count'],
+            'wall_count': result['wall_count'],
+            'opening_boolean_count': result['opening_boolean_count'],
+            'png_sha256': result['render']['png_sha256'],
+            'raw_pixel_sha256': result['render']['raw_pixel_sha256'],
+            'blend_sha256': result['blend_sha256'],
+            'checkpoint_id': result['checkpoint_id'],
+            'checkpoint_sha256': result['checkpoint_sha256'],
+            'physical_execution_claimed': result['physical_execution_claimed'],
+            'promotion_allowed': result['promotion_allowed'],
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Provider-side SHA readback
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${STAGE_DIR}"
+          sha256sum * > provider-sha256.txt
+          cat provider-sha256.txt
+
+      - name: Upload staged evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai3d-central-corridor-structure-stage-${{ github.run_id }}
+          path: |
+            ai3d_engine/artifacts/central_corridor_structure_stage/
+            ai3d_engine/artifacts/mars_module_preflight_stage/central_corridor_module_plan.json
+            ai3d_engine/artifacts/mars_module_preflight_stage/module_preflight_qa.json
+          if-no-files-found: error
+          retention-days: 14
