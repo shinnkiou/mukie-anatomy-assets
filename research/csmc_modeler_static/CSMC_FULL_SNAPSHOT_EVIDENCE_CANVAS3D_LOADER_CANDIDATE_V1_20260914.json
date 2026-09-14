@@ -1,0 +1,22 @@
+{
+  "blender_emit": false,
+  "class_or_template": "Planeswalker::PWCanvas3DModelLoader",
+  "confidence": "CANDIDATE",
+  "direct_edge_kind": "EXPLICIT_REGISTRY_LOOKUP",
+  "downstream_edge_summary": "Registry helper receives Canvas3DModelLoader paired with ModelData, but the snapshot does not yet bind a concrete loader method invocation as the load entry.",
+  "evidence_class": "EXPLICIT_CANVAS3D_LOAD_ENTRY",
+  "evidence_id": "FULLSNAP_20260914_CANVAS3DMODELLOADER_REGISTRY_ENTRY",
+  "evidence_source_kind": "PRIVATE_FULL_STATIC_SNAPSHOT_FRESH_DISPOSABLE_GHIDRA_PROJECT",
+  "exe_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+  "field_label": "ModelData",
+  "function_va": "0x140d45d30",
+  "lane": "MODELER_CONSUMER_SIDE_STATIC_ANALYSIS",
+  "negative_control": "RTTI/vftable presence alone is not promoted; direct loader invocation remains required.",
+  "provenance_hash": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+  "public_safe_pseudocode": "registry['ModelData'] -> Canvas3DModelLoader; direct load-method entry not yet bound",
+  "raw_private_bytes_embedded": false,
+  "runtime_dispatch": false,
+  "schema_version": "csmc_modeler_static_evidence_slice_v2",
+  "semantic_promotion": false,
+  "upstream_edge_summary": "Registry initializer is directly called from 0x14023a330."
+}
