@@ -1,8 +1,8 @@
 # CSMC F02 Mutation Oracle Intake
 
-Status: **intake contract ready; physical MODELER oracle pending**.
+Status: **intake hardened; physical MODELER oracle still pending**.
 
-This package does not run MODELER and does not manufacture oracle observations. It only validates future read-only observations against the already-generated, provenance-bound 30-variant F02 mutation batch.
+This package does not run MODELER and does not manufacture oracle observations. It only prepares and validates future read-only observations against the already-generated, provenance-bound 30-variant F02 mutation batch.
 
 ## Source binding
 
@@ -31,22 +31,33 @@ Visible effect is tracked separately as `VISIBLE_MODEL_CHANGED`, `VISIBLE_MODEL_
 
 Every observation row must bind to the preregistered variant ID, payload-relative source offset, structural region, variant file SHA-256, and variant character-BLOB SHA-256 from the source manifest. Missing, duplicate, extra, or hash-mismatched rows are rejected.
 
-A full oracle is exactly 30 observations. Partial checkpoints may be validated only when explicitly requested and remain classified as partial.
+`oracle_intake_cli.py` computes the **raw file SHA-256 of the source manifest itself** before parsing and refuses the observation if that digest is not the preregistered manifest digest.
 
-`oracle_intake_cli.py` is the recommended intake path because it computes the **raw file SHA-256 of the source manifest itself** before parsing and refuses the observation if that digest is not the preregistered manifest digest. This closes the gap where a caller could otherwise pass an unverified manifest object together with a separately supplied digest string.
+The v2 physical-completion gate additionally prevents a 30-row placeholder sheet from being mislabeled as a completed oracle. Final completion requires all 30 variants plus resolved load/visible/process classifications, `DIRECT_PHYSICAL_OBSERVATION` evidence on every row, offset-aware ISO-8601 timestamps, and zero save actions. Partial or unresolved rows may be retained only as partial checkpoints.
 
-Example after observations exist:
+## Manual-entry workflow
+
+Use `CSMC_F02_MODELER_ORACLE_OPERATOR_GUIDE_V2_20260914.md` and the v2 CSV sheet. The older CSV containing `save_normalization_result` is legacy history only and must not be used to authorize any save action.
+
+Convert a partially filled v2 CSV to validated JSON:
 
 ```bash
 cd tools/csmc_importer/oracle_intake
+python oracle_csv_to_json.py \
+  /path/to/CSMC_F02_SINGLE_BYTE_XOR01_30_PUBLIC_MANIFEST_20260914.json \
+  /path/to/CSMC_F02_MUTATION_ORACLE_OBSERVATION_SHEET_V2_20260914.csv \
+  /path/to/observation.json \
+  --partial
+
 python oracle_intake_cli.py \
   /path/to/CSMC_F02_SINGLE_BYTE_XOR01_30_PUBLIC_MANIFEST_20260914.json \
-  /path/to/CSMC_F02_MUTATION_ORACLE_30_V1_OBSERVED.json \
+  /path/to/observation.json \
+  --partial \
   --public-out /path/to/oracle_public_projection.json \
   --receipt-out /path/to/oracle_intake_receipt.json
 ```
 
-For an explicitly incomplete checkpoint only, add `--partial`. The CLI never opens MODELER, never edits CSMC, and never generates a new mutation.
+For final 30/30 completion, remove `--partial` from both commands. The tools never open MODELER, never edit CSMC, and never generate a new mutation.
 
 ## Public/private boundary
 
