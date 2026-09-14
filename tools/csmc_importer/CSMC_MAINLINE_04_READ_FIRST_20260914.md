@@ -1,8 +1,30 @@
 # CSMC MAINLINE 04 — READ FIRST
 
-Status: `HANDOFF_POINTER__ROW214__BRIDGE_PRECONDITION_RECONCILED`
+Status: `HANDOFF_POINTER__ROW217__SEMANTIC_BINDING_FAIL_CLOSED`
 
 This is the public-safe pointer for the complete Mainline 04 handoff plus its latest validated incremental checkpoints. The full handoff preserves Mainline 01→02→03 structural lineage, controlled fixtures, DATA2 envelope, phase-normalized Structural IR, 307-qword cadence, bounded rejected families, Importer Lab, F02 oracle, MODELER 1.10.13 static evidence, Companion C through C-069, Data Scout rules, plugin/store integration, immediate continuation and long-term CSMC→Blender roadmap.
+
+## Latest semantic-binding campaign current
+
+- Supabase row 217 = HANDOFF_CURRENT
+- predecessor row 214 = HANDOFF_SUPERSEDED
+- classification: FAIL_CLOSED_BRIDGE_LOCALIZED_NO_PROOF_GRADE_SEMANTIC_BINDING
+- checkpoint SHA-256: dbd30a904d081d84239c4030ae655f7a3ae93b024ddcf02e371caa457d014643
+- Base44: 6aa81042fd57221e087734d2
+- bounded hypothesis batch: 16 candidates; no padding; no Classic GA
+- candidate lead: 0x140f62d20; not admitted as a reader
+- direct-call bridge paths from C02/registry helper to candidate set: 0
+- DQ-BRIDGE-LOADER-SER-01 remains WAIT_FOR_BRIDGE_PROOF
+- DQ-SER-WIDTH-01 remains WAIT_FOR_PROOF
+- F02 exact recovered character BLOB SHA-256: cea288b2ebf3327263f02677bd496dc15eee85256a2c707edfa64f16538030a0
+- M14 is the highest information-gain proposal; frozen Sentinel-9 order is unchanged and M01 remains next
+- semantic promotion = 0; Blender emit BLOCKED; runtime false; physical oracle 0/30
+
+Read the checkpoint:
+https://github.com/shinnkiou/mukie-anatomy-assets/blob/csmc-importer-experimental-20260902/tools/csmc_importer/semantic_binding_campaign/CSMC_SEMANTIC_BINDING_CAMPAIGN_CHECKPOINT_20260914_150853Z.md
+
+Targeted static request:
+https://github.com/shinnkiou/mukie-anatomy-assets/blob/csmc-importer-experimental-20260902/tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_REQUEST_V1_20260914.md
 
 ## Complete handoff
 
@@ -14,7 +36,7 @@ This is the public-safe pointer for the complete Mainline 04 handoff plus its la
 ## Post-handoff incremental current
 
 - width-gate checkpoint: `CSMC_MAINLINE_04_DQ_SER_WIDTH_GATE_CHECKPOINT_20260914.md`
-- Supabase: row `214` = `HANDOFF_CURRENT`
+- Supabase: row `214` = `HANDOFF_SUPERSEDED_BY_ROW217`
 - previous Mainline04 row `212` = `HANDOFF_SUPERSEDED`
 - concurrent row `213` = C-069 duplicate durability mirror, explicitly superseded by canonical row `209`; do not count it as new evidence
 - width-gate Base44: `6aa809f72e72c2eeacd8a008`
@@ -72,8 +94,8 @@ Canonical C-069 durability remains row `209`. Row `213` is audit-only duplicate 
 At restart, reconcile this pointer against the newest durable state before acting. Newest validated evidence supersedes stale pointer fields; historical evidence remains history.
 
 Read first:
-1. Supabase latest `HANDOFF_CURRENT` (currently row 214)
-2. rows 209/210/211/212/213/214 specifically
+1. Supabase latest `HANDOFF_CURRENT` (currently row 217)
+2. rows 209/210/211/212/213/214/215/216/217 specifically
 3. GitHub mainline/static/Companion/F02 branches
 4. Drive current checkpoint/handoff plus bridge reconciliation
 5. Base44 ExperimentLineage
@@ -92,7 +114,8 @@ Read first:
 - V12 canonical before Mainline 04: row `211`
 - original Mainline 04 pointer: row `212` (now superseded)
 - duplicate C-069 mirror: row `213` (audit only; canonical is row209)
-- current incremental pointer: row `214`
+- previous incremental pointer: row `214` (superseded by row217)
+- current semantic-binding checkpoint: row `217`
 
 V12 / row210 adds scope-aware hard falsification constraints from the two confirmed architecture edges. Synthetic proposals 50 → 3 explicit contradictions rejected → 4 behavioral duplicates removed → 43 unique survivors, no refill. `CONSUMER_COMPATIBLE != SEMANTIC_CONFIRMED`.
 
