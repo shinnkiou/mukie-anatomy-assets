@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Fail-closed next-evidence router with controlled-fixture intake support.
+"""Fail-closed next-evidence router with active oracle-independent mainline development.
 
-v3 state correction:
-- the former parent-record/length/consumer-crossref Scout gaps are CLOSED;
-- they are retained as historical validated evidence, not re-search targets;
-- current consumer-side candidates are reference-only and never mandatory;
-- controlled fixture processing remains the main file-side admissible action.
+v4 progression-policy correction:
+- PHYSICAL_ORACLE_PENDING and unresolved serializer-field proof are semantic gates,
+  not a global mainline pause.
+- oracle-independent importer / Structural IR / validation / evidence-admission
+  development remains authorized.
+- broad blind semantic exploration and semantic promotion remain blocked.
+- former parent-record/length/consumer-crossref Scout gaps remain CLOSED.
 """
 from __future__ import annotations
 
@@ -30,6 +32,30 @@ ACTIVE_CONSUMER_CANDIDATES = (
     "EXPLICIT_SERIALIZER_FIELD_READ",
     "EXPLICIT_INTERNAL_MODEL_CONSTRUCTION",
     "CONTROLLED_FIXTURE_TO_CONSUMER_MATCH",
+)
+
+ORACLE_INDEPENDENT_MAINLINE_ACTIONS = (
+    "STRENGTHEN_IMPORTER_INTAKE_STRUCTURAL_IR_BRIDGE",
+    "RUN_FAIL_CLOSED_VALIDATION_AND_REGRESSION",
+    "ADMIT_NEW_STRUCTURAL_FACTS_NON_SEMANTIC",
+    "ADMIT_LAB_STRUCTURAL_OR_CODEC_CANDIDATES_NON_SEMANTIC",
+    "PREPARE_PROOF_GRADE_EVIDENCE_PACKET_SCHEMA",
+    "VALIDATE_CONTROLLED_FIXTURE_TO_CONSUMER_MATCH_ADMISSION_GATE",
+    "PREPARE_DIRECT_STATIC_EVIDENCE_ADMISSION_PATH",
+    "PREPARE_SAME_IDENTITY_FIXTURE_PROVENANCE_ADMISSION",
+    "PREPARE_CANDIDATE_TO_DISCRIMINATING_QUESTION_HANDOFF",
+    "STRENGTHEN_IMPORTER_CI_SMOKE_GUARDS",
+)
+
+SEMANTIC_GATE_BLOCKED_ACTIONS = (
+    "CONFIRM_GEOMETRY_OR_INDEX_SEMANTICS",
+    "CONFIRM_UV_MATERIAL_BONE_WEIGHT_SEMANTICS",
+    "BLENDER_PRODUCTION_EMIT",
+    "PROMOTE_VISUAL_RESULT_AS_SEMANTIC_PROOF",
+    "PROMOTE_LAB_SCORE_AS_SEMANTIC_PROOF",
+    "START_BLIND_PHASE10_FAMILY_EXPANSION",
+    "REOPEN_REJECTED_FAMILY_WITHOUT_NEW_INDEPENDENT_EVIDENCE",
+    "INFER_UNOBSERVED_ORACLE_VALUES",
 )
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -130,15 +156,31 @@ def route(s: EvidenceState) -> dict:
         })
 
     if controlled:
-        status = "NEW_ADMISSIBLE_CONTROLLED_EVIDENCE"
+        evidence_status = "NEW_ADMISSIBLE_CONTROLLED_EVIDENCE"
     elif candidates:
-        status = "NEW_ADMISSIBLE_EVIDENCE_PRESENT"
+        evidence_status = "NEW_ADMISSIBLE_EVIDENCE_PRESENT"
     else:
-        status = "NO_ADMISSIBLE_ACTION_CURRENT_DURABLE_CORPUS"
+        evidence_status = "NO_NEW_ADMISSIBLE_EVIDENCE_CURRENT_DURABLE_CORPUS"
+
+    if candidates:
+        status = evidence_status
+    else:
+        status = "STRUCTURAL_DEVELOPMENT_ACTIVE_NO_NEW_SEMANTIC_UNLOCK"
 
     return {
-        "schema_version": "csmc_p4_next_evidence_gate_v3",
+        "schema_version": "csmc_p4_next_evidence_gate_v4",
         "status": status,
+        "evidence_status": evidence_status,
+        "mainline_state": "ACTIVE",
+        "structural_development": "ACTIVE",
+        "semantic_gate": "CLOSED",
+        "physical_oracle": "PENDING_MANUAL_ORACLE",
+        "oracle_pending_is_global_pause": False,
+        "maintenance_only": False,
+        "broad_blind_semantic_expansion": "BLOCKED",
+        "oracle_independent_importer_structural_work": "AUTHORIZED",
+        "oracle_independent_development_actions": list(ORACLE_INDEPENDENT_MAINLINE_ACTIONS),
+        "semantic_gate_blocked_actions": list(SEMANTIC_GATE_BLOCKED_ACTIONS),
         "selected_static_actions": candidates,
         "runtime_dispatch": False,
         "runtime_authorized_input": bool(s.runtime_authorized),
@@ -148,7 +190,11 @@ def route(s: EvidenceState) -> dict:
         "validated_closed_consumer_evidence": list(CLOSED_CONSUMER_EVIDENCE),
         "closed_consumer_evidence_seen_in_input": closed_seen,
         "consumer_side_reference_candidates": list(ACTIVE_CONSUMER_CANDIDATES),
-        "consumer_side_policy": "REFERENCE_ONLY_NOT_MANDATORY_MAINLINE_TASKS",
+        "consumer_side_policy": "REFERENCE_ONLY_UNTIL_PROOF_BUT_ADMISSION_PATH_DEVELOPMENT_AUTHORIZED",
+        "blocked_by_evidence_policy": (
+            "Only the individual task that requires new semantic evidence is BLOCKED_BY_EVIDENCE; "
+            "the router must continue to the next oracle-independent mainline task."
+        ),
         "current_known_gaps": {
             "i2_missing_records": list(I2_REQUIRED_ROWS),
             "raw_pair_needed_for_fixed_role_real_probe": True,
@@ -173,11 +219,17 @@ def route(s: EvidenceState) -> dict:
 
 def self_test():
     empty = route(EvidenceState())
-    assert empty["status"] == "NO_ADMISSIBLE_ACTION_CURRENT_DURABLE_CORPUS"
+    assert empty["status"] == "STRUCTURAL_DEVELOPMENT_ACTIVE_NO_NEW_SEMANTIC_UNLOCK"
+    assert empty["evidence_status"] == "NO_NEW_ADMISSIBLE_EVIDENCE_CURRENT_DURABLE_CORPUS"
+    assert empty["mainline_state"] == "ACTIVE"
+    assert empty["semantic_gate"] == "CLOSED"
+    assert empty["oracle_independent_importer_structural_work"] == "AUTHORIZED"
+    assert empty["oracle_pending_is_global_pause"] is False
+    assert empty["maintenance_only"] is False
     assert "EXPLICIT_PARENT_RECORD_BOUNDARY" in empty["validated_closed_consumer_evidence"]
 
     old_closed = route(EvidenceState(decisive_owner_edges=CLOSED_CONSUMER_EVIDENCE))
-    assert old_closed["status"] == "NO_ADMISSIBLE_ACTION_CURRENT_DURABLE_CORPUS"
+    assert old_closed["status"] == "STRUCTURAL_DEVELOPMENT_ACTIVE_NO_NEW_SEMANTIC_UNLOCK"
     assert old_closed["selected_static_actions"] == []
     assert set(old_closed["closed_consumer_evidence_seen_in_input"]) == set(CLOSED_CONSUMER_EVIDENCE)
 
@@ -194,6 +246,7 @@ def self_test():
     assert c["runtime_dispatch"] is False
     assert c["semantic_projection"] is False
     assert c["blender_emit"] is False
+    assert c["mainline_state"] == "ACTIVE"
 
     bad = route(EvidenceState(
         controlled_fixture_bundle_present=True,
@@ -201,7 +254,7 @@ def self_test():
         controlled_fixture_manifest_valid=True,
         controlled_fixture_count=13,
     ))
-    assert bad["status"] == "NO_ADMISSIBLE_ACTION_CURRENT_DURABLE_CORPUS"
+    assert bad["status"] == "STRUCTURAL_DEVELOPMENT_ACTIVE_NO_NEW_SEMANTIC_UNLOCK"
 
     raw = route(EvidenceState(
         clip_present=True,
