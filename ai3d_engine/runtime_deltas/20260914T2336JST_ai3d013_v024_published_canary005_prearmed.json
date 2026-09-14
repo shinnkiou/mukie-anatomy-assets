@@ -1,0 +1,60 @@
+{
+  "schema": "never-tear-ai3d-runtime-delta-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "linear_issue": "RIO-60",
+  "status": "ACTIVE",
+  "stage": "PHYSICAL_CANARY_READY",
+  "recorded_at": "2026-09-14T23:36:00+09:00",
+  "repair_from": {
+    "canary": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-004",
+    "visual_qa": "FAIL",
+    "failure_class": "BOOLEAN_COMMAND_COUNT_FALSE_POSITIVE_NO_VISIBLE_OPENING",
+    "semantic_promotion": false
+  },
+  "worker_v024": {
+    "worker_version": "0.2.4-ai3d-structure-visualfix",
+    "source_branch": "ai3d-013-structure-canary-20260914",
+    "source_commit": "b864c6b45d6417222311bf5b54585070d0be4a7c",
+    "workflow_run_id": "34856246552",
+    "workflow_job_id": "104016443088",
+    "workflow_status": "PASS",
+    "ci_artifact_id": "10352951484",
+    "ci_artifact_digest": "sha256:d951808490ea91b5ea8ee2fac6e197cd48467b7cfc70b5864409c6b9f8c9a5bd",
+    "stable_release_tag": "ai3d-structure-worker-canary-channel",
+    "stable_worker_asset_id": "563568978",
+    "stable_worker_sha256": "bb71dbbdf863b61d54b9ce6654a6819dd794e4c0805227dc770338781c258af2",
+    "stable_worker_size_bytes": 8770802,
+    "stable_manifest_asset_id": "563568979",
+    "stable_manifest_digest": "sha256:e46eec75a6ae947c7f2b53d7c04503435e7ba10b1452f6869419b70393b70a2d",
+    "packaged_selftest": "PASS",
+    "geometry_level_boolean_qa": true,
+    "opening_void_probe_required": true,
+    "solid_control_probe_required": true,
+    "execution_overlap_epsilon_m": 0.01,
+    "arbitrary_shell": false
+  },
+  "supabase_v5": {
+    "project_id": "vbuokbwglauibabinaqs",
+    "claim_rpc": "ai3d_claim_structure_canary_job_v5",
+    "claim_migration": "ai3d_structure_canary_v5_claim",
+    "search_path_migration": "ai3d_structure_canary_v5_claim_search_path",
+    "edge_function": "ai3d-worker-transport-structure-canary-v5",
+    "edge_function_id": "0b3623f4-340c-4344-91e1-9d7e8213049b",
+    "edge_bundle_sha256": "67410318e58666d23f5da2f7c94f7df0394e7f965de3de3654d4b83711de8fe7",
+    "v5_search_path_advisor_warning": "CLEARED",
+    "canary_job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-005",
+    "canary_job_id": "597c99dc-132d-4f42-ad85-a46b814e0990",
+    "canary_job_status": "QUEUED",
+    "attempt_count": 0,
+    "max_attempts": 1
+  },
+  "hard_boundary": {
+    "structure_module_capability_promoted": false,
+    "ai3d010_unblocked": false,
+    "rio60_complete": false,
+    "production_plan_executed": false,
+    "semantic_promotion": false
+  },
+  "next_action": "Launch the already-installed NEVER TEAR AI3D Structure Worker Stable Launcher once. It must fetch SHA-verified v0.2.4 from the fixed release channel and claim the already-queued CANARY-005. Then require geometry-probe automated QA, durable provider SHA readback, and real visual QA before promotion."
+}
