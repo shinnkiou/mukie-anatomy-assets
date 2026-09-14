@@ -1,0 +1,31 @@
+name: CSMC MODELER Static Evidence Validator
+
+on:
+  push:
+    branches:
+      - csmc-modeler-static-analysis-second-pass-20260914
+    paths:
+      - 'research/csmc_modeler_static/**'
+      - '.github/workflows/csmc-modeler-static-evidence-validator.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-evidence-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile public-safe static evidence tools
+        run: python -m compileall -q research/csmc_modeler_static
+      - name: Run fail-closed static evidence tests
+        working-directory: research/csmc_modeler_static
+        run: python -m unittest discover -p 'test_*.py' -v
+      - name: Verify validator CLI surface
+        working-directory: research/csmc_modeler_static
+        run: python static_evidence_slice_validator.py --help >/dev/null
