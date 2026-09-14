@@ -1,0 +1,45 @@
+{
+  "schema_version": "csmc_analysis_c_public_clip_prior_reconciliation_c067_record_v1",
+  "run_id": "C-067",
+  "status": "COMPLETED",
+  "classification": "PUBLIC_CLIP_ARCHITECTURE_PRIOR_RECONCILED_QUARANTINED_POST_BLIND_ONLY",
+  "source": {
+    "supabase_row": 184,
+    "run_key": "CSMC_PUBLIC_CLIP_3D_ARCHITECTURE_PRIOR_20260914",
+    "static_branch": "csmc-modeler-static-analysis-second-pass-20260914",
+    "static_head": "65728766d6df668a5eedab5451f57d0e12008cc0",
+    "static_ci_run": 34833105429,
+    "static_ci_conclusion": "success",
+    "drive_checkpoint_id": "1qtzgn8Mwz6uoyIP4cfxj6jinTtTvBjPI",
+    "base44_record": "6aa7cc3444c999bcb656b427"
+  },
+  "public_prior": {
+    "observed_format": ".clip",
+    "target_format": ".csmc",
+    "classification": "STRONG_PUBLIC_ARCHITECTURE_PRIOR_NOT_CSMC_PROOF",
+    "external_chunk_rows_checked": 5889,
+    "external_chunk_offset_mismatches": 0,
+    "source_count": 3,
+    "unique_repo_count": 3,
+    "candidate_name_usage": "POST_BLIND_NON_PROOF_CORROBORATION_ONLY"
+  },
+  "companion_decision": {
+    "blind_preregistration_unchanged": true,
+    "blind_result_currently_available": false,
+    "current_public_prior_state": "QUARANTINED_PENDING_BLIND_RESULT",
+    "may_guide_blind_discovery": false,
+    "may_score_blind_discovery": false,
+    "may_be_used_post_blind": true,
+    "direct_csmc_evidence": false,
+    "proof_grade": false,
+    "static_evidence_gate_closed": false,
+    "explicit_serializer_field_read": "UNRESOLVED",
+    "controlled_fixture_to_consumer_match": "UNRESOLVED",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false,
+    "mainline_mutation": false,
+    "rio26_mutation": false
+  },
+  "resume_rule": "After a blind direct-data-flow result is independently sealed, compare it with the public .clip architecture prior only as non-proof corroboration. Never force a blind result toward public names."
+}
