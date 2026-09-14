@@ -1,0 +1,70 @@
+{
+  "run_id": "C-061",
+  "date_jst": "2026-09-14",
+  "classification": "PHASE3_HOLDOUT_PREFIX_EXACT_QWORD_NEGATIVE_CONTROL_RECONCILED",
+  "source": {
+    "mainline_prefix_head": "7ab466ac495cbb09792fad20f0d30e2bb4ed551a",
+    "mainline_framing_head": "c591741eabacfaf3d983328b8065dfab9b53a675",
+    "supabase_prefix_row": 152,
+    "supabase_framing_row": 153,
+    "drive_prefix_findings_id": "13LN932sx-a4OUm8gfqcVEAppCzWt-7bE",
+    "drive_prefix_aggregate_id": "1N6bRQIswV6d6EeVrgAKs8LfQmTfPGxeh"
+  },
+  "phase3_holdout": {
+    "pair_id": "R04_V01",
+    "logical_mod8": 3,
+    "invariant_length_qwords": 1800,
+    "invariant_length_bytes": 14400,
+    "start_r04_qword": 480,
+    "start_v01_qword": 533940,
+    "trailing_qwords_each": 2,
+    "same_identity_semantic_control": false
+  },
+  "prefix_negative_control": {
+    "bounded_pair_count": 7,
+    "distinct_exact_qword_overlap_zero_pairs": 7,
+    "multiset_exact_qword_overlap_zero_pairs": 7,
+    "accepted_scope": "TESTED_BOUNDED_VARIABLE_PREFIXES_ONLY",
+    "exact_qword_reuse_status": "NOT_PRODUCTIVE_FOR_TESTED_BOUNDED_PREFIXES"
+  },
+  "framing": {
+    "import_intake_schema": "csmc_import_intake_v0_3",
+    "frame_rule": "stored_length = align8(logical_length) + 8",
+    "aligned_logical_length_exposed": true,
+    "alignment_extension_length_exposed": true,
+    "framing_remainder_length_exposed": true,
+    "framing_remainder_length": 8,
+    "alignment_extension_semantic": "UNRESOLVED",
+    "framing_remainder_semantic": "UNRESOLVED"
+  },
+  "search_policy": {
+    "exclude": "VALIDATED_INVARIANT_CORE",
+    "include": ["VARIABLE_PREFIX", "TERMINAL_REMAINDER"],
+    "stop": "WHOLE_PREFIX_EXACT_QWORD_REUSE_HUNTING_FOR_TESTED_PAIRS",
+    "next": "PREREGISTERED_BOUNDED_SIZE_STRIDE_COUNT_RELATIONSHIPS"
+  },
+  "validation": {
+    "local_self_test": "10/10 PASS",
+    "local_pytest": "2/2 PASS",
+    "mainline_controlled_ci_run": 34804715191,
+    "mainline_importer_ci_run": 34804715117,
+    "mainline_ci_all_green": true
+  },
+  "semantic_binding": "UNRESOLVED",
+  "i3_valid": false,
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion_count": 0,
+  "blender_emit_ready": false,
+  "runtime_dispatch": false,
+  "raw_private_bytes_published": false,
+  "isolation": {
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "automatic_integration": false
+  }
+}
