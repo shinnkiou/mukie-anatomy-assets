@@ -1,0 +1,23 @@
+{
+  "blender_emit": false,
+  "caller_va": "0x1416578e0",
+  "confidence": "CONFIRMED",
+  "destination_summary": "The function contains an explicit lookup of Offset from ExternalChunk keyed by ExternalID.",
+  "direct_edge_kind": "EXPLICIT_FIELD_ACCESS",
+  "downstream_edge_summary": "The lookup resolves a physical Offset value for a supplied ExternalID within the ExternalChunk index path.",
+  "evidence_class": "EXPLICIT_EXTERNALCHUNK_OFFSET_LOOKUP",
+  "evidence_id": "FULLSNAP_20260914_EXTERNALCHUNK_OFFSET_BY_EXTERNALID",
+  "evidence_source_kind": "PRIVATE_FULL_STATIC_SNAPSHOT_FRESH_DISPOSABLE_GHIDRA_PROJECT",
+  "exe_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+  "field_label": "ExternalChunk.Offset",
+  "function_va": "0x140d175d0",
+  "lane": "MODELER_CONSUMER_SIDE_STATIC_ANALYSIS",
+  "negative_control": "The exact SELECT Offset by ExternalID query has a single function xref at 0x140d175d0; CREATE/DELETE/INSERT ExternalChunk operations are referenced by separate functions.",
+  "provenance_hash": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+  "public_safe_pseudocode": "offset = ExternalChunk.lookup(external_id).Offset",
+  "raw_private_bytes_embedded": false,
+  "runtime_dispatch": false,
+  "schema_version": "csmc_modeler_static_evidence_slice_v2",
+  "semantic_promotion": false,
+  "upstream_edge_summary": "0x140d175d0 is directly called by 0x1416578e0 and also calls the generic direct byte-read primitive 0x1408c27c0."
+}
