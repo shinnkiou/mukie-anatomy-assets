@@ -1,0 +1,24 @@
+{
+  "schema_version": "csmc_controlled_prefix_extinction_probe_v1",
+  "prior_pair_count": 6,
+  "holdout_pair_count": 1,
+  "pair_count": 7,
+  "all_pairs_same_logical_mod8": true,
+  "all_prefix_distinct_exact_qword_overlap_zero": true,
+  "all_prefix_multiset_exact_qword_overlap_zero": true,
+  "holdout_classification": "PHASE3_VROID_HOLDOUT_INVARIANT_SUFFIX_VALIDATION",
+  "prefix_classification": "PHASE_NORMALIZED_PREFIX_EXACT_QWORD_REUSE_NOT_OBSERVED",
+  "semantic_promotion": false,
+  "blender_emit_ready": false,
+  "named_codec_or_cipher_claim": false,
+  "raw_values_embedded": false,
+  "pairs": [
+    {"pair_id":"F02_F04","fixture_a":"CSMC_F02_QUAD","fixture_b":"CSMC_F04_CUBE_SUBDIV","logical_mod8":7,"qword_count_a":2212,"qword_count_b":2320,"invariant_start_a":402,"invariant_start_b":510,"invariant_length_qwords":1809,"trailing_qwords_each":1,"prefix_qwords_a":402,"prefix_qwords_b":510,"distinct_exact_qwords_shared_in_prefix":0,"multiset_exact_qword_overlap_in_prefix":0,"raw_values_embedded":false},
+    {"pair_id":"F02_R01","fixture_a":"CSMC_F02_QUAD","fixture_b":"CSMC_R01_CUBE_B1_W0","logical_mod8":7,"qword_count_a":2212,"qword_count_b":2233,"invariant_start_a":402,"invariant_start_b":423,"invariant_length_qwords":1809,"trailing_qwords_each":1,"prefix_qwords_a":402,"prefix_qwords_b":423,"distinct_exact_qwords_shared_in_prefix":0,"multiset_exact_qword_overlap_in_prefix":0,"raw_values_embedded":false},
+    {"pair_id":"F05_R02","fixture_a":"CSMC_F05_CUBE_UV","fixture_b":"CSMC_R02_CUBE_B1_W100","logical_mod8":5,"qword_count_a":2251,"qword_count_b":2266,"invariant_start_a":441,"invariant_start_b":456,"invariant_length_qwords":1808,"trailing_qwords_each":2,"prefix_qwords_a":441,"prefix_qwords_b":456,"distinct_exact_qwords_shared_in_prefix":0,"multiset_exact_qword_overlap_in_prefix":0,"raw_values_embedded":false},
+    {"pair_id":"F01_R05","fixture_a":"CSMC_F01_TRIANGLE","fixture_b":"CSMC_R05_CUBE_B2_MIX50","logical_mod8":2,"qword_count_a":2211,"qword_count_b":2281,"invariant_start_a":401,"invariant_start_b":471,"invariant_length_qwords":1808,"trailing_qwords_each":2,"prefix_qwords_a":401,"prefix_qwords_b":471,"distinct_exact_qwords_shared_in_prefix":0,"multiset_exact_qword_overlap_in_prefix":0,"raw_values_embedded":false},
+    {"pair_id":"F06_F07","fixture_a":"CSMC_F06_CUBE_MAT2","fixture_b":"CSMC_F07_TWO_CUBES","logical_mod8":1,"qword_count_a":2564,"qword_count_b":2576,"invariant_start_a":445,"invariant_start_b":457,"invariant_length_qwords":2118,"trailing_qwords_each":1,"prefix_qwords_a":445,"prefix_qwords_b":457,"distinct_exact_qwords_shared_in_prefix":0,"multiset_exact_qword_overlap_in_prefix":0,"raw_values_embedded":false},
+    {"pair_id":"F06_R03","fixture_a":"CSMC_F06_CUBE_MAT2","fixture_b":"CSMC_R03_CUBE_B2_W100","logical_mod8":1,"qword_count_a":2564,"qword_count_b":2275,"invariant_start_a":762,"invariant_start_b":473,"invariant_length_qwords":1801,"trailing_qwords_each":1,"prefix_qwords_a":762,"prefix_qwords_b":473,"distinct_exact_qwords_shared_in_prefix":0,"multiset_exact_qword_overlap_in_prefix":0,"raw_values_embedded":false},
+    {"pair_id":"R04_V01","fixture_a":"CSMC_R04_CUBE_B2_SPLIT","fixture_b":"CSMC_V01_VROID_BODY_BASE","logical_mod8":3,"qword_count_a":2282,"qword_count_b":535742,"invariant_start_a":480,"invariant_start_b":533940,"invariant_length_qwords":1800,"trailing_qwords_each":2,"prefix_qwords_a":480,"prefix_qwords_b":533940,"distinct_exact_qwords_shared_in_prefix":0,"multiset_exact_qword_overlap_in_prefix":0,"raw_values_embedded":false}
+  ]
+}
