@@ -1,0 +1,107 @@
+{
+  "blender_emit": false,
+  "closed_family_non_widening": {
+    "phase7_raw_index_range": "REMAINS_REJECTED_AS_PREVIOUSLY_SCOPED",
+    "phase8_count_to_anchor_extent": "REMAINS_REJECTED_AS_PREVIOUSLY_SCOPED",
+    "phase9_local_length_chain": "REMAINS_REJECTED_AS_PREVIOUSLY_SCOPED",
+    "simple_96b_insertion": "REMAINS_REJECTED_AS_PREVIOUSLY_SCOPED"
+  },
+  "family": "LOCAL_BOUNDED_STRIDE_PERIODICITY",
+  "generation": 0,
+  "geometry": "UNRESOLVED",
+  "index_topology": "UNRESOLVED",
+  "next_action": "Do not widen this stride family post hoc. Use Track-D discrimination questions and targeted consumer static analysis to seek direct read/width/endianness/count/destination evidence.",
+  "physical_oracle_status": "PENDING_MANUAL_ORACLE",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "preregistered_scope": {
+    "candidate_count_after_dedupe": 32,
+    "candidate_count_generated": 32,
+    "candidate_stride_bytes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32
+    ],
+    "comparison": "byte[i] == byte[i+stride]",
+    "cross_fixture_hard_pass_rule": "per_fixture_hit on both TRAIN fixtures and VALIDATION fixture",
+    "filler_candidates_added": 0,
+    "fixtures": {
+      "CSMC_F02_QUAD": {
+        "core_start_payload_offset": 3216,
+        "role": "TRAIN"
+      },
+      "CSMC_F04_CUBE_SUBDIV": {
+        "core_start_payload_offset": 4080,
+        "role": "TRAIN"
+      },
+      "CSMC_R01_CUBE_B1_W0": {
+        "core_start_payload_offset": 3384,
+        "role": "VALIDATION"
+      }
+    },
+    "logical_maximum": 50,
+    "logical_mod8_phase": 7,
+    "null_model": "independent uniform byte equality p=1/256",
+    "per_fixture_hit_rule": "exact binomial upper-tail p < 0.001",
+    "region": "FINAL_1024_BYTES_BEFORE_VALIDATED_EXACT_INVARIANT_CORE"
+  },
+  "rejection_scope": "Only direct byte-equality periodicity with stride 1..32 inside the final 1024 bytes before the validated phase-7 exact invariant core. This does not reject interleaved typed tuples, transformed/delta/indirect records, other windows, other phases, or consumer-side structures.",
+  "results": {
+    "classification": "GEN0_PARALLEL_PREPROOF_LOCAL_BOUNDED_STRIDE_PERIODICITY_REJECTED_PHASE7",
+    "cross_fixture_hard_fail": 32,
+    "cross_fixture_hard_pass": 0,
+    "fixture_local_hits": {
+      "CSMC_F02_QUAD": [],
+      "CSMC_F04_CUBE_SUBDIV": [
+        {
+          "exact_equal_pairs": 12,
+          "null_tail_lt_0_001": true,
+          "stride_bytes": 30
+        }
+      ],
+      "CSMC_R01_CUBE_B1_W0": []
+    },
+    "surviving_strides": [],
+    "train_local_hit_count": 1,
+    "validation_local_hit_count": 0
+  },
+  "runtime_dispatch": false,
+  "schema_version": "csmc_importer_lab_private_gen0_parallel_preproof_v1",
+  "search_strategy": "CONSTRAINT_GUIDED_BEAM_PLUS_FALSIFICATION",
+  "semantic_binding": "UNRESOLVED",
+  "semantic_promotion": false,
+  "source_corpus": {
+    "corpus_id": "CSMC_CONTROLLED_FIXTURES_20260914",
+    "corpus_zip_sha256": "be6132ef83959167ffd19218810e099f0bd164714fbd1ec4770f9296b38643b6",
+    "private_raw_publication": false,
+    "raw_private_bytes_embedded": false
+  }
+}
