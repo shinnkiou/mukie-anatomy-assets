@@ -96,10 +96,32 @@ jobs:
           Copy-Item NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt bootstrap/seed/
 
           @'
+          $ErrorActionPreference = 'Stop'
+          function Get-Sha256([string]$Path) {
+              $stream = [System.IO.File]::OpenRead($Path)
+              $sha = [System.Security.Cryptography.SHA256]::Create()
+              try {
+                  return ([System.BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-', '').ToLowerInvariant()
+              }
+              finally {
+                  $stream.Dispose()
+                  $sha.Dispose()
+              }
+          }
+          $launcherExpected = ((Get-Content 'NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.sha256.txt' -Raw).Trim() -split '\s+')[0].ToLowerInvariant()
+          $launcherActual = Get-Sha256 'NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe'
+          if ($launcherExpected -ne $launcherActual) { throw "launcher SHA256 mismatch expected=$launcherExpected actual=$launcherActual" }
+          $workerExpected = ((Get-Content 'seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt' -Raw).Trim() -split '\s+')[0].ToLowerInvariant()
+          $workerActual = Get-Sha256 'seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe'
+          if ($workerExpected -ne $workerActual) { throw "worker SHA256 mismatch expected=$workerExpected actual=$workerActual" }
+          Write-Host "SHA256 PASS launcher=$launcherActual worker=$workerActual"
+          '@ | Set-Content -Encoding utf8 bootstrap/VERIFY_BOOTSTRAP_SHA256.ps1
+
+          @'
           @echo off
           setlocal
           cd /d "%~dp0"
-          powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $lh=(Get-Content 'NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.sha256.txt').Split()[0].ToLower(); $la=(Get-FileHash 'NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe' -Algorithm SHA256).Hash.ToLower(); if($lh -ne $la){throw 'launcher SHA256 mismatch'}; $wh=(Get-Content 'seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.sha256.txt').Split()[0].ToLower(); $wa=(Get-FileHash 'seed\NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe' -Algorithm SHA256).Hash.ToLower(); if($wh -ne $wa){throw 'worker SHA256 mismatch'}; Write-Host ('SHA256 PASS launcher='+$la+' worker='+$wa)"
+          powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_BOOTSTRAP_SHA256.ps1"
           if errorlevel 1 exit /b 23
           exit /b 0
           '@ | Set-Content -Encoding ascii bootstrap/VERIFY_BOOTSTRAP_SHA256.bat
@@ -158,7 +180,7 @@ jobs:
         run: |
           dist/NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe --self-test
           dist/NEVER_TEAR_AI3D_STRUCTURE_WORKER_LAUNCHER.exe --self-test
-          bootstrap/VERIFY_BOOTSTRAP_SHA256.bat
+          powershell -NoProfile -ExecutionPolicy Bypass -File bootstrap/VERIFY_BOOTSTRAP_SHA256.ps1
 
       - name: Publish fixed GitHub release channel
         shell: pwsh
@@ -167,7 +189,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $tag = 'ai3d-structure-worker-canary-channel'
-          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          gh release view $tag --repo $env:GITHUB_REPOSITORY 2>$null | Out-Null
           if ($LASTEXITCODE -ne 0) {
             gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --prerelease --title 'AI3D Structure Worker CANARY channel' --notes 'Fixed fail-closed update channel for the one-time Structure Worker launcher.'
             if ($LASTEXITCODE -ne 0) { throw 'release create failed' }
