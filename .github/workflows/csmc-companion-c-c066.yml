@@ -1,0 +1,27 @@
+name: CSMC Companion C C066 oracle intake hardening reconciliation
+
+on:
+  push:
+    branches:
+      - csmc-analysis-companion-c-20260913
+    paths:
+      - 'tools/csmc_importer/companion_c/csmc_analysis_c_oracle_intake_hardening_c066.py'
+      - 'tools/csmc_importer/companion_c/test_csmc_analysis_c_oracle_intake_hardening_c066.py'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_ORACLE_INTAKE_HARDENING_C066_20260914.json'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_RUN066_ORACLE_INTAKE_HARDENING_20260914.md'
+      - '.github/workflows/csmc-companion-c-c066.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  c066-fail-closed:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run C066 hardening reconciliation tests
+        working-directory: tools/csmc_importer/companion_c
+        run: python -m unittest -v test_csmc_analysis_c_oracle_intake_hardening_c066.py

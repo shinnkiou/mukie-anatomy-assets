@@ -1,0 +1,57 @@
+{
+  "run_id": "C-066",
+  "date": "2026-09-14",
+  "classification": "F02_ORACLE_INTAKE_PROVENANCE_HARDENING_RECONCILED_NO_PHYSICAL_EVIDENCE",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "source": {
+    "oracle_branch": "csmc-f02-mutation-oracle-intake-20260914",
+    "oracle_head": "c25750fc3d91d97ffa79de95f583914d1294ee9f",
+    "cli_commit": "5de3567ec683441717b39c4ace885563e9951ef2",
+    "ci_coverage_commit": "d9e7948330f7bf3932387b75b56713ee9eed358f",
+    "ci_run": 34826886335,
+    "source_supabase_row": 176,
+    "source_base44_record": "6aa7bcb72c955663a751d4c5",
+    "drive_checkpoint_id": "1K5nkUZwhqmmbsPS_LG7jxZYLlvK-R6a8"
+  },
+  "source_batch_id": "CSMC_F02_SINGLE_BYTE_XOR01_30_20260914",
+  "source_manifest_raw_sha256": "751f05dfff9d5308dfd96421d5bce43e6785de2cb385fb28a8c97c565c6cc891",
+  "source_manifest_raw_sha_bound": true,
+  "verify_raw_sha_before_json_parse": true,
+  "expected_variant_count": 30,
+  "existing_observation_contract_preserved": true,
+  "fail_closed_cli": true,
+  "receipt_contract": {
+    "schema_version": "csmc_f02_mutation_oracle_intake_receipt_v1",
+    "source_manifest_raw_sha256": true,
+    "observation_raw_sha256": true,
+    "public_projection_canonical_sha256": true,
+    "diagnostic_only": true,
+    "semantic_promotion": false,
+    "blender_emit": false
+  },
+  "physical_observations_acquired": 0,
+  "physical_oracle_status": "PENDING_MANUAL_ORACLE",
+  "observation_sheet_drive_id": "1tQP9Zyy4UQCkqkdwX2kOonqdRDfLeH-X",
+  "observation_sheet_verified_all_pending": true,
+  "launch_modeler": false,
+  "generate_mutations": false,
+  "save_allowed": false,
+  "serialization_trigger_allowed": false,
+  "semantic_promotion": false,
+  "blender_emit": false,
+  "runtime_dispatch": false,
+  "mainline_mutation": false,
+  "rio26_mutation": false,
+  "raw_private_bytes_published": false,
+  "semantic_state": {
+    "geometry": "UNRESOLVED",
+    "index_topology": "UNRESOLVED",
+    "explicit_serializer_field_read": "UNRESOLVED",
+    "controlled_fixture_to_consumer_match": "UNRESOLVED"
+  },
+  "next_admissible_evidence": [
+    "VALIDATED_READ_ONLY_F02_ORACLE_OBSERVATION",
+    "PROOF_GRADE_EXPLICIT_SERIALIZER_FIELD_READ_OR_DESTINATION_DATA_FLOW",
+    "GENUINELY_INDEPENDENT_CONSTRAINT_AXIS"
+  ]
+}
