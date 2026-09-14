@@ -1,0 +1,57 @@
+{
+  "schema_version": "csmc_dq_ser_width_gate_v1",
+  "question_id": "DQ-SER-WIDTH-01",
+  "current_status": "WAIT_FOR_PROOF",
+  "accepted_evidence_class": "EXPLICIT_SERIALIZER_FIELD_READ",
+  "hard_constraint_confidence": "CONFIRMED",
+  "accepted_width_bytes": [2, 4],
+  "expected_modeler_exe_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+  "required_serializer_fields": [
+    "schema_version",
+    "lane",
+    "evidence_id",
+    "evidence_class",
+    "confidence",
+    "evidence_source_kind",
+    "exe_sha256",
+    "direct_edge_kind",
+    "function_va",
+    "read_or_write_primitive_va",
+    "width_bytes",
+    "endianness",
+    "count_or_length_source",
+    "destination_summary",
+    "upstream_edge_summary",
+    "downstream_edge_summary",
+    "negative_control",
+    "provenance_hash",
+    "semantic_promotion",
+    "blender_emit",
+    "runtime_dispatch",
+    "raw_private_bytes_embedded"
+  ],
+  "dq_resolution": {
+    "requires_all_serializer_fields": true,
+    "requires_confirmed": true,
+    "requires_width_bytes_in": [2, 4],
+    "meaning": "Resolve only the structural 16-bit-vs-32-bit direct-reader discriminator. This is not a semantic field claim."
+  },
+  "f02_candidate_pruning": {
+    "additional_binding_required": true,
+    "controlled_fixture_ref": "F02",
+    "field_label": "F02_DATA2_VARIABLE_PREFIX",
+    "consumer_scope": "MODELDATA_CONSUMER_PATH",
+    "unbound_width_evidence_must_not_prune": true,
+    "unrelated_scope_must_not_prune": true
+  },
+  "policy": {
+    "role": "FALSIFICATION_CONSTRAINT_NOT_WINNER_BONUS",
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_dispatch": false,
+    "consumer_bonus": 0,
+    "visual_score_delta": 0,
+    "automatic_semantic_labeling": false,
+    "score_max_is_truth": false
+  }
+}
