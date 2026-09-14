@@ -1,5 +1,5 @@
 {
-  "schema_version": "csmc_data_scout_static_toolchain_v1",
+  "schema_version": "csmc_data_scout_static_toolchain_v2",
   "date": "2026-09-14",
   "lane": "CSMC_DATA_SCOUT",
   "mode": "RESEARCH_PROCUREMENT_ONLY",
@@ -12,6 +12,15 @@
     "rio26_mutations": 0,
     "install_batch_actions": 0,
     "proprietary_binary_publication": false
+  },
+  "state_correction": {
+    "source": "CLIP STUDIO MODELER 1.10.13 static-analysis FIRST PASS",
+    "closed_by_downstream_consumer_code": [
+      "EXPLICIT_PARENT_RECORD_BOUNDARY",
+      "EXPLICIT_PARENT_LENGTH_FIELD",
+      "EXPLICIT_CONSUMER_CROSSREF"
+    ],
+    "policy": "Retain as historical gaps; never treat them as active procurement targets again."
   },
   "toolchain": {
     "MINIMAL": [
@@ -32,28 +41,106 @@
       {"tool":"radare2 6.2.2","automation_score":5,"license":"mostly LGPLv3; component licenses vary","decision":"EXTERNAL_TOOL_ONLY","purpose":"radiff2/r2pipe fallback for block/xref/diff"}
     ]
   },
+  "active_gap_priority": [
+    {
+      "priority": 1,
+      "gap": "EXPLICIT_CSMC_HANDLER_ENTRY",
+      "existing_toolchain": "Ghidra headless + FLOSS + LIEF/pefile",
+      "why_existing_is_sufficient_now": "Known CSMC/model vocabulary can be anchored to PE functions and xrefs without a new external tool.",
+      "expected_evidence": "Concrete handler entry function(s) consuming CSMC/container/model-loading inputs.",
+      "new_tool_required": false
+    },
+    {
+      "priority": 2,
+      "gap": "EXPLICIT_EXTERNALCHUNK_OFFSET_LOOKUP",
+      "existing_toolchain": "SQLite Tools + Ghidra xref/decompile + Construct/Kaitai for framing",
+      "why_existing_is_sufficient_now": "sqlite3/sqldiff can isolate ExternalChunk/Offset rows while Ghidra follows offset-to-seek consumer code.",
+      "expected_evidence": "ExternalChunk(SQLite) -> Offset -> seek -> CHNKExta control/data path.",
+      "new_tool_required": false
+    },
+    {
+      "priority": 3,
+      "gap": "EXPLICIT_MODELDATA_LOOKUP",
+      "existing_toolchain": "FLOSS + Ghidra headless/decompile",
+      "why_existing_is_sufficient_now": "String/data xrefs plus decompilation can follow ModelData lookup into loader/consumer functions.",
+      "expected_evidence": "Concrete lookup path from ModelData identifiers/records to consumer code.",
+      "new_tool_required": false
+    },
+    {
+      "priority": 4,
+      "gap": "EXPLICIT_CANVAS3D_LOAD_ENTRY",
+      "existing_toolchain": "Ghidra headless + FLOSS + capa secondary hints",
+      "why_existing_is_sufficient_now": "Existing static stack can map Canvas3D loader vocabulary to entry functions and call graph.",
+      "expected_evidence": "Concrete Canvas3D load entry and its immediate callees.",
+      "new_tool_required": false
+    },
+    {
+      "priority": 5,
+      "gap": "EXPLICIT_SERIALIZER_FIELD_READ",
+      "existing_toolchain": "Ghidra decompile/xref + SQLite Tools + Construct/Kaitai controlled structures",
+      "why_existing_is_sufficient_now": "Field-reader code can be correlated to known container/SQLite structures before introducing another parser.",
+      "expected_evidence": "Concrete field read / decode operations tied to controlled payload locations or schema fields.",
+      "new_tool_required": false
+    },
+    {
+      "priority": 6,
+      "gap": "EXPLICIT_INTERNAL_MODEL_CONSTRUCTION",
+      "existing_toolchain": "Ghidra decompile/RTTI/xref + BinDiff/BSim for stable function family tracking",
+      "why_existing_is_sufficient_now": "Class/function candidates and builder call chains can be reconstructed from existing deep static tools.",
+      "expected_evidence": "Internal mesh/bone/material/node object construction path after load/deserialize.",
+      "new_tool_required": false
+    },
+    {
+      "priority": 7,
+      "gap": "CONTROLLED_FIXTURE_TO_CONSUMER_MATCH",
+      "existing_toolchain": "Controlled fixture diffs + csmc_numeric_candidate_probe.py + Ghidra/BinDiff/radare2 outputs",
+      "why_existing_is_sufficient_now": "A project-local correlation layer can join fixture delta locations/signatures with consumer functions; no new vendor tool is justified yet.",
+      "expected_evidence": "Machine-readable mapping from controlled fixture variable -> changed byte/record/row candidates -> consumer-side function/read/build evidence.",
+      "new_tool_required": false
+    }
+  ],
+  "acquisition_gate": {
+    "required_fields_for_any_new_candidate": [
+      "CURRENT_GAP",
+      "WHY_EXISTING_TOOLCHAIN_IS_INSUFFICIENT",
+      "NEW_TOOL",
+      "LICENSE",
+      "AUTOMATION_SCORE",
+      "EXPECTED_EVIDENCE",
+      "ADOPT_HOLD_REJECT"
+    ],
+    "convenience_only_procurement": "PROHIBITED"
+  },
   "holds": [
     {"tool":"Ghidriff 1.0.0","reason":"latest release explicitly targets Ghidra 11.4; selected Ghidra is 12.1.3; compatibility unverified"},
     {"tool":"Diaphora 3.4.x","reason":"strong diff engine but IDA-dependent and AGPL; reference only for current free automated pipeline"},
     {"tool":"Detect It Easy","reason":"source/license verified, but stable binary/tag pin must be resolved before acquisition"}
   ],
   "numeric_detector": {
+    "artifact":"research/csmc_data_scout/csmc_numeric_candidate_probe.py",
     "foundation":"NumPy 2.5.3",
     "license":"BSD-3-Clause",
     "decision":"EMBED_OK",
+    "reusable_by":["MAINLINE_IMPORTER_SUPPORT","CONTROLLED_DIFFERENTIAL_SIDE_RESEARCH","R04_TO_R05","VROID_COMPARISON"],
     "required_signals":["f32","f64","u16","u32","endianness","16-byte alignment","repeated stride","NaN/Inf rejection","normalized 0..1","group weight sum","vec2/vec3/vec4","matrix4","quaternion norm","index range","monotonic integer pattern","histogram"],
-    "semantic_promotion": false
+    "semantic_promotion": false,
+    "evidence_role":"candidate detector only; never semantic proof"
   },
-  "current_gap_matrix": [
-    {"gap":"EXPLICIT_CONSUMER_CROSSREF","best_tool":"Ghidra headless + FLOSS","expected_evidence":"known loader/model vocabulary -> string/data xref -> function/class candidate -> consumer edge candidate"},
-    {"gap":"EXPLICIT_PARENT_RECORD_BOUNDARY","best_tool":"Construct/Kaitai + controlled differential + SQLite extraction","expected_evidence":"reproducible repeated record/alignment schema across known-variable fixtures"},
-    {"gap":"EXPLICIT_PARENT_LENGTH_FIELD","best_tool":"Construct/Kaitai + controlled length perturbations","expected_evidence":"field whose value tracks controlled parent payload length across fixtures"},
-    {"gap":"WEIGHT_SCALAR","best_tool":"controlled rig fixtures + public-safe numeric candidate probe","expected_evidence":"same structural slot with numeric candidate shift consistent with 0/50/100 controls, without automatic semantic promotion"},
-    {"gap":"MODELER_VERSION_FUNCTION_DIFF","best_tool":"Google BinDiff + Ghidra/BinExport","expected_evidence":"stable/mutated loader/serializer/consumer functions across executable versions"},
-    {"gap":"SQLITE_BLOB_OR_ROW_CHANGE","best_tool":"sqlite3 + sqldiff + sqlite3_analyzer","expected_evidence":"deterministic schema/row diff and isolated BLOB candidates"}
-  ],
+  "fixture_policy": {
+    "general_3d_fixture_acquisition":"STOPPED",
+    "allowed_only_if_current_13_fixtures_cannot_isolate_semantic":[
+      "same-identity material ON/OFF",
+      "same-identity object count 1->2",
+      "hierarchy depth controlled pair",
+      "multiple influence weight pair"
+    ]
+  },
   "ground_truth_decision": {
     "new_fixture_acquired": false,
-    "reason":"Existing Khronos/Assimp/AOUSD plus controlled CSMC corpus already cover current triangle/UV/material/morph/matrix/quaternion/rig negative-control needs. Current bottleneck is consumer-side/static evidence, not another generic mesh corpus."
+    "reason":"Existing Khronos/Assimp/AOUSD plus controlled CSMC corpus already cover current general negative-control needs. Current priority is the seven next-stage consumer-side evidence targets, not more generic mesh data."
+  },
+  "new_tool_search_decision": {
+    "performed": false,
+    "reason":"All seven current gaps have a concrete path using the existing MINIMAL/STANDARD/DEEP stack plus a project-local correlation layer. Per acquisition gate, no new tool is justified until one of those paths demonstrably fails."
   }
 }
