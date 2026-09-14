@@ -56,11 +56,7 @@ def sanitize_plan(value: object) -> dict[str, Any]:
         raise core.WorkerError("task/run/module rejected")
     if value.get("coordinate_contract") != "PLAN_XY_EAST_NORTH_TO_THREE_XZ_YUP_V1":
         raise core.WorkerError("coordinate contract rejected")
-    expected_policy = {
-        "synthetic_canary": True, "geometry_authority_mutated": False, "production_plan_mutated": False,
-        "allow_arbitrary_script": False, "allow_network": False, "max_commands": 6, "max_attempts": 1,
-        "physical_concurrency": 1, "semantic_promotion": False,
-    }
+    expected_policy = {"synthetic_canary": True, "geometry_authority_mutated": False, "production_plan_mutated": False, "allow_arbitrary_script": False, "allow_network": False, "max_commands": 6, "max_attempts": 1, "physical_concurrency": 1, "semantic_promotion": False}
     if value.get("policy") != expected_policy:
         raise core.WorkerError("policy rejected")
     commands = value.get("commands")
@@ -108,8 +104,7 @@ def sanitize_plan(value: object) -> dict[str, Any]:
 
 
 def validate_result(job_dir: Path) -> tuple[dict[str, Any], Path]:
-    result_path = job_dir / "result.json"
-    png_path = job_dir / "ai3d_structure_capability_canary.png"
+    result_path = job_dir / "result.json"; png_path = job_dir / "ai3d_structure_capability_canary.png"
     if not result_path.is_file() or not png_path.is_file():
         raise core.WorkerError("Structure CANARY evidence files missing")
     result = json.loads(result_path.read_text(encoding="utf-8"))
@@ -129,6 +124,15 @@ def validate_result(job_dir: Path) -> tuple[dict[str, Any], Path]:
     if png_path.stat().st_size > core.MAX_PNG_BYTES:
         raise core.WorkerError("local PNG exceeds upload contract")
     return result, png_path
+
+
+def _bounded_log_tail(path: Path, limit: int = 3500) -> str:
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except Exception:
+        return ""
+    text = text.replace("\x00", "").strip()
+    return text[-limit:]
 
 
 def run_blender_job(credential: dict[str, str], job: dict[str, Any], job_dir: Path) -> tuple[dict[str, Any], Path]:
@@ -152,92 +156,48 @@ def run_blender_job(credential: dict[str, str], job: dict[str, Any], job_dir: Pa
             if now >= next_heartbeat:
                 core.heartbeat(credential, job); next_heartbeat = now + core.HEARTBEAT_SECONDS
             time.sleep(1.0)
-        if proc.returncode != 0:
-            raise core.WorkerError(f"Structure Blender exited with code {proc.returncode}")
+    if proc.returncode != 0:
+        stderr_tail = _bounded_log_tail(stderr_path)
+        stdout_tail = _bounded_log_tail(stdout_path, 1200)
+        diagnostic = stderr_tail or stdout_tail or "no Blender diagnostic output"
+        raise core.WorkerError(f"Structure Blender exited with code {proc.returncode}; diagnostic_tail={diagnostic}")
     core.heartbeat(credential, job)
     return validate_result(job_dir)
 
 
 def complete_pass(credential: dict[str, str], job: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
-    return core.request_json(credential, {
-        "action": "complete", "job_id": job["id"], "lease_owner": job["lease_owner"], "outcome": "PASS",
-        "result": {
-            "raw_pixel_sha256": result["raw_pixel_sha256"], "png_sha256": result["png_sha256"],
-            "checkpoint_id": result["checkpoint_id"], "checkpoint_sha256": result["checkpoint_sha256"],
-            "renderer": result["renderer"], "blender_version": result["blender_version"], "render_engine": result["render_engine"],
-            "boolean_solver": result["boolean_solver"], "width": result["width"], "height": result["height"],
-            "wall_count": result["wall_count"], "opening_boolean_count": result["opening_boolean_count"], "command_count": result["command_count"],
-            "automated_qa": "PASS", "visual_qa": "PENDING",
-        },
-    })
+    return core.request_json(credential, {"action": "complete", "job_id": job["id"], "lease_owner": job["lease_owner"], "outcome": "PASS", "result": {"raw_pixel_sha256": result["raw_pixel_sha256"], "png_sha256": result["png_sha256"], "checkpoint_id": result["checkpoint_id"], "checkpoint_sha256": result["checkpoint_sha256"], "renderer": result["renderer"], "blender_version": result["blender_version"], "render_engine": result["render_engine"], "boolean_solver": result["boolean_solver"], "width": result["width"], "height": result["height"], "wall_count": result["wall_count"], "opening_boolean_count": result["opening_boolean_count"], "command_count": result["command_count"], "automated_qa": "PASS", "visual_qa": "PENDING"}})
 
 
 def process_job(credential: dict[str, str], job: dict[str, Any]) -> None:
     command_id = str(job.get("command_id") or "")
     if job.get("action") != ACTION or job.get("task_id") != TASK_ID or job.get("job_key") != "AI3D-013-PHYSICAL-STRUCTURE-CANARY-001":
         raise core.WorkerError("Structure CANARY job identity rejected")
-    if len(command_id) < 8:
-        raise core.WorkerError("command_id invalid")
-    job_dir = core.command_dir(command_id)
-    result, png_path = run_blender_job(credential, job, job_dir)
-    upload = core.upload_png(credential, job, png_path, result["png_sha256"])
-    response = complete_pass(credential, job, result)
-    if response.get("status") != "STRUCTURE_CANARY_AUTOMATED_PASS_VISUAL_PENDING":
-        raise core.WorkerError(f"unexpected completion status: {response.get('status')}")
-    receipt = {
-        "schema_version": "never-tear-ai3d-structure-worker-receipt-v1", "command_id": command_id,
-        "job_key": job.get("job_key"), "status": response.get("status"), "artifact_id": upload.get("artifact_id"),
-        "png_sha256": result["png_sha256"], "checkpoint_id": result["checkpoint_id"], "local_job_dir": str(job_dir),
-    }
-    core.receipt_path(command_id).write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(receipt, ensure_ascii=False), flush=True)
+    if len(command_id) < 8: raise core.WorkerError("command_id invalid")
+    job_dir = core.command_dir(command_id); result, png_path = run_blender_job(credential, job, job_dir)
+    upload = core.upload_png(credential, job, png_path, result["png_sha256"]); response = complete_pass(credential, job, result)
+    if response.get("status") != "STRUCTURE_CANARY_AUTOMATED_PASS_VISUAL_PENDING": raise core.WorkerError(f"unexpected completion status: {response.get('status')}")
+    receipt = {"schema_version":"never-tear-ai3d-structure-worker-receipt-v1","command_id":command_id,"job_key":job.get("job_key"),"status":response.get("status"),"artifact_id":upload.get("artifact_id"),"png_sha256":result["png_sha256"],"checkpoint_id":result["checkpoint_id"],"local_job_dir":str(job_dir)}
+    core.receipt_path(command_id).write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"); print(json.dumps(receipt, ensure_ascii=False), flush=True)
 
 
 def _valid_plan() -> dict[str, Any]:
-    def cmd(cid: str, op: str, params: dict[str, Any]) -> dict[str, Any]:
-        return {"command_id": cid, "op": op, "params": params, "lineage": {"module_id": MODULE_ID, "source": "AI3D-013_SYNTHETIC_CANARY"}, "routes": ["WINDOWS_WORKER"]}
-    return {
-        "schema": PLAN_SCHEMA, "project_key": "never_tear_ai3d_engine", "task_id": TASK_ID, "run_id": RUN_ID,
-        "module_id": MODULE_ID, "coordinate_contract": "PLAN_XY_EAST_NORTH_TO_THREE_XZ_YUP_V1",
-        "commands": [
-            cmd("ai3d-013-canary-create-wall", "CREATE_PRIMITIVE", {"name":"wall_001","kind":"box","position":[0.0,1.7,0.0],"size":[4.0,3.4,0.2]}),
-            cmd("ai3d-013-canary-transform-wall", "TRANSFORM_SET", {"name":"wall_001","rotation":[0.0,0.0,0.0]}),
-            cmd("ai3d-013-canary-create-opening", "CREATE_PRIMITIVE", {"name":"opening_cutter_001","kind":"box","position":[0.0,1.1,0.0],"size":[1.0,2.2,0.6]}),
-            cmd("ai3d-013-canary-transform-opening", "TRANSFORM_SET", {"name":"opening_cutter_001","rotation":[0.0,0.0,0.0]}),
-            cmd("ai3d-013-canary-boolean", "BOOLEAN", {"target":"wall_001","tool":"opening_cutter_001","mode":"subtract","keep_tool":False}),
-            cmd("ai3d-013-canary-qa", "QA_RUN", {"checks": sorted(SAFE_QA)}),
-        ],
-        "policy": {"synthetic_canary":True,"geometry_authority_mutated":False,"production_plan_mutated":False,"allow_arbitrary_script":False,"allow_network":False,"max_commands":6,"max_attempts":1,"physical_concurrency":1,"semantic_promotion":False},
-    }
+    def cmd(cid: str, op: str, params: dict[str, Any]) -> dict[str, Any]: return {"command_id":cid,"op":op,"params":params,"lineage":{"module_id":MODULE_ID,"source":"AI3D-013_SYNTHETIC_CANARY"},"routes":["WINDOWS_WORKER"]}
+    return {"schema":PLAN_SCHEMA,"project_key":"never_tear_ai3d_engine","task_id":TASK_ID,"run_id":RUN_ID,"module_id":MODULE_ID,"coordinate_contract":"PLAN_XY_EAST_NORTH_TO_THREE_XZ_YUP_V1","commands":[cmd("ai3d-013-canary-create-wall","CREATE_PRIMITIVE",{"name":"wall_001","kind":"box","position":[0.0,1.7,0.0],"size":[4.0,3.4,0.2]}),cmd("ai3d-013-canary-transform-wall","TRANSFORM_SET",{"name":"wall_001","rotation":[0.0,0.0,0.0]}),cmd("ai3d-013-canary-create-opening","CREATE_PRIMITIVE",{"name":"opening_cutter_001","kind":"box","position":[0.0,1.1,0.0],"size":[1.0,2.2,0.6]}),cmd("ai3d-013-canary-transform-opening","TRANSFORM_SET",{"name":"opening_cutter_001","rotation":[0.0,0.0,0.0]}),cmd("ai3d-013-canary-boolean","BOOLEAN",{"target":"wall_001","tool":"opening_cutter_001","mode":"subtract","keep_tool":False}),cmd("ai3d-013-canary-qa","QA_RUN",{"checks":sorted(SAFE_QA)})],"policy":{"synthetic_canary":True,"geometry_authority_mutated":False,"production_plan_mutated":False,"allow_arbitrary_script":False,"allow_network":False,"max_commands":6,"max_attempts":1,"physical_concurrency":1,"semantic_promotion":False}}
 
 
 def self_test() -> int:
-    failures: list[str] = []
+    failures=[]
     try: sanitize_plan(_valid_plan())
     except Exception as exc: failures.append(f"valid plan rejected: {exc}")
-    for field in ("command", "script", "path", "url", "executable"):
-        bad = _valid_plan(); bad[field] = "forbidden"
+    for field in ("command","script","path","url","executable"):
+        bad=_valid_plan(); bad[field]="forbidden"
         try: sanitize_plan(bad); failures.append(f"dangerous field accepted: {field}")
         except core.WorkerError: pass
     if ALLOWED_ACTIONS != frozenset({ACTION}): failures.append("allowlist widened")
     if not EDGE_URL.endswith("/ai3d-worker-transport-structure-canary"): failures.append("endpoint mismatch")
-    result = {"schema_version":"never-tear-ai3d-structure-worker-selftest-v1","worker_version":WORKER_VERSION,"protocol":PROTOCOL,"allowed_actions":sorted(ALLOWED_ACTIONS),"arbitrary_shell":False,"production_plan_claim":False,"status":"PASS" if not failures else "FAIL","failures":failures}
-    print(json.dumps(result, indent=2, sort_keys=True)); return 0 if not failures else 23
+    result={"schema_version":"never-tear-ai3d-structure-worker-selftest-v1","worker_version":WORKER_VERSION,"protocol":PROTOCOL,"allowed_actions":sorted(ALLOWED_ACTIONS),"arbitrary_shell":False,"production_plan_claim":False,"status":"PASS" if not failures else "FAIL","failures":failures}; print(json.dumps(result,indent=2,sort_keys=True)); return 0 if not failures else 23
 
 
-# Patch only the narrow extension points. The proven DPAPI credential handling,
-# request transport, heartbeat, upload SHA readback, receipts and main loop remain
-# shared with the already-verified base companion.
-core.WORKER_VERSION = WORKER_VERSION
-core.PROTOCOL = PROTOCOL
-core.EDGE_URL = EDGE_URL
-core.ALLOWED_ACTIONS = ALLOWED_ACTIONS
-core.sanitize_plan = sanitize_plan
-core.validate_result = validate_result
-core.run_blender_job = run_blender_job
-core.complete_pass = complete_pass
-core.process_job = process_job
-core.self_test = self_test
-
-if __name__ == "__main__":
-    raise SystemExit(core.main())
+core.WORKER_VERSION=WORKER_VERSION; core.PROTOCOL=PROTOCOL; core.EDGE_URL=EDGE_URL; core.ALLOWED_ACTIONS=ALLOWED_ACTIONS; core.sanitize_plan=sanitize_plan; core.validate_result=validate_result; core.run_blender_job=run_blender_job; core.complete_pass=complete_pass; core.process_job=process_job; core.self_test=self_test
+if __name__ == "__main__": raise SystemExit(core.main())
