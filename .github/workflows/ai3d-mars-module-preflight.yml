@@ -1,0 +1,38 @@
+name: NEVER TEAR AI3D Mars Module Production Preflight QA
+
+on:
+  push:
+    branches:
+      - ai-3d-production-engine-20260913
+    paths:
+      - 'ai3d_engine/data/walkmyplan_revision380_geometry_recovery.json'
+      - 'ai3d_engine/data/mars_structure_module_execution_v1.json'
+      - 'ai3d_engine/scripts/ai3dMarsModulePreflightSmoke.mjs'
+      - 'ai3d_engine/src/floorPlanStructureCompiler.js'
+      - 'ai3d_engine/src/floorPlanStructureGate.js'
+      - 'ai3d_engine/src/productionProtocol.js'
+      - '.github/workflows/ai3d-mars-module-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mars-module-preflight-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run AI3D-010 Central Corridor module preflight QA
+        run: |
+          rm -rf ai3d_engine/artifacts/mars_module_preflight
+          node ai3d_engine/scripts/ai3dMarsModulePreflightSmoke.mjs ai3d_engine/artifacts/mars_module_preflight
+          cat ai3d_engine/artifacts/mars_module_preflight/module_preflight_qa.json
+      - name: Upload module plan and preflight evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai3d-mars-module-preflight-evidence
+          path: ai3d_engine/artifacts/mars_module_preflight/
+          if-no-files-found: error
