@@ -11,7 +11,10 @@ class PublicPriorRejected(ValueError):
     pass
 
 
-EXPECTED_SCHEMA = "csmc_public_clip_3d_architecture_prior_v1"
+EXPECTED_SCHEMAS = {
+    "csmc_public_clip_3d_architecture_prior_v1",
+    "csmc_public_clip_3d_architecture_prior_v2",
+}
 EXPECTED_LANE = "PUBLIC_EXTERNAL_ARCHITECTURE_CORROBORATION"
 EXPECTED_STATUS = "PUBLIC_PRIOR_NOT_CSMC_PROOF"
 EXPECTED_OBSERVED_FORMAT = ".clip"
@@ -24,6 +27,11 @@ REQUIRED_CANDIDATE_NAMES = {
     "Canvas3DModelLoader",
     "ModelData3D",
     "Manager3DOd",
+}
+
+V2_REQUIRED_NEGATIVE_CONTROLS = {
+    "DECLARED_EXTERNAL_NAME_NOT_INSTANCE_PRESENCE",
+    "TYPED_VIEW_NOT_INDEPENDENT_REPLICATION",
 }
 
 
@@ -48,8 +56,42 @@ def _source_repos(sources: Iterable[Mapping[str, Any]]) -> set[str]:
     return repos
 
 
+def _validate_v2(document: Mapping[str, Any], sources: list[Mapping[str, Any]]) -> int:
+    if document.get("independence_not_assumed") is not True:
+        raise PublicPriorRejected("v2 requires independence_not_assumed=true")
+    if len(sources) < 4:
+        raise PublicPriorRejected("v2 requires at least four pinned public sources")
+
+    controls = document.get("public_negative_controls")
+    if not isinstance(controls, list) or not controls:
+        raise PublicPriorRejected("v2 requires public_negative_controls")
+    control_ids = {
+        item.get("id")
+        for item in controls
+        if isinstance(item, Mapping) and isinstance(item.get("id"), str)
+    }
+    missing = sorted(V2_REQUIRED_NEGATIVE_CONTROLS - control_ids)
+    if missing:
+        raise PublicPriorRejected(f"v2 negative controls missing: {missing}")
+
+    roles = {source.get("role") for source in sources}
+    if "INDEPENDENT_REDERIVATION_WITH_MEASURED_NEGATIVE_CONTROL" not in roles:
+        raise PublicPriorRejected("v2 requires a measured negative-control source")
+    if "DEPENDENT_TYPED_SCHEMA_CORROBORATION" not in roles:
+        raise PublicPriorRejected("v2 requires dependency-tagged typed corroboration")
+
+    dependent = [
+        source for source in sources if source.get("role") == "DEPENDENT_TYPED_SCHEMA_CORROBORATION"
+    ]
+    if any(not str(source.get("dependency_note") or "").strip() for source in dependent):
+        raise PublicPriorRejected("dependency-tagged sources require dependency_note")
+
+    return len(control_ids)
+
+
 def validate_public_prior(document: Mapping[str, Any]) -> Dict[str, Any]:
-    if document.get("schema") != EXPECTED_SCHEMA:
+    schema = document.get("schema")
+    if schema not in EXPECTED_SCHEMAS:
         raise PublicPriorRejected("unexpected schema")
     if document.get("lane") != EXPECTED_LANE:
         raise PublicPriorRejected("unexpected lane")
@@ -93,12 +135,17 @@ def validate_public_prior(document: Mapping[str, Any]) -> Dict[str, Any]:
     if not isinstance(dependency_warning, str) or not dependency_warning.strip():
         raise PublicPriorRejected("source dependency warning required")
 
+    negative_control_count = 0
+    if schema == "csmc_public_clip_3d_architecture_prior_v2":
+        negative_control_count = _validate_v2(document, sources)
+
     return {
-        "schema": EXPECTED_SCHEMA,
+        "schema": schema,
         "classification": "PUBLIC_CLIP_3D_ARCHITECTURE_PRIOR_VALID_NON_PROOF",
         "source_count": len(sources),
         "unique_repo_count": len(repos),
         "candidate_name_count": len(names),
+        "negative_control_count": negative_control_count,
         "direct_csmc_evidence": False,
         "blind_preregistration_unchanged": True,
         "proof_grade": False,
