@@ -9,8 +9,11 @@ on:
       - 'tools/csmc_importer/importer_lab/CSMC_IMPORTER_LAB_CONSUMER_INTAKE_V1.md'
       - 'tools/csmc_importer/importer_lab/CSMC_IMPORTER_LAB_DISCRIMINATING_QUESTIONS_V1.json'
       - 'tools/csmc_importer/importer_lab/CSMC_IMPORTER_LAB_CONSUMER_COMPATIBILITY_SCHEMA_V1.json'
+      - 'tools/csmc_importer/importer_lab/CSMC_DQ_SER_WIDTH_GATE_V1.json'
       - 'tools/csmc_importer/importer_lab/csmc_consumer_constrained_lab.py'
+      - 'tools/csmc_importer/importer_lab/csmc_serializer_field_read_gate.py'
       - 'tools/csmc_importer/importer_lab/test_csmc_consumer_constrained_lab_synthetic.py'
+      - 'tools/csmc_importer/importer_lab/test_csmc_serializer_field_read_gate.py'
       - '.github/workflows/csmc-consumer-constrained-lab-smoke.yml'
   workflow_dispatch:
 
@@ -27,11 +30,13 @@ jobs:
           python -m json.tool tools/csmc_importer/importer_lab/CSMC_CONSUMER_CONSTRAINT_PACK_V1.json >/dev/null
           python -m json.tool tools/csmc_importer/importer_lab/CSMC_IMPORTER_LAB_DISCRIMINATING_QUESTIONS_V1.json >/dev/null
           python -m json.tool tools/csmc_importer/importer_lab/CSMC_IMPORTER_LAB_CONSUMER_COMPATIBILITY_SCHEMA_V1.json >/dev/null
+          python -m json.tool tools/csmc_importer/importer_lab/CSMC_DQ_SER_WIDTH_GATE_V1.json >/dev/null
       - name: Compile and test consumer constraints
         working-directory: tools/csmc_importer/importer_lab
         run: |
-          python -m py_compile csmc_consumer_constrained_lab.py test_csmc_consumer_constrained_lab_synthetic.py
+          python -m py_compile csmc_consumer_constrained_lab.py test_csmc_consumer_constrained_lab_synthetic.py csmc_serializer_field_read_gate.py test_csmc_serializer_field_read_gate.py
           python test_csmc_consumer_constrained_lab_synthetic.py
+          python test_csmc_serializer_field_read_gate.py
       - name: Re-run M1 acceptance v2
         working-directory: tools/csmc_importer/importer_lab
         run: python test_csmc_importer_lab_m1_acceptance_v2.py
