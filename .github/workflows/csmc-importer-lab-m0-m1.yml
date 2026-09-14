@@ -1,0 +1,25 @@
+name: CSMC Importer Lab M0 M1
+
+on:
+  push:
+    branches:
+      - csmc-importer-lab-m0-m1-20260914
+    paths:
+      - 'tools/csmc_importer/importer_lab/**'
+      - '.github/workflows/csmc-importer-lab-m0-m1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run M0/M1 synthetic contract tests
+        run: python -m unittest discover -s tools/csmc_importer/importer_lab -p 'test_*.py' -v

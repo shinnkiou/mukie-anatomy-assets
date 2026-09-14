@@ -1,0 +1,91 @@
+{
+  "schema_version": "csmc_importer_lab_m0_m1_spec_v0_1",
+  "lane": "CSMC_IMPORTER_HYPOTHESIS_LAB",
+  "purpose": "Generate and falsify bounded structural hypotheses; never decide semantic truth.",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion": false,
+  "blender_emit": false,
+  "private_csmc_gen0_enabled": false,
+  "factory_permissions": ["execute", "measure", "record"],
+  "factory_forbidden": [
+    "semantic_truth",
+    "semantic_promotion",
+    "mainline_adoption",
+    "holdout_release",
+    "score_weight_change",
+    "search_bound_expansion",
+    "blender_readiness",
+    "runtime_dispatch"
+  ],
+  "m0": {
+    "typed_manifest": true,
+    "hard_constraint_registry": true,
+    "rejected_family_registry": true,
+    "holdout_ledger": true,
+    "frozen_scoring": true,
+    "semantic_promotion_firewall": true,
+    "private_evaluator_boundary": true
+  },
+  "m1": {
+    "synthetic_only": true,
+    "logical_batch_max": 50,
+    "concurrency_allowed": [1, 2],
+    "genotype_dedupe": true,
+    "phenotype_dedupe": true,
+    "timeout_isolation": true,
+    "crash_isolation": true,
+    "negative_controls": true,
+    "deterministic_replay": true,
+    "artifact_lineage": true
+  },
+  "gen0": {
+    "status": "DESIGNED_NOT_EXECUTED",
+    "semantic_scope": "UNRESOLVED_LOCAL_SUBBLOCK_GRAMMAR_ONLY",
+    "candidate_family_counts": {
+      "LOCAL_BOUNDARY_LENGTH": 14,
+      "COUNT_SCALAR_CODEC": 10,
+      "LOCAL_RECORD_LAYOUT": 10,
+      "CROSS_BLOCK_RELATIONSHIP": 6,
+      "REFERENCE_DOMAIN": 5,
+      "NEGATIVE_CONTROL": 5
+    },
+    "max_logical_candidates": 50,
+    "waterfill_to_50": false,
+    "geometry_label": "NOT_ASSERTED",
+    "index_label": "NOT_ASSERTED",
+    "material_uv_weight_texture_morph_bone": "OUT_OF_SCOPE"
+  },
+  "rejected_families": [
+    "WHOLE_PAYLOAD_SIMPLE_FIXED_STRIDE",
+    "WHOLE_PHASE_PREFIX_SIMPLE_FIXED_STRIDE",
+    "PLAINTEXT_NAME_CARVING",
+    "EXACT_QWORD_BRUTE_FORCE_REPETITION",
+    "OLD_OWNER_EDGE_RESCAN"
+  ],
+  "scoring": {
+    "meaning": "NEXT_TEST_PRIORITY_ONLY",
+    "parse_success_points": 0,
+    "visual_similarity_points": 0,
+    "generic_numeric_plausibility_points": 0,
+    "weights": {
+      "controlled_differential": 30,
+      "withheld_validation": 25,
+      "negative_controls": 20,
+      "structural_consistency": 10,
+      "consumer_evidence": 10,
+      "simplicity": 5
+    }
+  },
+  "holdout": {
+    "V01": {
+      "role": "LOCKED_AUDIT_SET",
+      "pristine_holdout": false,
+      "reason": "Already used by prior structural validation; cannot be reset by policy wording."
+    }
+  },
+  "diagnostic_output": {
+    "label": "HYPOTHESIS_VISUALIZATION",
+    "required_flags": ["DIAGNOSTIC_ONLY", "NOT_SEMANTIC_PROOF", "NOT_IMPORT_RESULT"],
+    "visual_similarity_score": 0
+  }
+}
