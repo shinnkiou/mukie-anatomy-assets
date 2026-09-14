@@ -1,0 +1,30 @@
+name: CSMC Companion C C068 public clip source-lineage reconciliation
+
+on:
+  push:
+    branches:
+      - csmc-analysis-companion-c-20260913
+    paths:
+      - 'tools/csmc_importer/companion_c/csmc_analysis_c_public_clip_lineage_c068.py'
+      - 'tools/csmc_importer/companion_c/test_csmc_analysis_c_public_clip_lineage_c068.py'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_PUBLIC_CLIP_SOURCE_LINEAGE_C068_20260914.json'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_RUN068_PUBLIC_CLIP_SOURCE_LINEAGE_RECONCILIATION_20260914.md'
+      - '.github/workflows/csmc-companion-c-c068.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile C068 source-lineage guard
+        run: python -m py_compile tools/csmc_importer/companion_c/csmc_analysis_c_public_clip_lineage_c068.py
+      - name: Run C068 fail-closed tests
+        working-directory: tools/csmc_importer/companion_c
+        run: python -m unittest test_csmc_analysis_c_public_clip_lineage_c068.py -v
