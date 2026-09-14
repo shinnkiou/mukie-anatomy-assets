@@ -1,0 +1,156 @@
+{
+  "consumer_corridor_only": true,
+  "f02_information_gain_update": {
+    "canonical_order_overwrite": false,
+    "canonical_sentinel9_order": [
+      "M01",
+      "M10",
+      "M13",
+      "M14",
+      "M15",
+      "M18",
+      "M22",
+      "M23",
+      "M30"
+    ],
+    "proposal": "Score each existing mutation only by how many surviving structural reader/count/destination hypotheses it can distinguish; do not reorder the canonical oracle sequence automatically.",
+    "status": "PROPOSAL_ONLY"
+  },
+  "frozen_f02_questions": {
+    "questions": [
+      "Q-BND-01",
+      "Q-BND-02",
+      "Q-INV-01",
+      "Q-PFX-01",
+      "Q-TERM-01"
+    ],
+    "resolved_count": 0
+  },
+  "packet_id": "CSMC_IMPORTER_LAB_DISCRIMINATING_QUESTIONS_V1",
+  "questions": [
+    {
+      "competing_hypotheses": [
+        "reader width = 16-bit",
+        "reader width = 32-bit"
+      ],
+      "minimum_decisive_observation": "One provenance-bound direct read whose effective width and downstream destination are explicit.",
+      "priority": 1,
+      "question": "On the confirmed consumer corridor, is the direct primitive consuming the bounded candidate region a 16-bit or 32-bit read?",
+      "question_id": "DQ-SER-WIDTH-01",
+      "related_frozen_questions": [
+        "Q-PFX-01",
+        "Q-INV-01"
+      ],
+      "required_static_evidence": [
+        "reader VA",
+        "read primitive",
+        "effective width",
+        "loop/count bound source",
+        "destination write/container"
+      ],
+      "resolves_frozen_question_without_observation": false,
+      "target": "EXPLICIT_SERIALIZER_FIELD_READ"
+    },
+    {
+      "competing_hypotheses": [
+        "LE numeric reader",
+        "BE numeric reader"
+      ],
+      "minimum_decisive_observation": "Instruction-level byte-order evidence on the same direct read path.",
+      "priority": 2,
+      "question": "Does the direct primitive preserve little-endian byte order or perform a byte-order transform before the destination?",
+      "question_id": "DQ-SER-ENDIAN-01",
+      "related_frozen_questions": [
+        "Q-PFX-01"
+      ],
+      "required_static_evidence": [
+        "reader VA",
+        "primitive",
+        "byte-order transform or absence",
+        "destination data-flow"
+      ],
+      "resolves_frozen_question_without_observation": false,
+      "target": "EXPLICIT_SERIALIZER_FIELD_READ"
+    },
+    {
+      "competing_hypotheses": [
+        "local count",
+        "parent length",
+        "derived count",
+        "sentinel termination"
+      ],
+      "minimum_decisive_observation": "A direct data-flow edge from bound source to loop/block termination.",
+      "priority": 3,
+      "question": "What value directly controls the read loop or block extent on the bounded consumer path?",
+      "question_id": "DQ-COUNT-SOURCE-01",
+      "related_frozen_questions": [
+        "Q-BND-01",
+        "Q-BND-02",
+        "Q-TERM-01"
+      ],
+      "required_static_evidence": [
+        "producer VA for loop bound",
+        "bound expression",
+        "reader VA",
+        "branch/termination condition",
+        "destination extent"
+      ],
+      "resolves_frozen_question_without_observation": false,
+      "target": "EXPLICIT_SERIALIZER_FIELD_READ"
+    },
+    {
+      "competing_hypotheses": [
+        "array/vector container",
+        "node structure",
+        "mesh-like structure",
+        "generic model-data structure"
+      ],
+      "minimum_decisive_observation": "A provenance-bound destination write plus one downstream use.",
+      "priority": 4,
+      "question": "What destination object/container receives the direct reader output before any semantic interpretation?",
+      "question_id": "DQ-DEST-01",
+      "related_frozen_questions": [
+        "Q-INV-01",
+        "Q-PFX-01"
+      ],
+      "required_static_evidence": [
+        "destination object address/field",
+        "allocation/reserve/push/write pattern",
+        "upstream reader VA",
+        "downstream consumer call"
+      ],
+      "resolves_frozen_question_without_observation": false,
+      "target": "EXPLICIT_SERIALIZER_FIELD_READ"
+    },
+    {
+      "competing_hypotheses": [
+        "reader terminates in generic model-data structure",
+        "reader feeds explicit internal model constructor/importer"
+      ],
+      "minimum_decisive_observation": "A direct call/data-flow edge from reader destination into a concrete internal construction path.",
+      "priority": 5,
+      "question": "Does the bounded reader destination flow into a concrete internal model construction/importer call?",
+      "question_id": "DQ-INTERNAL-CONSTRUCT-01",
+      "related_frozen_questions": [],
+      "required_static_evidence": [
+        "caller VA",
+        "callee VA",
+        "destination object flow",
+        "constructor/importer identity",
+        "negative control"
+      ],
+      "resolves_frozen_question_without_observation": false,
+      "target": "EXPLICIT_INTERNAL_MODEL_CONSTRUCTION"
+    }
+  ],
+  "schema_version": "csmc_importer_lab_discriminating_question_packet_v1",
+  "semantic_promotion": false,
+  "source_canonical_input": {
+    "checkpoint": "V11",
+    "supabase_row": 208
+  },
+  "target_priority": [
+    "EXPLICIT_SERIALIZER_FIELD_READ",
+    "EXPLICIT_INTERNAL_MODEL_CONSTRUCTION"
+  ]
+}

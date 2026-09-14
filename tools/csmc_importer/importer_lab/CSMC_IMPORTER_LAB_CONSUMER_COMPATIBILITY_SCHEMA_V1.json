@@ -1,0 +1,92 @@
+{
+  "$id": "csmc_importer_lab_consumer_compatibility_schema_v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "applicable_constraints": {
+      "items": {
+        "enum": [
+          "C01",
+          "C02"
+        ]
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "blender_emit": {
+      "const": false
+    },
+    "candidate_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "consumer_bonus": {
+      "const": 0
+    },
+    "contradicted_constraints": {
+      "items": {
+        "enum": [
+          "C01",
+          "C02"
+        ]
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "hard_reject": {
+      "type": "boolean"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "result_class": {
+      "enum": [
+        "CONSUMER_COMPATIBLE",
+        "CONSUMER_CONTRADICTED",
+        "CONSUMER_UNRESOLVED"
+      ]
+    },
+    "runtime_dispatch": {
+      "const": false
+    },
+    "schema_version": {
+      "const": "csmc_importer_lab_consumer_compatibility_v1"
+    },
+    "semantic_promotion": {
+      "const": false
+    },
+    "survives": {
+      "type": "boolean"
+    },
+    "unresolved_constraints": {
+      "items": {
+        "enum": [
+          "C01",
+          "C02"
+        ]
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "visual_score_delta": {
+      "const": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "candidate_id",
+    "result_class",
+    "hard_reject",
+    "applicable_constraints",
+    "contradicted_constraints",
+    "semantic_promotion",
+    "blender_emit",
+    "visual_score_delta",
+    "consumer_bonus"
+  ],
+  "title": "CSMC Importer Lab Consumer Compatibility Result",
+  "type": "object"
+}

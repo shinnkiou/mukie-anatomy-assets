@@ -1,0 +1,81 @@
+{
+  "constraints": [
+    {
+      "allowed_inference": [
+        "A candidate that explicitly claims to traverse the ExternalChunk corridor must remain compatible with ExternalID-to-Offset lookup.",
+        "An explicit contradiction to this lookup may be used as a hard reject inside that scope."
+      ],
+      "constraint_id": "C01",
+      "direct_evidence": {
+        "caller_va": "0x1416578e0",
+        "edge_kind": "EXPLICIT_FIELD_ACCESS",
+        "fact": "ExternalChunk.Offset lookup is keyed by ExternalID at a concrete consumer function."
+      },
+      "evidence_level": "CONFIRMED",
+      "forbidden_inference": [
+        "Offset is a vertex offset.",
+        "Offset identifies geometry, index, UV, material, bone, or weight data.",
+        "This constraint applies to unrelated record families or payload regions."
+      ],
+      "function_va": "0x140d175d0",
+      "name": "EXTERNALCHUNK_OFFSET_LOOKUP_CONFIRMED",
+      "scope": {
+        "applies_when": {
+          "externalchunk_corridor": true
+        },
+        "corridor": "ExternalChunk.ExternalID -> Offset lookup",
+        "does_not_apply_globally": true
+      },
+      "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+      "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342"
+    },
+    {
+      "allowed_inference": [
+        "A candidate explicitly scoped to the ModelData consumer path must not contradict the confirmed Canvas3DModelLoader binding.",
+        "Explicit contradiction may be used as a hard reject only inside the ModelData consumer scope."
+      ],
+      "constraint_id": "C02",
+      "direct_evidence": {
+        "edge_kind": "EXPLICIT_REGISTRY_LOOKUP",
+        "fact": "ModelData is explicitly paired with Canvas3DModelLoader and passed to a registration helper.",
+        "negative_controls": [
+          "BankData -> Canvas3DModelBank",
+          "Layer3DModelData -> ModelData3D"
+        ],
+        "registration_helper_va": "0x141657140"
+      },
+      "evidence_level": "CONFIRMED",
+      "forbidden_inference": [
+        "The float or integer immediately after ModelData is a vertex.",
+        "Canvas3DModelLoader proves geometry semantics.",
+        "ModelData proves index, UV, material, bone, or weight semantics.",
+        "This constraint applies to unrelated record families."
+      ],
+      "function_va": "0x140d45d30",
+      "name": "MODELDATA_CANVAS3D_LOADER_BINDING_CONFIRMED",
+      "scope": {
+        "applies_when": {
+          "consumer_scope": "MODELDATA_CONSUMER_PATH"
+        },
+        "corridor": "ModelData -> Canvas3DModelLoader registry binding",
+        "does_not_apply_globally": true
+      },
+      "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+      "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342"
+    }
+  ],
+  "pack_id": "CSMC_CONSUMER_CONSTRAINT_PACK_V1",
+  "policy": {
+    "blender_emit": false,
+    "consumer_compatible_is_not_semantic_confirmed": true,
+    "role": "FALSIFICATION_CONSTRAINT_NOT_WINNER_BONUS",
+    "runtime_dispatch": false,
+    "scope_aware": true,
+    "semantic_promotion": false
+  },
+  "schema_version": "csmc_consumer_constraint_pack_v1",
+  "source_canonical_input": {
+    "checkpoint": "V11",
+    "supabase_row": 208
+  }
+}
