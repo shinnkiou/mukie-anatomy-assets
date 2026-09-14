@@ -15,7 +15,7 @@ from pathlib import Path
 from csmc_core import probe
 from csmc_controlled_envelope import EnvelopeError, parse_csmc_file
 
-SCHEMA_VERSION = "csmc_import_intake_v0_1"
+SCHEMA_VERSION = "csmc_import_intake_v0_2"
 PIPELINE_STAGE = "STRUCTURAL_ONLY"
 
 
@@ -35,6 +35,7 @@ class ImportIntake:
     guid_hex: str
     inner_version: int
     logical_length: int
+    logical_mod8_phase: int
     stored_length: int
     payload_offset: int
     payload_size_available: int
@@ -100,6 +101,7 @@ def inspect_csmc(path: str | Path) -> ImportIntake:
         guid_hex=env.guid_hex,
         inner_version=env.inner_version,
         logical_length=env.logical_length,
+        logical_mod8_phase=env.logical_length % 8,
         stored_length=env.stored_length,
         payload_offset=env.payload_offset,
         payload_size_available=core.payload_size_available,

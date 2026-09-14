@@ -13,6 +13,8 @@ on:
       - 'tools/csmc_importer/test_csmc_import_intake_synthetic.py'
       - 'tools/csmc_importer/csmc_controlled_phase_class_probe.py'
       - 'tools/csmc_importer/test_csmc_controlled_phase_class_probe_synthetic.py'
+      - 'tools/csmc_importer/csmc_pair_invariant_evidence.py'
+      - 'tools/csmc_importer/test_csmc_pair_invariant_evidence_synthetic.py'
       - 'tools/csmc_importer/CSMC_CONTROLLED_FIXTURE_MAINLINE_FINDINGS_20260914.md'
       - 'tools/csmc_importer/CSMC_CONTROLLED_FIXTURE_PUBLIC_INDEX_20260914.json'
       - 'tools/csmc_importer/CSMC_IMPORT_INTAKE_V01_20260914.md'
@@ -29,7 +31,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Compile controlled fixture parser and evidence sidecar
+      - name: Compile controlled fixture parser and evidence sidecars
         run: |
           python -m py_compile \
             tools/csmc_importer/csmc_controlled_envelope.py \
@@ -39,7 +41,9 @@ jobs:
             tools/csmc_importer/csmc_import_intake.py \
             tools/csmc_importer/test_csmc_import_intake_synthetic.py \
             tools/csmc_importer/csmc_controlled_phase_class_probe.py \
-            tools/csmc_importer/test_csmc_controlled_phase_class_probe_synthetic.py
+            tools/csmc_importer/test_csmc_controlled_phase_class_probe_synthetic.py \
+            tools/csmc_importer/csmc_pair_invariant_evidence.py \
+            tools/csmc_importer/test_csmc_pair_invariant_evidence_synthetic.py
       - name: Run controlled envelope synthetic tests
         working-directory: tools/csmc_importer
         run: python test_csmc_controlled_envelope_synthetic.py
@@ -52,3 +56,6 @@ jobs:
       - name: Run controlled phase-class synthetic tests
         working-directory: tools/csmc_importer
         run: python test_csmc_controlled_phase_class_probe_synthetic.py
+      - name: Run pair invariant evidence synthetic tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_pair_invariant_evidence_synthetic.py

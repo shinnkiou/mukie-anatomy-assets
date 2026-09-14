@@ -43,10 +43,11 @@ def test_valid_intake():
         p = Path(td) / "valid.csmc"
         write_db(p, make_blob(31))
         out = inspect_csmc(p)
-        assert out.schema_version == "csmc_import_intake_v0_1"
+        assert out.schema_version == "csmc_import_intake_v0_2"
         assert out.sqlite_table == "character"
         assert out.blob_column == "character"
         assert out.logical_length == 31
+        assert out.logical_mod8_phase == 7
         assert out.stored_length == 40
         assert out.payload_offset == 65
         assert out.payload_size_available == 40
@@ -60,6 +61,18 @@ def test_valid_intake():
         public = out.to_public_dict()
         assert "payload_bytes" not in public
         assert "source_path" not in public
+
+
+def test_phase_is_structural_metadata_only():
+    with tempfile.TemporaryDirectory() as td:
+        for logical in range(8, 16):
+            p = Path(td) / f"phase_{logical}.csmc"
+            write_db(p, make_blob(logical))
+            out = inspect_csmc(p)
+            assert out.logical_mod8_phase == logical % 8
+            assert out.geometry == "unresolved"
+            assert out.index_topology == "unresolved"
+            assert out.blender_emit_ready is False
 
 
 def test_reject_wrong_route():
@@ -86,6 +99,7 @@ def test_reject_truncated_payload():
 
 def main():
     test_valid_intake()
+    test_phase_is_structural_metadata_only()
     test_reject_wrong_route()
     test_reject_wrong_frame_rule()
     test_reject_truncated_payload()
