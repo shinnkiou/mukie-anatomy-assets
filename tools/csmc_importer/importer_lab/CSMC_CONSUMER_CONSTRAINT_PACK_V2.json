@@ -1,0 +1,72 @@
+{
+  "schema_version": "csmc_consumer_constraint_pack_v2",
+  "pack_id": "CSMC_CONSUMER_CONSTRAINT_PACK_V2",
+  "source_canonical_input": {
+    "mainline_handoff_row": 218,
+    "additional_independent_packet_row": 220,
+    "additional_packet_logical_run": "C-069",
+    "run_id_collision_with_row209": true,
+    "count_row220_as_second_numbered_run": false,
+    "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+    "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342"
+  },
+  "constraints": [
+    {
+      "constraint_id": "C01",
+      "name": "EXTERNALCHUNK_OFFSET_LOOKUP_CONFIRMED",
+      "evidence_level": "CONFIRMED",
+      "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+      "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+      "function_va": "0x140d175d0",
+      "scope": {"corridor":"ExternalChunk.ExternalID -> Offset lookup","applies_when":{"externalchunk_corridor":true},"does_not_apply_globally":true},
+      "direct_evidence": {"edge_kind":"EXPLICIT_FIELD_ACCESS","caller_va":"0x1416578e0","fact":"Exact keyed Offset lookup is bound to a concrete function."},
+      "allowed_inference": ["Explicit contradiction to the keyed lookup may be hard-rejected only inside this corridor."],
+      "forbidden_inference": ["Offset is a vertex offset.","Offset identifies geometry/index/UV/material/bone/weight.","Apply this constraint to unrelated record families."]
+    },
+    {
+      "constraint_id": "C02",
+      "name": "MODELDATA_CANVAS3D_LOADER_BINDING_CONFIRMED",
+      "evidence_level": "CONFIRMED",
+      "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+      "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+      "function_va": "0x140d45d30",
+      "scope": {"corridor":"ModelData -> Canvas3DModelLoader registry binding","applies_when":{"consumer_scope":"MODELDATA_CONSUMER_PATH"},"does_not_apply_globally":true},
+      "direct_evidence": {"edge_kind":"EXPLICIT_REGISTRY_LOOKUP","registration_helper_va":"0x141657140","fact":"ModelData is explicitly paired with Canvas3DModelLoader and passed to the registration helper.","negative_controls":["BankData -> Canvas3DModelBank","Layer3DModelData -> ModelData3D","SceneData -> Manager3DOd"]},
+      "allowed_inference": ["Explicit contradiction to the loader binding may be hard-rejected only inside ModelData consumer scope."],
+      "forbidden_inference": ["Registration proves runtime load invocation.","Canvas3DModelLoader proves geometry semantics.","ModelData proves index/UV/material/bone/weight semantics.","Apply this constraint to unrelated record families."]
+    },
+    {
+      "constraint_id": "C03",
+      "name": "CONTAINER_16B_FIELD_READ_CONFIRMED",
+      "evidence_level": "CONFIRMED",
+      "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+      "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+      "function_va": "0x140d15a90",
+      "scope": {"corridor":"CSFCHUNK/CHNKHead container parse field","applies_when":{"container_scope":"CSFCHUNK_CONTAINER_FIELD"},"does_not_apply_globally":true},
+      "direct_evidence": {"edge_kind":"DIRECT_DATA_FLOW","fact":"Destination param_1+0x1e is ensured/resized to 16 bytes and exactly 16 bytes are transferred into it.","transfer_primitive_va":"0x1408c27c0","destination_prepare_va":"0x1408c0d40","logical_size_bytes":16,"destination_expression":"param_1+0x1e","source_packet":"row220 sealed 2026-09-15 C-069 packet"},
+      "allowed_inference": ["Inside this exact container-field scope, candidates requiring a non-16-byte direct field read contradict observed direct data flow.","The field remains an opaque 16-byte container-owned value until downstream identity/use is proven."],
+      "forbidden_inference": ["The field is ExternalID.","The field is UUID/checksum.","The field is a ModelData serializer field.","The field has geometry/index/UV/material/bone/weight semantics.","The 16-byte read answers DQ-SER-WIDTH-01."]
+    },
+    {
+      "constraint_id": "C04",
+      "name": "CHNKSQLI_LENGTH_BOUNDED_STREAM_COPY_CONFIRMED",
+      "evidence_level": "CONFIRMED",
+      "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+      "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+      "function_va": "0x140d15a90",
+      "scope": {"corridor":"CHNKSQLi container/database transfer","applies_when":{"container_scope":"CHNKSQLI_CONTAINER_TRANSFER"},"does_not_apply_globally":true},
+      "direct_evidence": {"edge_kind":"DIRECT_DATA_FLOW","fact":"Decoded u64 supplies remaining byte length; loop transfers min(remaining,capacity) and decrements remaining by that amount.","length_primitive":"BE_U64_CONTAINER_LENGTH","loop_relationship":"DECODED_LENGTH_TO_REMAINING_TO_BOUNDED_COPY","source_packet":"row220 sealed 2026-09-15 C-069 packet"},
+      "allowed_inference": ["Inside CHNKSQLi transfer scope, count/length hypotheses must preserve decoded-byte-length -> loop-bound -> exact-transfer behavior."],
+      "forbidden_inference": ["The decoded u64 is a ModelData element count.","The decoded u64 is a vertex/index count.","The BE-u64 read answers ModelData serializer endianness/width.","CHNKSQLi transfer proves mesh/model semantics."]
+    }
+  ],
+  "policy": {
+    "scope_aware": true,
+    "role": "FALSIFICATION_CONSTRAINT_NOT_WINNER_BONUS",
+    "consumer_compatible_is_not_semantic_confirmed": true,
+    "additional_packet_is_not_second_numbered_run": true,
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_dispatch": false
+  }
+}
