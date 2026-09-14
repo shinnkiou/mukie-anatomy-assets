@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "csmc-importer-hypothesis-lab-v0-1-*"
+      - "research-lab-m1-*"
     paths:
       - "tools/csmc_importer_lab/**"
       - "docs/CSMC_IMPORTER_HYPOTHESIS_LAB_**"
