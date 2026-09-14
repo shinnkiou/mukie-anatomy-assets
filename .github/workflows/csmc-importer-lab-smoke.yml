@@ -1,0 +1,28 @@
+name: CSMC importer lab synthetic smoke
+
+on:
+  push:
+    branches:
+      - csmc-importer-experimental-20260902
+    paths:
+      - 'tools/csmc_importer/importer_lab/**'
+      - '.github/workflows/csmc-importer-lab-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  m0-m1-synthetic-acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile Importer Lab public-safe infrastructure
+        run: |
+          python -m py_compile \
+            tools/csmc_importer/importer_lab/csmc_importer_lab_manifest.py \
+            tools/csmc_importer/importer_lab/csmc_importer_lab_runner.py \
+            tools/csmc_importer/importer_lab/test_csmc_importer_lab_m0_m1_synthetic.py
+      - name: Run M0/M1 synthetic acceptance
+        working-directory: tools/csmc_importer/importer_lab
+        run: python test_csmc_importer_lab_m0_m1_synthetic.py
