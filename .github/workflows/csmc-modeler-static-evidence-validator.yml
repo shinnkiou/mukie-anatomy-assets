@@ -26,6 +26,9 @@ jobs:
       - name: Run fail-closed static evidence tests
         working-directory: research/csmc_modeler_static
         run: python -m unittest discover -p 'test_*.py' -v
-      - name: Verify validator CLI surface
+      - name: Verify validator CLI surfaces
         working-directory: research/csmc_modeler_static
-        run: python static_evidence_slice_validator.py --help >/dev/null
+        run: |
+          python static_evidence_slice_validator.py --help >/dev/null
+          python public_architecture_prior_guard.py --help >/dev/null
+          python public_architecture_prior_guard.py CSMC_PUBLIC_CLIP_3D_ARCHITECTURE_PRIOR_V1.json >/dev/null
