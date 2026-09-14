@@ -43,7 +43,7 @@ def test_valid_intake():
         p = Path(td) / "valid.csmc"
         write_db(p, make_blob(31))
         out = inspect_csmc(p)
-        assert out.schema_version == "csmc_import_intake_v0_3"
+        assert out.schema_version == "csmc_import_intake_v0_4"
         assert out.sqlite_table == "character"
         assert out.blob_column == "character"
         assert out.logical_length == 31
@@ -55,6 +55,12 @@ def test_valid_intake():
         assert out.payload_offset == 65
         assert out.payload_size_available == 40
         assert out.frame_rule_holds is True
+        assert out.cadence_detector_schema == "csmc_public_safe_cadence_detector_v0_1"
+        assert out.cadence_detected is False
+        assert out.cadence_period_qwords == 307
+        assert out.cadence_period_bytes == 2456
+        assert out.cadence_count_candidate is None
+        assert out.cadence_semantic_status == "UNRESOLVED"
         assert out.raw_payload_embedded is False
         assert out.pipeline_stage == "STRUCTURAL_ONLY"
         assert out.semantic_promotion_count == 0
@@ -76,6 +82,7 @@ def test_phase_is_structural_metadata_only():
             assert out.aligned_logical_length == align8(logical)
             assert out.alignment_extension_length == align8(logical) - logical
             assert out.framing_remainder_length == 8
+            assert out.cadence_semantic_status == "UNRESOLVED"
             assert out.geometry == "unresolved"
             assert out.index_topology == "unresolved"
             assert out.blender_emit_ready is False

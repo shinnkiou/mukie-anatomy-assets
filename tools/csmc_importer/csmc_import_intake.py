@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fail-closed mainline importer intake for validated controlled CSMC envelopes.
 
-This adapter joins the legacy container probe with the controlled-fixture
-envelope parser. It emits public-safe structural metadata only. It never
-returns payload bytes and never authorizes semantic projection or Blender emit.
+v0.4 adds a public-safe structural cadence detector. The cadence output is
+candidate structural metadata only: it does not itself bind render-part,
+material, object, geometry, index, UV, bone, or weight semantics.
 """
 from __future__ import annotations
 
@@ -14,8 +14,9 @@ from pathlib import Path
 
 from csmc_core import probe
 from csmc_controlled_envelope import EnvelopeError, parse_csmc_file
+from csmc_cadence_structural_detector import inspect_csmc_cadence
 
-SCHEMA_VERSION = "csmc_import_intake_v0_3"
+SCHEMA_VERSION = "csmc_import_intake_v0_4"
 PIPELINE_STAGE = "STRUCTURAL_ONLY"
 
 
@@ -45,6 +46,15 @@ class ImportIntake:
     frame_rule: str
     frame_rule_holds: bool
     payload_sha256: str
+    cadence_detector_schema: str
+    cadence_detected: bool
+    cadence_period_qwords: int
+    cadence_period_bytes: int
+    cadence_cluster_run_count: int
+    cadence_count_candidate: int | None
+    cadence_cluster_start_qword: int | None
+    cadence_cluster_end_qword: int | None
+    cadence_semantic_status: str
     raw_payload_embedded: bool
     pipeline_stage: str
     semantic_promotion_count: int
@@ -57,7 +67,7 @@ class ImportIntake:
 
 
 def inspect_csmc(path: str | Path) -> ImportIntake:
-    """Validate the controlled outer route and produce semantics-free intake."""
+    """Validate the controlled outer route and produce fail-closed metadata."""
     core = probe(path)
     try:
         env = parse_csmc_file(path)
@@ -93,6 +103,11 @@ def inspect_csmc(path: str | Path) -> ImportIntake:
     if env.framing_remainder_length != 8:
         raise ImportIntakeError("validated framing remainder is not 8 bytes")
 
+    try:
+        cadence = inspect_csmc_cadence(path)
+    except ValueError as exc:
+        raise ImportIntakeError(f"structural cadence detector rejected input: {exc}") from exc
+
     return ImportIntake(
         schema_version=SCHEMA_VERSION,
         source_sha256=core.sha256,
@@ -114,6 +129,17 @@ def inspect_csmc(path: str | Path) -> ImportIntake:
         frame_rule="stored_length = align8(logical_length) + 8",
         frame_rule_holds=True,
         payload_sha256=env.payload_sha256,
+        cadence_detector_schema=cadence.schema_version,
+        cadence_detected=cadence.detected,
+        cadence_period_qwords=cadence.lag_qwords,
+        cadence_period_bytes=cadence.period_bytes,
+        cadence_cluster_run_count=cadence.cluster_run_count,
+        cadence_count_candidate=cadence.cadence_count_candidate,
+        cadence_cluster_start_qword=cadence.cluster_start_qword,
+        cadence_cluster_end_qword=cadence.cluster_end_qword,
+        cadence_semantic_status=(
+            "STRUCTURAL_CADENCE_CANDIDATE_ONLY" if cadence.detected else "UNRESOLVED"
+        ),
         raw_payload_embedded=False,
         pipeline_stage=PIPELINE_STAGE,
         semantic_promotion_count=0,
@@ -124,9 +150,7 @@ def inspect_csmc(path: str | Path) -> ImportIntake:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(
-        description="Public-safe controlled CSMC importer intake"
-    )
+    ap = argparse.ArgumentParser(description="Public-safe controlled CSMC importer intake")
     ap.add_argument("path", type=Path)
     ns = ap.parse_args()
     try:
@@ -134,13 +158,11 @@ def main() -> int:
     except (ImportIntakeError, ValueError) as exc:
         print(json.dumps({"status": "REJECTED", "error": str(exc)}, indent=2))
         return 2
-    print(
-        json.dumps(
-            {"status": "ACCEPTED_STRUCTURAL_ONLY", **result.to_public_dict()},
-            ensure_ascii=False,
-            indent=2,
-        )
-    )
+    print(json.dumps(
+        {"status": "ACCEPTED_STRUCTURAL_ONLY", **result.to_public_dict()},
+        ensure_ascii=False,
+        indent=2,
+    ))
     return 0
 
 

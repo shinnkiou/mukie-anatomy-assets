@@ -1,0 +1,44 @@
+name: CSMC cadence detector smoke
+
+on:
+  push:
+    branches:
+      - csmc-importer-experimental-20260902
+    paths:
+      - 'tools/csmc_importer/csmc_cadence_structural_detector.py'
+      - 'tools/csmc_importer/test_csmc_cadence_structural_detector_synthetic.py'
+      - 'tools/csmc_importer/csmc_render_part_cadence_candidate.py'
+      - 'tools/csmc_importer/test_csmc_render_part_cadence_candidate_synthetic.py'
+      - 'tools/csmc_importer/csmc_import_intake.py'
+      - 'tools/csmc_importer/test_csmc_import_intake_synthetic.py'
+      - 'tools/csmc_importer/CSMC_PUBLIC_SAFE_CADENCE_DETECTOR_FINDINGS_20260914.md'
+      - 'tools/csmc_importer/CSMC_PUBLIC_SAFE_CADENCE_DETECTOR_AGGREGATE_20260914.json'
+      - '.github/workflows/csmc-cadence-detector-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  cadence-detector-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile cadence detector and candidate gate
+        run: |
+          python -m py_compile \
+            tools/csmc_importer/csmc_cadence_structural_detector.py \
+            tools/csmc_importer/test_csmc_cadence_structural_detector_synthetic.py \
+            tools/csmc_importer/csmc_render_part_cadence_candidate.py \
+            tools/csmc_importer/test_csmc_render_part_cadence_candidate_synthetic.py \
+            tools/csmc_importer/csmc_import_intake.py \
+            tools/csmc_importer/test_csmc_import_intake_synthetic.py
+      - name: Run cadence detector synthetic tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_cadence_structural_detector_synthetic.py
+      - name: Run render-part candidate gate tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_render_part_cadence_candidate_synthetic.py
+      - name: Run importer intake integration tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_import_intake_synthetic.py

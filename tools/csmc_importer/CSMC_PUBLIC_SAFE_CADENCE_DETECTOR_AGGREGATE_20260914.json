@@ -1,0 +1,54 @@
+{
+  "schema_version": "csmc_public_safe_cadence_detector_result_v0_1",
+  "corpus_sha256": "be6132ef83959167ffd19218810e099f0bd164714fbd1ec4770f9296b38643b6",
+  "fixture_count": 13,
+  "algorithm": {
+    "qword_lag": 307,
+    "period_bytes": 2456,
+    "min_equal_run_qwords": 10,
+    "max_cluster_start_gap_qwords": 250,
+    "eligible_cluster_rule": "even run_count >= 4; select largest then rightmost",
+    "cadence_inference": "cluster_run_count / 2 + 1",
+    "raw_values_embedded": false
+  },
+  "relationship": {
+    "candidate": "TAIL_2456_RENDER_PART_CARDINALITY_CANDIDATE",
+    "formula": "inferred_cadence_count = 2 + known_render_part_count",
+    "holds_count": 13,
+    "total_count": 13,
+    "confidence_level": 4,
+    "validation_status": "I3_PARTIAL",
+    "promotion": "CANDIDATE_ONLY"
+  },
+  "negative_lag_sweep": {
+    "range_qwords_inclusive": [280, 330],
+    "full_match_lags": [307],
+    "non307_max_teacher_relation_match_count": 0,
+    "non307_max_detected_fixture_count": 1
+  },
+  "parameter_robustness": {
+    "min_run_grid": [8, 9, 10, 11, 12],
+    "max_gap_grid": [225, 230, 240, 250, 260, 280, 300],
+    "full_13_of_13_grid_cells": 35,
+    "total_grid_cells": 35
+  },
+  "observations": [
+    {"fixture_id":"CSMC_F01_TRIANGLE","qword_count":2211,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[466,1007]},
+    {"fixture_id":"CSMC_F02_QUAD","qword_count":2212,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[467,1009]},
+    {"fixture_id":"CSMC_F03_CUBE","qword_count":2244,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[499,1041]},
+    {"fixture_id":"CSMC_F04_CUBE_SUBDIV","qword_count":2320,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[575,1117]},
+    {"fixture_id":"CSMC_F05_CUBE_UV","qword_count":2251,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[506,1048]},
+    {"fixture_id":"CSMC_F06_CUBE_MAT2","qword_count":2564,"cluster_run_count":6,"cadence_count_candidate":4,"known_render_part_count":2,"cluster_bounds_qwords":[510,1360]},
+    {"fixture_id":"CSMC_F07_TWO_CUBES","qword_count":2576,"cluster_run_count":6,"cadence_count_candidate":4,"known_render_part_count":2,"cluster_bounds_qwords":[522,1372]},
+    {"fixture_id":"CSMC_R01_CUBE_B1_W0","qword_count":2233,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[488,1030]},
+    {"fixture_id":"CSMC_R02_CUBE_B1_W100","qword_count":2266,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[521,1063]},
+    {"fixture_id":"CSMC_R03_CUBE_B2_W100","qword_count":2275,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[530,1071]},
+    {"fixture_id":"CSMC_R04_CUBE_B2_SPLIT","qword_count":2282,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[537,1078]},
+    {"fixture_id":"CSMC_R05_CUBE_B2_MIX50","qword_count":2281,"cluster_run_count":4,"cadence_count_candidate":3,"known_render_part_count":1,"cluster_bounds_qwords":[536,1077]},
+    {"fixture_id":"CSMC_V01_VROID_BODY_BASE","qword_count":535742,"cluster_run_count":18,"cadence_count_candidate":10,"known_render_part_count":8,"cluster_bounds_qwords":[531838,534538]}
+  ],
+  "semantic_promotion": false,
+  "blender_emit_ready": false,
+  "runtime_dispatch": false,
+  "raw_private_bytes_published": false
+}
