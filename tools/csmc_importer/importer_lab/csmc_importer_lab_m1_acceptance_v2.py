@@ -245,13 +245,13 @@ def run_acceptance() -> dict[str, Any]:
 
     def timeout_isolation() -> tuple[bool, dict[str, Any]]:
         rows = [
-            _manifest_row(hypothesis_id="TIMEOUT_BAD", synthetic_fault="SLEEP:0.20", relative_offset=0),
+            _manifest_row(hypothesis_id="TIMEOUT_BAD", synthetic_fault="SLEEP:1.20", relative_offset=0),
             _manifest_row(hypothesis_id="TIMEOUT_GOOD", relative_offset=2),
         ]
-        public = run_batch(rows, fixtures, concurrency=2, timeout_seconds=0.05)
+        public = run_batch(rows, fixtures, concurrency=2, timeout_seconds=0.50)
         bad = _one_result(public, "TIMEOUT_BAD")["status"]
         good = _one_result(public, "TIMEOUT_GOOD")["status"]
-        return bad == "TIMEOUT_ISOLATED" and good == "EVALUATED", {"TIMEOUT_BAD": bad, "TIMEOUT_GOOD": good}
+        return bad == "TIMEOUT_ISOLATED" and good == "EVALUATED", {"TIMEOUT_BAD": bad, "TIMEOUT_GOOD": good, "timeout_seconds": 0.50, "fault_sleep_seconds": 1.20}
 
     def crash_isolation() -> tuple[bool, dict[str, Any]]:
         rows = [
