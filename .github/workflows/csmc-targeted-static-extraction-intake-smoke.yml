@@ -4,7 +4,9 @@ on:
     branches: [csmc-importer-experimental-20260902]
     paths:
       - 'tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_INTAKE_CONTRACT_V1.json'
+      - 'tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_MANIFEST_TEMPLATE_V1.json'
       - 'tools/csmc_importer/semantic_binding_campaign/csmc_targeted_static_extraction_intake.py'
+      - 'tools/csmc_importer/semantic_binding_campaign/validate_csmc_targeted_static_extraction.py'
       - 'tools/csmc_importer/semantic_binding_campaign/test_csmc_targeted_static_extraction_intake.py'
       - '.github/workflows/csmc-targeted-static-extraction-intake-smoke.yml'
   workflow_dispatch:
@@ -15,13 +17,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
-      - name: Validate contract JSON
-        run: python -m json.tool tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_INTAKE_CONTRACT_V1.json >/dev/null
+      - name: Validate contract and template JSON
+        run: |
+          python -m json.tool tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_INTAKE_CONTRACT_V1.json >/dev/null
+          python -m json.tool tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_MANIFEST_TEMPLATE_V1.json >/dev/null
       - name: Compile and test targeted static intake
         working-directory: tools/csmc_importer/semantic_binding_campaign
         run: |
-          python -m py_compile csmc_targeted_static_extraction_intake.py test_csmc_targeted_static_extraction_intake.py
+          python -m py_compile csmc_targeted_static_extraction_intake.py validate_csmc_targeted_static_extraction.py test_csmc_targeted_static_extraction_intake.py
           python test_csmc_targeted_static_extraction_intake.py
+          ! python validate_csmc_targeted_static_extraction.py CSMC_TARGETED_STATIC_EXTRACTION_MANIFEST_TEMPLATE_V1.json >/tmp/template_rejection.json
+          grep -q 'INTAKE_REJECTED' /tmp/template_rejection.json
       - name: Re-run provenance bridge gate
         working-directory: tools/csmc_importer/importer_lab
         run: python test_csmc_modeldata_serializer_bridge_gate.py
