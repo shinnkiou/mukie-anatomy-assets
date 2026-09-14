@@ -1,0 +1,117 @@
+name: AI3D Structure Worker v0.2.3 Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ai3d-013-structure-canary-20260914
+    paths:
+      - 'ai3d_engine/windows_worker/ai3d_structure_worker_v023.py'
+      - 'ai3d_engine/windows_worker/blender_structure_module_canary_v023.py'
+      - 'ai3d_engine/windows_worker/ai3d_structure_worker_v021.py'
+      - 'ai3d_engine/windows_worker/ai3d_structure_worker.py'
+      - 'ai3d_engine/windows_worker/blender_structure_module_canary.py'
+      - 'ai3d_engine/windows_worker/ai3d_worker.py'
+      - '.github/workflows/ai3d-structure-worker-v023-windows.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install build dependency
+        shell: pwsh
+        run: python -m pip install --disable-pip-version-check pyinstaller==6.11.1
+      - name: Static syntax and loader-fix self-test
+        shell: pwsh
+        run: |
+          python -m py_compile ai3d_engine/windows_worker/ai3d_worker.py
+          python -m py_compile ai3d_engine/windows_worker/ai3d_structure_worker.py
+          python -m py_compile ai3d_engine/windows_worker/ai3d_structure_worker_v021.py
+          python -m py_compile ai3d_engine/windows_worker/ai3d_structure_worker_v023.py
+          python -m py_compile ai3d_engine/windows_worker/blender_structure_module_canary.py
+          python -m py_compile ai3d_engine/windows_worker/blender_structure_module_canary_v023.py
+          python ai3d_engine/windows_worker/ai3d_structure_worker_v023.py --self-test
+      - name: Build v0.2.3 Structure companion
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --onefile --console `
+            --name NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023 `
+            --paths ai3d_engine/windows_worker `
+            --add-data "ai3d_engine/windows_worker/blender_structure_module_canary.py;." `
+            --add-data "ai3d_engine/windows_worker/blender_structure_module_canary_v023.py;." `
+            ai3d_engine/windows_worker/ai3d_structure_worker_v023.py
+      - name: Package verified artifact
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force package | Out-Null
+          Copy-Item dist/NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe package/
+          $hash=(Get-FileHash package/NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe -Algorithm SHA256).Hash.ToLower()
+          "$hash  NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe" | Set-Content -Encoding ascii package/NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.sha256.txt
+          @'
+          @echo off
+          setlocal
+          cd /d "%~dp0"
+          for /f "tokens=1" %%H in (NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.sha256.txt) do set EXPECTED=%%H
+          for /f "tokens=*" %%H in ('certutil -hashfile NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe SHA256 ^| findstr /R /V "hash CertUtil"') do set ACTUAL=%%H
+          set ACTUAL=%ACTUAL: =%
+          if /I "%EXPECTED%"=="%ACTUAL%" (echo SHA256 PASS %ACTUAL%&exit /b 0)
+          echo SHA256 FAIL expected=%EXPECTED% actual=%ACTUAL%
+          exit /b 23
+          '@ | Set-Content -Encoding ascii package/VERIFY_SHA256.bat
+          @'
+          @echo off
+          setlocal
+          cd /d "%~dp0"
+          call VERIFY_SHA256.bat || exit /b %errorlevel%
+          set TARGET=%LOCALAPPDATA%\UKIE_AI_BRIDGE\ai3d\structure_canary
+          if not exist "%TARGET%" mkdir "%TARGET%"
+          copy /Y NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe "%TARGET%\NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe" >nul
+          powershell -NoProfile -Command "$s=(New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('StartMenu')+'\Programs\NEVER TEAR AI3D Structure Worker CANARY v0.2.3.lnk');$s.TargetPath='%TARGET%\NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe';$s.WorkingDirectory='%TARGET%';$s.Save()"
+          echo Installed: %TARGET%\NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe
+          echo Start Menu: NEVER TEAR AI3D Structure Worker CANARY v0.2.3
+          '@ | Set-Content -Encoding ascii package/INSTALL_OR_UPDATE_NEVER_TEAR_AI3D_STRUCTURE_WORKER_V023.bat
+          @'
+          NEVER TEAR AI3D-013 Structure Capability CANARY v0.2.3 loader-fix
+
+          CANARY-003 reached real Blender but Blender's embedded Python could not
+          import blender_structure_module_canary from the PyInstaller one-file
+          extraction directory. v0.2.3 explicitly loads the trusted bundled base
+          executor by absolute sibling path. The prior QA-gate fix is preserved.
+
+          This build uses new bounded CANARY-004 and keeps the same six-command
+          allowlist, no arbitrary cloud script/path execution, and no promotion
+          until durable readback + automated Structure QA + visual QA all pass.
+
+          Install:
+          1. Close the older v0.2.2 Structure Worker window.
+          2. Run VERIFY_SHA256.bat.
+          3. Run INSTALL_OR_UPDATE_NEVER_TEAR_AI3D_STRUCTURE_WORKER_V023.bat.
+          4. Start NEVER TEAR AI3D Structure Worker CANARY v0.2.3.
+          5. Leave the console open.
+
+          Expected banner:
+          NEVER TEAR AI3D Worker 0.2.3-ai3d-structure-loaderfix online
+          '@ | Set-Content -Encoding utf8 package/README.txt
+          Compress-Archive -Path package/* -DestinationPath NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023_ARTIFACT.zip -Force
+          (Get-FileHash NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023_ARTIFACT.zip -Algorithm SHA256).Hash.ToLower() | Set-Content -Encoding ascii NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023_ARTIFACT.zip.sha256.txt
+      - name: Verify packaged executable self-test
+        shell: pwsh
+        run: package/NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023.exe --self-test
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023_ARTIFACT
+          path: |
+            NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023_ARTIFACT.zip
+            NEVER_TEAR_AI3D_STRUCTURE_WORKER_CANARY_V023_ARTIFACT.zip.sha256.txt
+          if-no-files-found: error
+          retention-days: 30
