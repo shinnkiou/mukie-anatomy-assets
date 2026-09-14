@@ -1,0 +1,53 @@
+{
+  "run_id": "C-055",
+  "date_jst": "2026-09-14",
+  "title": "run-id collision reconciliation for controlled-evidence promotion firewall",
+  "state": "RUN_ID_COLLISION_RECONCILED_NO_HISTORY_REWRITE",
+  "canonical_run_map": {
+    "C-053": "C-051/C-052 provenance continuity gate",
+    "C-054": "C-051 evidence-admission state machine",
+    "C-055": "controlled-evidence promotion firewall / run-id collision reconciliation"
+  },
+  "historical_collision": {
+    "commit": "e5908eafb6e6377b8ae7a4be94084413a171f79a",
+    "historical_run_id": "C-053",
+    "canonical_run_id": "C-055",
+    "history_rewritten": false,
+    "logic_changed": false,
+    "historical_json": "CSMC_ANALYSIS_C_CONTROLLED_PROMOTION_FIREWALL_C053_20260914.json",
+    "historical_code": "csmc_analysis_c_controlled_promotion_firewall_c053.py"
+  },
+  "verification": {
+    "underlying_firewall_policy": "SELF_TEST_PASS_15_OF_15",
+    "c055_reconciliation_checks": 12,
+    "promotion_boundary": "ACTIVE_FAIL_CLOSED"
+  },
+  "current_evidence": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "render_part_cardinality_level": 4,
+    "render_part_confidence": "HIGH_NOT_CONFIRMED",
+    "i3_partial_pairs": 10,
+    "i3_valid_pairs": 0,
+    "c051_fixture_predictions": 7,
+    "c051_observations": 0,
+    "c052_teacher_manifest_state": "VALIDATOR_READY_TEACHER_MANIFEST_NOT_YET_ACQUIRED",
+    "c053_provenance_state": "PROVENANCE_GATE_READY_INPUT_NOT_YET_ACQUIRED",
+    "c054_admission_state": "ADMISSION_STATE_MACHINE_READY_INPUT_NOT_YET_ACQUIRED",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false
+  },
+  "isolation": {
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "semantic_promotion_count": 0,
+    "automatic_integration": false,
+    "raw_private_payload_publication": false
+  },
+  "next": "WAIT_FOR_REAL_C051_SOURCE_MANIFEST_OR_DIFFERENT_GENUINELY_NEW_PUBLIC_SAFE_UNLOCK"
+}
