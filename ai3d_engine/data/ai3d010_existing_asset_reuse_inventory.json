@@ -1,0 +1,68 @@
+{
+  "schema": "never-tear-ai3d-existing-asset-reuse-inventory-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-010",
+  "status": "READY",
+  "purpose": "Preserve and realign existing Central Corridor / Blast Junction work onto the authoritative revision-380 Structure instead of rebuilding or discarding prior assets.",
+  "source": {
+    "provider": "BASE44",
+    "base44_app_id": "6a2ae58cc6b153727abb83f1",
+    "base44_path": "src/lib/3d/neverTearMarsFullBuild.js",
+    "structure_geometry_revision": 380,
+    "structure_geometry_sha256": "0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb",
+    "central_corridor_module_plan_id": "module-plan-7d0ef550473d76e6",
+    "geometry_mutated": false
+  },
+  "central_corridor": {
+    "module_id": "central_corridor_structure_base",
+    "preserve_prefixes": ["HERO_CORRIDOR_","HERO_TRAY_SUPPORT_","HERO_COOLANT_PIPE_","HERO_WATER_PIPE_","HERO_AIR_PIPE","HERO_WALL_PANEL_","HERO_FLOOR_EDGE_STRIP_","HERO_DOORFRAME_","HERO_DOOR_LAMP_","HERO_CEILING_LIGHT_","HERO_POINT_LIGHT_"],
+    "verified_semantic_roles": ["OVERHEAD_DUCT","CABLE_TRAY","TRAY_SUPPORT","COOLANT_PIPE","WATER_PIPE","AIR_PIPE","WALL_SERVICE_PANEL","HAZARD_EDGE","DOOR_FRAME","DOOR_STATUS_LAMP","CEILING_LIGHT"],
+    "verified_material_families": ["bareSteel","paintedSteel","emissive","decal","dustOverlay","plastic"],
+    "integration_policy": {
+      "reuse_existing_geometry_first": true,
+      "align_to_authoritative_structure": true,
+      "delete_existing_assets": false,
+      "regenerate_existing_assets_by_default": false,
+      "preserve_existing_pbr": true,
+      "structure_qa_before_surface": true
+    }
+  },
+  "blast_junction": {
+    "module_id": "blast_junction_damage_overlay",
+    "base_module": "central_corridor_structure_base",
+    "preserve_prefixes": ["DMG024_","HERO_BLAST_","HERO_BROKEN_BEAM_","HERO_COLLAPSED_CEILING_SLAB","HERO_EMERGENCY_LIGHT_","HERO_EMERGENCY_POINT_LIGHT_","HERO_DUST_PATCH_"],
+    "verified_component_groups": ["spall cavity/rim/aggregate","exposed and bent rebar","warped blast panel / torn flap / curled tear / fasteners","ruptured coolant and water services","utility hangers","torn cable tray and severed power-data cables","coolant leak and spark animation anchors","deterministic A/B/C debris bands","localized soot plumes and ceiling soot","broken beams / collapsed slab / rubble","blast bulkhead survivor frame","emergency lighting and alarm beacon","localized Mars dust/ash overlays"],
+    "verified_material_families": ["concrete","bareSteel","paintedSteel","rubber","emissive","decal","dustOverlay"],
+    "damage_policy": {
+      "causal_order": ["blast_pressure","heat","fire","structural_failure","electrical_failure","secondary_fire"],
+      "uniform_random_damage": false,
+      "whole_base_blackening": false,
+      "preserve_zone_falloff": true,
+      "preserve_animation_anchors": true,
+      "preserve_pbr_surface_pass": true
+    }
+  },
+  "surface_assets_already_present": ["NT-BLD-025-blast-painted-steel-rust-edge-v1","NT-BLD-025-damaged-emergency-light-lens-v1","NT-BLD-025-blast-floor-dust-ash-v1","NT-BLD-025-ruptured-service-pipe-v1","NT-BLD-025-soot-char-deposit-v1"],
+  "adobe_visual_references": {
+    "role": "NON_CANONICAL_VISUAL_REFERENCE",
+    "geometry_truth": false,
+    "count": 6,
+    "asset_ids": ["urn:aaid:sc:AP:bba8cb04-5d38-43fa-afd1-1fa7866329d4","urn:aaid:sc:AP:82c46e98-f5b2-49cd-8394-1872c4c8b349","urn:aaid:sc:AP:8bca8e0d-1163-4483-b7df-f26475eead13","urn:aaid:sc:AP:356dcf85-90e4-40f7-9f4a-8289d3c05218","urn:aaid:sc:AP:cba96843-daf0-45d9-a421-473b33b83969","urn:aaid:sc:AP:ed688e18-8112-4fa6-9c11-dfe0557fa92c"]
+  },
+  "generation_policy": {
+    "search_material_vault_and_existing_assets_first": true,
+    "use_self_owned_or_verified_assets_before_generation": true,
+    "generate_only_missing_surface_assets": true,
+    "never_use_adobe_reference_as_geometry_truth": true,
+    "never_retry_failed_to3d_job_as_same_route": true
+  },
+  "physical_boundary": {
+    "physical_execution_claimed": false,
+    "required_capability": "ai3d_blender_physical_mvp_v1",
+    "canary_queued": false
+  },
+  "base44_inventory_sha256": "933417b05bcbb63b158e5083a046db336789b1ea59487f8c741d7cb223e8c323",
+  "base44_qa_sha256": "0c6edfb50f904441382d79e5393d6d0eb043c3d0180741eae90bf2000e7ee94b",
+  "base44_checkpoint": "6aa763b5367f59c094ec2fa2",
+  "next_action": "After AI3D-002 CANARY and AI3D-004 real Physical QA PASS, build the authoritative Central Corridor Structure, then realign these existing assets onto it. Run Module QA before integrating the Blast Junction overlay. Preserve existing PBR and animation anchors unless a QA failure requires a targeted fix."
+}
