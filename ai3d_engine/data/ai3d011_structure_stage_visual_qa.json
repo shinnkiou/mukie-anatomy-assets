@@ -1,0 +1,46 @@
+{
+  "schema": "never-tear-ai3d-staged-visual-qa-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-011",
+  "source_task_id": "AI3D-010",
+  "evidence_class": "STAGED_VISUAL_SANITY_NOT_PHYSICAL",
+  "source_run_id": 34802449510,
+  "github_artifact_id": 10331952706,
+  "artifact_zip_sha256": "e8557ac621b7be7882a4e474ec9276d1352720ed6aa2472bef27d1db15a9981b",
+  "render": {
+    "file": "central_corridor_structure_stage.png",
+    "sha256": "ac72f2d44fef6161f819273a19e6a08f2e59a4df45b2ea4c59cfab70b99d4a1e",
+    "decoded_pixel_sha256": "0524d054ac5d09a9e2b7ff2b617de121314a920c7abda20fc9089a32e306658e",
+    "width": 1280,
+    "height": 720,
+    "renderer": "Blender 4.2.23 LTS / EEVEE Next"
+  },
+  "drive": {
+    "evidence_zip_file_id": "1zF8xoue49uzF644QWKV6M55PRj9X_9t-",
+    "render_png_file_id": "1imKjmJWnEEPp_iVRFZhSlO6DyuXYRBp5",
+    "zip_exact_sha_readback": "PASS",
+    "png_exact_sha_readback": "PASS"
+  },
+  "inspection": {
+    "verdict": "PASS",
+    "scope": "staged structure visual sanity only",
+    "observations": [
+      "render is non-empty and readable",
+      "long-form corridor wall geometry is visibly present",
+      "multiple door/opening cutouts are visibly present",
+      "no catastrophic boolean blow-up, empty scene, or all-black failure is visible",
+      "lighting is sufficient to read the staged structural massing"
+    ],
+    "not_claimed": [
+      "physical Windows execution",
+      "final architectural visual quality",
+      "Surface Pass completion",
+      "Blast Junction overlay completion",
+      "all 13 openings individually countable from the selected camera"
+    ]
+  },
+  "physical_execution_claimed": false,
+  "canary_promoted": false,
+  "promotion_allowed": false,
+  "next_action": "Keep staged executor frozen. Start the separate AI3D companion on the paired Windows device, run exactly one AI3D-002 physical CANARY, pass AI3D-004 real Physical QA, then perform a separately reviewed allowlist promotion for ai3d_structure_module_v1 before any physical Structure production job."
+}
