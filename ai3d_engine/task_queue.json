@@ -1,7 +1,7 @@
 {
   "schema": "never-tear-ai3d-task-queue-v1",
   "project_key": "never_tear_ai3d_engine",
-  "updated_at": "2026-09-14T07:08:00+09:00",
+  "updated_at": "2026-09-14T12:30:20+09:00",
   "priority_order": ["BLOCKED_FIX", "QA_FAIL_FIX", "ACTIVE", "HIGH", "NORMAL"],
   "tasks": [
     {
@@ -104,8 +104,19 @@
       "stage": "PLAN",
       "dependencies": ["AI3D-009", "AI3D-002", "AI3D-004"],
       "artifact_refs": ["github:4f517808d302932b1a01cf887d725ef32c46ef5f", "github:ai3d_engine/data/mars_structure_module_execution_v1.json", "base44:src/lib/3d/neverTearMarsFullBuild.js", "base44-checkpoint:6aa71de5e5617d9d930db82c", "linear:RIO-53"],
-      "qa": {"prep_status":"PASS","central_corridor_wall_count":13,"central_corridor_opening_count":13,"compiler_command_subset_count":65,"geometry_mutated":false,"existing_assets_reused":true,"structure_authority_revision":380,"physical_execution_claimed":false,"base44_lineage_readback":"PASS","base44_build":"BLOCKED_WORKSPACE_NO_PACKAGE_JSON"},
-      "next_action": "Wait for AI3D-002 verified companion capability and exactly one physical CANARY, then AI3D-004 real Physical QA PASS. Execute central_corridor_structure_base first, run Module QA, then reuse/integrate blast_junction_damage_overlay and run Module QA."
+      "qa": {"prep_status":"PASS","central_corridor_wall_count":13,"central_corridor_opening_count":13,"compiler_command_subset_count":65,"geometry_mutated":false,"existing_assets_reused":true,"structure_authority_revision":380,"physical_execution_claimed":false,"base44_lineage_readback":"PASS","base44_build":"BLOCKED_WORKSPACE_NO_PACKAGE_JSON","staged_structure_adapter":"AI3D-011_COMPLETE_NOT_PROMOTED"},
+      "next_action": "Wait for AI3D-002 verified companion capability and exactly one physical CANARY, then AI3D-004 real Physical QA PASS. Separately review promotion of ai3d_structure_module_v1, execute central_corridor_structure_base first, run Module QA, then reuse/integrate blast_junction_damage_overlay and run Module QA."
+    },
+    {
+      "task_id": "AI3D-011",
+      "title": "Structure Production Worker Stage",
+      "priority": "HIGH",
+      "status": "COMPLETE",
+      "stage": "COMPLETE",
+      "dependencies": ["AI3D-010", "AI3D-002", "AI3D-004"],
+      "artifact_refs": ["github:972983a742b68e61d21b1a5cccc4f2e73160883e", "github:34e37afabbad9478652c1efcc931a5fb9996ca8e", "github:86109244fc983e7418d50d61096ac5b4286bb360", "github-actions:34802449510", "github-actions-artifact:10331952706", "drive:1zF8xoue49uzF644QWKV6M55PRj9X_9t-", "drive:1imKjmJWnEEPp_iVRFZhSlO6DyuXYRBp5", "base44-checkpoint:6aa76ad53a3646dca592f766", "supabase:cp-stage-3ffd8a9f3ef1e58c", "linear:RIO-54_DONE"],
+      "qa": {"runtime_qa":"PASS","staged_visual_sanity":"PASS","visual_qa_scope":"STAGED_STRUCTURE_ONLY","evidence_class":"VIRTUAL_GITHUB_ACTIONS_BLENDER_NOT_PHYSICAL","module_plan_id":"module-plan-7d0ef550473d76e6","module_plan_sha256":"7d0ef550473d76e6cbacf5e285f81cb0152787e29034d524bd8b946f2ad9707a","source_geometry_sha256":"0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb","command_count":66,"wall_count":13,"opening_boolean_count":13,"successful_run_id":34802449510,"github_actions_artifact_id":10331952706,"artifact_zip_sha256":"e8557ac621b7be7882a4e474ec9276d1352720ed6aa2472bef27d1db15a9981b","png_sha256":"ac72f2d44fef6161f819273a19e6a08f2e59a4df45b2ea4c59cfab70b99d4a1e","decoded_pixel_sha256":"0524d054ac5d09a9e2b7ff2b617de121314a920c7abda20fc9089a32e306658e","blend_sha256":"d3f576045872ff07881801132c76f06eceefea63a2b6b6c234fa09f17337e170","checkpoint_id":"cp-stage-3ffd8a9f3ef1e58c","drive_zip_exact_sha_readback":"PASS","drive_png_exact_sha_readback":"PASS","first_failed_run_id":34802328999,"first_failure_class":"MISSING_LIBEGL_RUNTIME_DEPENDENCY","physical_execution_claimed":false,"canary_promoted":false,"promotion_allowed":false},
+      "next_action": "COMPLETE as staged implementation only. Keep the deployed physical allowlist unchanged. After AI3D-002 verified companion + exactly one physical CANARY PASS and AI3D-004 real Physical QA PASS, separately review promotion of ai3d_structure_module_v1 before using it for physical AI3D-010 Structure production."
     }
   ]
 }
