@@ -1,154 +1,115 @@
 # CSMC MAINLINE 04 — READ FIRST
 
-Status: `HANDOFF_POINTER__ROW217__SEMANTIC_BINDING_FAIL_CLOSED`
+Status: `HANDOFF_POINTER__ROW218__TARGETED_STATIC_INTAKE_READY`
 
-This is the public-safe pointer for the complete Mainline 04 handoff plus its latest validated incremental checkpoints. The full handoff preserves Mainline 01→02→03 structural lineage, controlled fixtures, DATA2 envelope, phase-normalized Structural IR, 307-qword cadence, bounded rejected families, Importer Lab, F02 oracle, MODELER 1.10.13 static evidence, Companion C through C-069, Data Scout rules, plugin/store integration, immediate continuation and long-term CSMC→Blender roadmap.
+This file is the public-safe restart pointer. Historical detail remains in the complete Mainline 04 handoff, prior checkpoints, and Git history. At restart, newest validated durable state wins over stale chat memory.
 
-## Latest semantic-binding campaign current
+## Current canonical pointer
 
-- Supabase row 217 = HANDOFF_CURRENT
-- predecessor row 214 = HANDOFF_SUPERSEDED
-- classification: FAIL_CLOSED_BRIDGE_LOCALIZED_NO_PROOF_GRADE_SEMANTIC_BINDING
-- checkpoint SHA-256: dbd30a904d081d84239c4030ae655f7a3ae93b024ddcf02e371caa457d014643
-- Base44: 6aa81042fd57221e087734d2
-- bounded hypothesis batch: 16 candidates; no padding; no Classic GA
-- candidate lead: 0x140f62d20; not admitted as a reader
-- direct-call bridge paths from C02/registry helper to candidate set: 0
-- DQ-BRIDGE-LOADER-SER-01 remains WAIT_FOR_BRIDGE_PROOF
-- DQ-SER-WIDTH-01 remains WAIT_FOR_PROOF
-- F02 exact recovered character BLOB SHA-256: cea288b2ebf3327263f02677bd496dc15eee85256a2c707edfa64f16538030a0
-- M14 is the highest information-gain proposal; frozen Sentinel-9 order is unchanged and M01 remains next
-- semantic promotion = 0; Blender emit BLOCKED; runtime false; physical oracle 0/30
+- Supabase `HANDOFF_CURRENT`: row **218**
+- run key: `CSMC_TARGETED_STATIC_EXTRACTION_INTAKE_GATE_V1_20260915`
+- classification: `TARGETED_STATIC_INTAKE_GATE_VERIFIED_NO_NEW_EVIDENCE`
+- predecessor row 217: `HANDOFF_SUPERSEDED`
+- Base44 ExperimentLineage: `6aa8128c6687e989beef27a4`
+- GitHub gate commit: `77415f789a6c3a9fa33c044bb2574eeab459b4d2`
+- targeted intake CI `34862082867`: **SUCCESS**
+- importer smoke `34862082732`: **SUCCESS**
+- Drive checkpoint MD: `17qHMtLYyl9n2l4tqDG1CR6NzwGS0KjaL`
+- Drive checkpoint JSON: `1WlGI63Ijc12Mlu1vy01MU-F0FhP3qxSK`
+- checkpoint MD SHA-256: `025dd8ccb2b783f8119a4c937db0228a7e44f0b54989b2ccf5a25116c876866c`
+- checkpoint JSON SHA-256: `c6d335a09acc1594a0244645833450d7c8adab0e1ed9ef5ef4d6f3c4863873cb`
 
-Read the checkpoint:
-https://github.com/shinnkiou/mukie-anatomy-assets/blob/csmc-importer-experimental-20260902/tools/csmc_importer/semantic_binding_campaign/CSMC_SEMANTIC_BINDING_CAMPAIGN_CHECKPOINT_20260914_150853Z.md
+## Campaign state retained from row217
 
-Targeted static request:
-https://github.com/shinnkiou/mukie-anatomy-assets/blob/csmc-importer-experimental-20260902/tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_REQUEST_V1_20260914.md
+The semantic-binding campaign localized the next proof gap but did not close it.
 
-## Complete handoff
+- C02 confirmed registration anchor: `0x140d45d30` (`ModelData -> Canvas3DModelLoader`)
+- bounded reader lead: `0x140f62d20`
+- bounded transfer lead: `0x140f650c0`
+- `modeldata` string VA: `0x14195fb88`
+- `PW3DModelDataLoader` vftable label: `0x14195fad0`
+- `PWCanvas3DModelLoader` vftable label: `0x1417f6d30`
+- direct-call bridge paths from C02/registry helper to candidate set: 0; this is a negative control, not a rejection of factory/vtable/indirect dispatch
 
-- filename: `CSMC_MAINLINE_04_HANDOFF_COMPLETE_20260914.md`
-- Google Drive ID: `1nqRrIWiUP9vYcxam1lG9OFa3AH95JnQj`
-- SHA-256: `a36be2381b64ac0c759b7f959cf0653124277a64064698d575c922db7354bcca`
-- size: `40227` bytes
+Campaign durability repair:
+- raw Drive MD: `1qh1m7910k0xHQoao-QBcmwmmrBrtiC5B`
+- raw Drive JSON: `1_58ORbnvmErfwFYSZ2uvRp8xxMAKCXw1`
+- the old native Doc `1ujbhlFwR7OamWCReQxlsT0cxYH4iuphI-6MDtFUhUZ0` is explicitly quarantined as `SUPERSEDED_EMPTY_RATE_LIMITED__...` and must not be treated as the checkpoint body.
 
-## Post-handoff incremental current
+## Fail-closed targeted static intake
 
-- width-gate checkpoint: `CSMC_MAINLINE_04_DQ_SER_WIDTH_GATE_CHECKPOINT_20260914.md`
-- Supabase: row `214` = `HANDOFF_SUPERSEDED_BY_ROW217`
-- previous Mainline04 row `212` = `HANDOFF_SUPERSEDED`
-- concurrent row `213` = C-069 duplicate durability mirror, explicitly superseded by canonical row `209`; do not count it as new evidence
-- width-gate Base44: `6aa809f72e72c2eeacd8a008`
-- width-gate Drive: `1alSc76KRZj_GoLV8yGZr62xDFh-Z28xC`
-- width-gate Drive SHA-256: `855e2609c87666b75cb78dca4d59f7743740279c0b995b6af7f7cc2736c651f4`
-- width-gate Drive size: `5305` bytes
-- tested width-gate code head: `e7cb837dce73a726d0e800b54940d5ba7d262f03`
-- width-gate CI: `34858073131` = `SUCCESS`
-- width-gate checkpoint commit: `f3a43ca6f76048a8c01a2f35c83c5a8c0830d369`
+The private static extension request is frozen at:
+`tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_REQUEST_V1_20260914.md`
 
-A concurrent mainline delta was then detected and reconciled before final pointer close:
+The intake contract is:
+`tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_INTAKE_CONTRACT_V1.json`
 
-- provenance-bridge commit: `fa491fd768f286363d071757d90867fed5eb339b`
-- bridge CI: `34858378345` = `SUCCESS`
-- bridge Base44: `6aa80aa67ec50d8db4b9e26a`
-- bridge Drive: `1ny67IyDOU_4euLcqrP8e4eUWQuTx3M_R`
-- bridge Drive SHA-256: `156b6d9a49d766d51a62ac879cb2f7b80a7a58751b365843af4956d1c1572470`
-- bridge Drive size: `2927` bytes
-- bridge reconciliation file: `CSMC_MAINLINE_04_MODELDATA_SERIALIZER_BRIDGE_RECONCILIATION_20260914.md`
-- current branch HEAD before this pointer commit: `de02271754a533b7820363c63df45abb7dc25654`
+Validator:
+`tools/csmc_importer/semantic_binding_campaign/csmc_targeted_static_extraction_intake.py`
 
-## Two-stage proof gate
+Required exact source identity:
+- MODELER 1.10.13 SHA-256 `2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150`
+- baseline Full Snapshot SHA-256 `afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342`
 
-The width gate still does **not** answer 16-bit vs 32-bit. `DQ-SER-WIDTH-01` remains `WAIT_FOR_PROOF`.
+Required function exports:
+- `0x140f62d20`
+- `0x140f64600`
+- `0x140f650c0`
+- `0x140f622f0`
+- `0x140f63200`
+- `0x140f635d0`
 
-A new priority-0 precondition is now canonical:
+Also require both 9-slot candidate vtable interval dumps, factory trace rooted at `0x141656a80`, and conditional exports for `0x141658300` / `0x1416586f0` only when resolution points to them.
 
-`DQ-BRIDGE-LOADER-SER-01`
+A package that passes intake receives only:
+`INTAKE_COMPLETE_STATIC_REVIEW_REQUIRED`
 
-It asks for a provenance-bound direct/factory/vtable/indirect edge from the confirmed C02 `ModelData -> Canvas3DModelLoader` anchor (`0x140d45d30`) to one concrete serializer/importer reader. Until this bridge is admitted, even a concrete width read elsewhere cannot be attributed to the ModelData serializer corridor.
+Passing intake does **not** automatically admit the bridge, proof-grade status, `EXPLICIT_SERIALIZER_FIELD_READ`, semantic promotion, or Blender emit.
 
-After bridge admission, the canonical width gate remains fail-closed:
+## Current proof gates
 
-- no/incomplete/CANDIDATE/STRONG-only/wrong-binary evidence => no hard width pruning;
-- complete CONFIRMED serializer field-read evidence must reference the admitted bridge and match its reader VA;
-- actual F02 candidate pruning additionally requires explicit binding to controlled fixture `F02` and `F02_DATA2_VARIABLE_PREFIX`;
-- pruning is scope-aware and only rejects width contradictions inside `MODELDATA_CONSUMER_PATH`;
-- unrelated record-family candidates remain negative controls;
-- semantic promotion / Blender emit / runtime dispatch remain false.
-
-Synthetic gate tests only: baseline 43 survivor; hypothetical F02-bound 16-bit proof -> 25 survivor; hypothetical F02-bound 32-bit proof -> 27 survivor. These counts are not evidence of the real width.
-
-## C-069 scope reconciliation
-
-C-069 remains independently useful but is not merged into the ModelData serializer claim:
-
-- repeated BE-u64 reads in the CHNKSQLi/ExternalChunk routine are `OUT_OF_SCOPE_FOR_MODELDATA_SERIALIZER_WIDTH` until the provenance bridge is proven;
-- C-069 serializer-family questions align with width/endian/count/destination discrimination but do not answer `DQ-SER-WIDTH-01`;
-- zero observed direct paths to selected construction targets is a negative control, not a rejection of indirect/virtual construction.
-
-Canonical C-069 durability remains row `209`. Row `213` is audit-only duplicate durability and must not be counted as another evidence event.
-
-## Authority rule
-
-At restart, reconcile this pointer against the newest durable state before acting. Newest validated evidence supersedes stale pointer fields; historical evidence remains history.
-
-Read first:
-1. Supabase latest `HANDOFF_CURRENT` (currently row 217)
-2. rows 209/210/211/212/213/214/215/216/217 specifically
-3. GitHub mainline/static/Companion/F02 branches
-4. Drive current checkpoint/handoff plus bridge reconciliation
-5. Base44 ExperimentLineage
-6. Linear lane state
-
-## Current baseline lineage
-
-- mainline branch: `csmc-importer-experimental-20260902`
-- consumer implementation commit: `f7e2e69d52fa39e5eaa6074611ec4688d9773a7b`
-- original Mainline04 pointer commit: `43efa387e9ddf390bf5366e461155cdf1e2aef55`
-- static branch: `csmc-modeler-static-analysis-second-pass-20260914`
-- static HEAD: `fa3c3a7af57342eee9178cd78a65c11a83f8c471`
-- F02 oracle HEAD: `5db89bc6f0ca20dcb2646b89202ead6b8b53bde2`
-- Companion C: C-069 canonical durable row `209`
-- Importer Lab consumer-constrained phase: row `210`
-- V12 canonical before Mainline 04: row `211`
-- original Mainline 04 pointer: row `212` (now superseded)
-- duplicate C-069 mirror: row `213` (audit only; canonical is row209)
-- previous incremental pointer: row `214` (superseded by row217)
-- current semantic-binding checkpoint: row `217`
-
-V12 / row210 adds scope-aware hard falsification constraints from the two confirmed architecture edges. Synthetic proposals 50 → 3 explicit contradictions rejected → 4 behavioral duplicates removed → 43 unique survivors, no refill. `CONSUMER_COMPATIBLE != SEMANTIC_CONFIRMED`.
-
-Current discriminator order:
-1. `DQ-BRIDGE-LOADER-SER-01` — prove ownership/provenance from C02 to a concrete serializer/importer reader.
-2. `DQ-SER-WIDTH-01` — frozen 16-bit vs 32-bit discriminator on that admitted reader, requiring reader VA, direct primitive, effective width, count/loop source and destination.
-3. F02 pruning only after the independent F02 bounded-region binding requirement also passes.
-
-Current gates:
 - MAINLINE = ACTIVE
 - STRUCTURAL DEVELOPMENT = ACTIVE
-- pipeline = STRUCTURAL_ONLY
+- pipeline = `STRUCTURAL_ONLY`
 - semantic gate = CLOSED
 - semantic promotion = 0
+- `DQ-BRIDGE-LOADER-SER-01 = WAIT_FOR_BRIDGE_PROOF`
+- `DQ-SER-WIDTH-01 = WAIT_FOR_PROOF`
+- `EXPLICIT_SERIALIZER_FIELD_READ = UNRESOLVED`
+- `CONTROLLED_FIXTURE_TO_CONSUMER_MATCH = UNRESOLVED`
+- `EXPLICIT_INTERNAL_MODEL_CONSTRUCTION = UNRESOLVED`
 - geometry/index = UNRESOLVED
-- `DQ-BRIDGE-LOADER-SER-01` = WAIT_FOR_BRIDGE_PROOF
-- `DQ-SER-WIDTH-01` = WAIT_FOR_PROOF
-- `EXPLICIT_SERIALIZER_FIELD_READ` = UNRESOLVED
-- `CONTROLLED_FIXTURE_TO_CONSUMER_MATCH` = UNRESOLVED
 - Blender emit = BLOCKED
 - runtime dispatch = false
-- physical F02 oracle = 0/30 PENDING_MANUAL_ORACLE
+- F02 physical oracle = `0/30 PENDING_MANUAL_ORACLE`
+- frozen F02 questions resolved = `0/5`
 
-## Highest-value next action
+F02 Sentinel-9 remains:
+`M01, M10, M13, M14, M15, M18, M22, M23, M30`.
+`M14` is information-gain proposal only; next physical operation remains `M01`.
 
-Do not broaden mainline into a static reverse-engineering lane. Receive the next validated static slice from the dedicated MODELER lane.
+## Important historical anchors
 
-Existing CONFIRMED architecture anchors remain:
+- complete Mainline 04 handoff Drive: `1nqRrIWiUP9vYcxam1lG9OFa3AH95JnQj`
+- complete handoff SHA-256: `a36be2381b64ac0c759b7f959cf0653124277a64064698d575c922db7354bcca`
+- canonical C-069: Supabase row `209`; duplicate row213 is audit-only
+- consumer-constrained phase: row `210`
+- V12: row `211`
+- Mainline04 complete pointer: row `212`
+- width-gate pointer: row `214`
+- bridge-gate durability: row `215`
+- sealed cross-lane compare: row `216`
+- semantic-binding campaign: row `217`
+- targeted static intake gate: row `218`
 
+Confirmed architecture anchors remain:
 - `EXPLICIT_EXTERNALCHUNK_OFFSET_LOOKUP` at `0x140d175d0`
 - `EXPLICIT_MODELDATA_LOOKUP` / C02 at `0x140d45d30`
 
-Target chain is now explicitly staged:
-`C02 ModelData -> Canvas3DModelLoader -> PROVENANCE BRIDGE -> concrete serializer/importer reader -> width/endian/count-or-length -> destination -> internal construction -> CONTROLLED_FIXTURE_TO_CONSUMER_MATCH`.
+C-069 BE-u64 reads remain scoped to the CHNKSQLi/ExternalChunk corridor and are not ModelData serializer width evidence without the provenance bridge.
 
-Use C-069 row209 as an independently sealed cross-lane falsification/reference surface; do not silently promote it. Do not count row213 as another C-069 evidence event. Do not restart broad string/name searches. Do not use public `.clip` names to guide the sealed blind pass. Do not perform Save/Ctrl+S in the F02 physical oracle. Do not promote semantics or enable Blender emit before the mainline evidence gate closes.
+## Next action
+
+Receive the exact private targeted static extraction package, run it through the intake validator, and then conduct a separate static proof review for `DQ-BRIDGE-LOADER-SER-01`.
+
+Do not broaden into blind string/name search. Do not use public `.clip` names to select/score the sealed target. Do not launch or save in MODELER from this lane. Do not mutate Worker/Canary/Control Gate/Production/STABLE or RIO-26. Do not promote semantics or enable Blender emit before the evidence gate closes.
