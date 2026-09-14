@@ -1,0 +1,63 @@
+{
+  "schema": "never-tear-ai3d-structure-capability-canary-plan-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "run_id": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-001",
+  "module_id": "ai3d_structure_capability_canary_v1",
+  "coordinate_contract": "PLAN_XY_EAST_NORTH_TO_THREE_XZ_YUP_V1",
+  "commands": [
+    {
+      "command_id": "ai3d-013-canary-create-wall",
+      "op": "CREATE_PRIMITIVE",
+      "params": {"name": "wall_001", "kind": "box", "position": [0.0, 1.7, 0.0], "size": [4.0, 3.4, 0.2]},
+      "lineage": {"module_id": "ai3d_structure_capability_canary_v1", "source": "AI3D-013_SYNTHETIC_CANARY"},
+      "routes": ["WINDOWS_WORKER"]
+    },
+    {
+      "command_id": "ai3d-013-canary-transform-wall",
+      "op": "TRANSFORM_SET",
+      "params": {"name": "wall_001", "rotation": [0.0, 0.0, 0.0]},
+      "lineage": {"module_id": "ai3d_structure_capability_canary_v1", "source": "AI3D-013_SYNTHETIC_CANARY"},
+      "routes": ["WINDOWS_WORKER"]
+    },
+    {
+      "command_id": "ai3d-013-canary-create-opening",
+      "op": "CREATE_PRIMITIVE",
+      "params": {"name": "opening_cutter_001", "kind": "box", "position": [0.0, 1.1, 0.0], "size": [1.0, 2.2, 0.6]},
+      "lineage": {"module_id": "ai3d_structure_capability_canary_v1", "source": "AI3D-013_SYNTHETIC_CANARY"},
+      "routes": ["WINDOWS_WORKER"]
+    },
+    {
+      "command_id": "ai3d-013-canary-transform-opening",
+      "op": "TRANSFORM_SET",
+      "params": {"name": "opening_cutter_001", "rotation": [0.0, 0.0, 0.0]},
+      "lineage": {"module_id": "ai3d_structure_capability_canary_v1", "source": "AI3D-013_SYNTHETIC_CANARY"},
+      "routes": ["WINDOWS_WORKER"]
+    },
+    {
+      "command_id": "ai3d-013-canary-boolean",
+      "op": "BOOLEAN",
+      "params": {"target": "wall_001", "tool": "opening_cutter_001", "mode": "subtract", "keep_tool": false},
+      "lineage": {"module_id": "ai3d_structure_capability_canary_v1", "source": "AI3D-013_SYNTHETIC_CANARY"},
+      "routes": ["WINDOWS_WORKER"]
+    },
+    {
+      "command_id": "ai3d-013-canary-qa",
+      "op": "QA_RUN",
+      "params": {"checks": ["wall_count_exact", "opening_boolean_exact", "cutter_removed", "mesh_nonempty", "floor_contact", "render_evidence"]},
+      "lineage": {"module_id": "ai3d_structure_capability_canary_v1", "source": "AI3D-013_SYNTHETIC_CANARY"},
+      "routes": ["WINDOWS_WORKER"]
+    }
+  ],
+  "policy": {
+    "synthetic_canary": true,
+    "geometry_authority_mutated": false,
+    "production_plan_mutated": false,
+    "allow_arbitrary_script": false,
+    "allow_network": false,
+    "max_commands": 6,
+    "max_attempts": 1,
+    "physical_concurrency": 1,
+    "semantic_promotion": false
+  }
+}
