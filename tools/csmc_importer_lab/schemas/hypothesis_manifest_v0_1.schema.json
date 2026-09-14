@@ -1,0 +1,40 @@
+{
+  "$id": "csmc_hypothesis_manifest_v0_1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "alignment": {"enum": [1, 2, 4, 8, 16]},
+    "anchor_id": {"enum": ["IR_START", "VARIABLE_PREFIX_START", "CONTROL_ZONE_START", "PRESERVED_ISLAND_START", "LOCAL_BOUNDARY_A", "LOCAL_BOUNDARY_B"]},
+    "candidate_family": {"enum": ["LOCAL_STRUCTURAL_BOUNDARY", "COUNTED_NUMERIC_CODEC", "GEOMETRY_INDEX_RELATIONSHIP", "FALSIFICATION_CONTROLS", "EXPLORATION"]},
+    "candidate_id": {"pattern": "^HYP_[0-9]{4}$", "type": "string"},
+    "candidate_semantic_hint": {"maxLength": 64, "type": "string"},
+    "components": {"maximum": 4, "minimum": 1, "type": "integer"},
+    "count_endianness": {"enum": ["NONE", "LE", "BE"]},
+    "count_source": {"enum": ["NONE", "LOCAL_U16", "LOCAL_U32", "PARENT_COUNT", "LOCAL_LENGTH_DERIVED"]},
+    "count_type": {"enum": ["NONE", "U16", "U32"]},
+    "element_endianness": {"enum": ["NONE", "LE", "BE"]},
+    "element_type": {"enum": ["NONE", "U16", "U32", "F32", "F64"]},
+    "experiment_id": {"pattern": "^[A-Za-z0-9_.:-]{1,128}$", "type": "string"},
+    "generation_id": {"pattern": "^GEN[0-9]+$", "type": "string"},
+    "grouping": {"enum": ["SCALAR", "VECTOR", "COUNTED_ARRAY", "LOCAL_RECORD", "RELATION_PAIR"]},
+    "mutation_descriptor": {
+      "additionalProperties": false,
+      "properties": {
+        "axes": {"items": {"enum": ["relative_offset", "count_source", "count_type", "count_endianness", "element_type", "element_endianness", "components", "stride_class", "alignment", "grouping", "relationship", "phase_scope"]}, "maxItems": 2, "minItems": 0, "type": "array"},
+        "kind": {"enum": ["SEED", "SINGLE_AXIS", "PREREGISTERED_COMPOUND", "FALSIFICATION_SENTINEL"]}
+      },
+      "required": ["kind", "axes"],
+      "type": "object"
+    },
+    "parent_candidate_ids": {"items": {"pattern": "^HYP_[0-9]{4}$", "type": "string"}, "maxItems": 2, "type": "array"},
+    "phase_scope": {"enum": ["TRAIN", "ADVERSARIAL", "VALIDATION", "SEALED_SIDE_DOMAIN", "AUDIT_ONLY"]},
+    "region_id": {"enum": ["VARIABLE_PREFIX", "LOCAL_SUBBLOCK_A", "LOCAL_SUBBLOCK_B", "CONTROL_ZONE", "PRESERVED_ISLAND", "INVARIANT_CORE_DECOY"]},
+    "relationship": {"enum": ["NONE", "COUNT_TO_EXTENT", "COUNT_TO_INDEX_RANGE", "LENGTH_TO_BLOCK", "CROSS_REGION_CARDINALITY", "WRONG_ENDIAN_SENTINEL", "WRONG_COUNT_SENTINEL", "WRONG_PHASE_SENTINEL", "WRONG_RELATIONSHIP_SENTINEL", "LABEL_ALIAS_SENTINEL", "NOISE_SENTINEL"]},
+    "relative_offset": {"maximum": 8, "minimum": -8, "type": "integer"},
+    "schema_version": {"const": "csmc_hypothesis_manifest_v0_1"},
+    "stride_class": {"enum": ["PACKED", "PAD8", "PAD16", "PAD32", "LOCAL_VARLEN"]}
+  },
+  "required": ["schema_version", "experiment_id", "generation_id", "candidate_id", "parent_candidate_ids", "mutation_descriptor", "candidate_family", "region_id", "anchor_id", "relative_offset", "count_source", "count_type", "count_endianness", "element_type", "element_endianness", "components", "stride_class", "alignment", "grouping", "relationship", "phase_scope", "candidate_semantic_hint"],
+  "title": "CSMC Importer Hypothesis Manifest v0.1",
+  "type": "object"
+}

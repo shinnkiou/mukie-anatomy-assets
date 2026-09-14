@@ -1,0 +1,25 @@
+{
+  "public_factory_may_receive": [
+    "candidate_id",
+    "manifest",
+    "structural_ir_region_id",
+    "mask_id",
+    "hashes",
+    "counts",
+    "metric_vector",
+    "constraint_ids",
+    "result_fingerprint",
+    "provenance_refs"
+  ],
+  "public_repo_payload_material_allowed": false,
+  "registry": "EVALUATION_BOUNDARY",
+  "sealed_material_in_public_result": false,
+  "sealed_only": [
+    "payload_source",
+    "bounded_decode",
+    "numeric_region_inspection",
+    "consumer_evidence"
+  ],
+  "sha256": "6111735bfb8b42aee42f6d28f4fb89a25ebbf0562dbb945e175fcaadeceb7042",
+  "version": "0.1.0"
+}

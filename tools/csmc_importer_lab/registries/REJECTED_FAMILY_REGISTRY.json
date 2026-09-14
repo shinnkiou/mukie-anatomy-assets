@@ -1,0 +1,21 @@
+{
+  "entries": [
+    {
+      "counterexample": "observed variable/local structural behavior",
+      "evidence": "prior canonical structural analysis",
+      "family": "OVERBROAD_GLOBAL_STRIDE_ASSUMPTION_A",
+      "scope": "whole stored region",
+      "source_hash": "CURRENT_MAINLINE_SCOPE_REQUIRED"
+    },
+    {
+      "counterexample": "local bounded sub-block hypotheses remain unresolved",
+      "evidence": "prior canonical structural analysis",
+      "family": "OVERBROAD_GLOBAL_STRIDE_ASSUMPTION_B",
+      "scope": "whole phase prefix",
+      "source_hash": "CURRENT_MAINLINE_SCOPE_REQUIRED"
+    }
+  ],
+  "registry": "REJECTED_FAMILY_REGISTRY",
+  "sha256": "9bf120e4c560e23764f587fd264d9d582799f63cb4306d9988ca6255c7aa4716",
+  "version": "0.1.0"
+}

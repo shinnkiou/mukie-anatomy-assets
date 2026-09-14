@@ -1,0 +1,20 @@
+{
+  "factory_adoption_authorized": false,
+  "mainline_gate_override_authorized": false,
+  "promotion_authorized": false,
+  "registry": "PROMOTION_FIREWALL",
+  "render_output_authorized": false,
+  "required_for_proof_grade": [
+    "provenance",
+    "controlled_response",
+    "orthogonal_negative_control",
+    "independent_validation",
+    "competing_hypothesis_exclusion",
+    "scope_matched_direct_consumer_read",
+    "width_endian_count_agreement",
+    "destination_dataflow_evidence",
+    "counterexample_zero_within_scope"
+  ],
+  "sha256": "9a9a42f6431022f40d9aabc8fedd6dac0a718fd33a46e38a81b6ccc51bff6718",
+  "version": "0.1.0"
+}

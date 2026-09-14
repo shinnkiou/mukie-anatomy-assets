@@ -1,0 +1,33 @@
+{
+  "dynamic_weights": false,
+  "hard_gate": [
+    "bounds_safe",
+    "provenance_match",
+    "allowed_structural_region",
+    "not_rejected_family",
+    "no_scope_matched_hard_contradiction",
+    "no_fixture_specific_exception",
+    "not_duplicate",
+    "no_holdout_access",
+    "semantic_promotion_false",
+    "blender_emit_false"
+  ],
+  "metric_vector": [
+    "controlled_differential_consistency",
+    "cross_fixture_structural_consistency",
+    "negative_control_specificity",
+    "validation_generalization",
+    "modeler_consumer_compatibility",
+    "parsimony_complexity"
+  ],
+  "registry": "FROZEN_SCORING_SPEC",
+  "selection": "PARETO_LEXICOGRAPHIC",
+  "sha256": "09d969b97d9dfc686b25b7562d3b2e4b247aa56ee6a41b12d52346ca090725ff",
+  "version": "0.1.0",
+  "zero_fitness": [
+    "parse_success",
+    "visual_similarity",
+    "vroid_fit",
+    "generic_numeric_plausibility"
+  ]
+}

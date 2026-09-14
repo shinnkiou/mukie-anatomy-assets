@@ -1,0 +1,111 @@
+{
+  "entries": [
+    {
+      "exposure_count": 1,
+      "exposure_reason": "TRAIN",
+      "first_exposed_generation": 0,
+      "fixture_id": "F01",
+      "state": "CONSUMED",
+      "used_for_selection": true
+    },
+    {
+      "exposure_count": 1,
+      "exposure_reason": "TRAIN",
+      "first_exposed_generation": 0,
+      "fixture_id": "F02",
+      "state": "CONSUMED",
+      "used_for_selection": true
+    },
+    {
+      "exposure_count": 1,
+      "exposure_reason": "TRAIN",
+      "first_exposed_generation": 0,
+      "fixture_id": "F03",
+      "state": "CONSUMED",
+      "used_for_selection": true
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "VALIDATION",
+      "first_exposed_generation": 0,
+      "fixture_id": "F04",
+      "state": "AUDIT_ONLY",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "ADVERSARIAL_INVARIANCE",
+      "first_exposed_generation": 0,
+      "fixture_id": "R01",
+      "state": "AUDIT_ONLY",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "ADVERSARIAL_INVARIANCE",
+      "first_exposed_generation": 0,
+      "fixture_id": "R02",
+      "state": "AUDIT_ONLY",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "ADVERSARIAL_INVARIANCE",
+      "first_exposed_generation": 0,
+      "fixture_id": "R03",
+      "state": "AUDIT_ONLY",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "ADVERSARIAL_INVARIANCE",
+      "first_exposed_generation": 0,
+      "fixture_id": "R04",
+      "state": "AUDIT_ONLY",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "ADVERSARIAL_INVARIANCE",
+      "first_exposed_generation": 0,
+      "fixture_id": "R05",
+      "state": "AUDIT_ONLY",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "SEALED_SIDE_DOMAIN",
+      "first_exposed_generation": null,
+      "fixture_id": "F05",
+      "state": "SEALED",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "SEALED_SIDE_DOMAIN",
+      "first_exposed_generation": null,
+      "fixture_id": "F06",
+      "state": "SEALED",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "SEALED_SIDE_DOMAIN",
+      "first_exposed_generation": null,
+      "fixture_id": "F07",
+      "state": "SEALED",
+      "used_for_selection": false
+    },
+    {
+      "exposure_count": 0,
+      "exposure_reason": "REUSED_EXTERNAL_BENCHMARK_NOT_PRISTINE_HOLDOUT",
+      "first_exposed_generation": null,
+      "fixture_id": "V01",
+      "state": "AUDIT_ONLY",
+      "used_for_selection": false
+    }
+  ],
+  "registry": "HOLDOUT_EXPOSURE_LEDGER",
+  "sha256": "2c4af8cea37f128876a507660d432013bd379e9740e6f97912302f3b02a03783",
+  "version": "0.1.0"
+}

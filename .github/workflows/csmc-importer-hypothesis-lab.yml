@@ -1,0 +1,30 @@
+name: CSMC Importer Hypothesis Lab M1
+
+on:
+  push:
+    branches:
+      - "csmc-importer-hypothesis-lab-v0-1-*"
+    paths:
+      - "tools/csmc_importer_lab/**"
+      - "docs/CSMC_IMPORTER_HYPOTHESIS_LAB_**"
+      - ".github/workflows/csmc-importer-hypothesis-lab.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  m1-synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile Lab sources
+        run: python -m compileall -q tools/csmc_importer_lab
+      - name: Run unit and M1 acceptance tests
+        run: python -m unittest discover -s tools/csmc_importer_lab/tests -p "test_*.py" -v
+      - name: Execute frozen M1 acceptance suite
+        run: python tools/csmc_importer_lab/run_m1_acceptance.py

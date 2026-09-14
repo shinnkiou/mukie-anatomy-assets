@@ -1,0 +1,57 @@
+{
+  "entries": [
+    {
+      "id": "HC_PUBLIC_SAFE_ONLY",
+      "rule": "raw/private payload bytes are forbidden in public-safe manifests/results/artifacts",
+      "scope": "LAB_PUBLIC_PLANE"
+    },
+    {
+      "id": "HC_STRUCTURAL_ONLY",
+      "rule": "mode must remain STRUCTURAL_ONLY",
+      "scope": "CURRENT_MAINLINE_IMPORTER_BRIDGE"
+    },
+    {
+      "id": "HC_NO_SEMANTIC_PROMOTION",
+      "rule": "semantic promotion count must remain zero",
+      "scope": "LAB_ALL"
+    },
+    {
+      "id": "HC_NO_RUNTIME_DISPATCH",
+      "rule": "runtime dispatch is false",
+      "scope": "LAB_ALL"
+    },
+    {
+      "id": "HC_NO_BLENDER_EMIT",
+      "rule": "Blender emit is false",
+      "scope": "LAB_ALL"
+    },
+    {
+      "id": "HC_SOURCE_SHA_MATCH",
+      "rule": "CSMC source SHA must match between independently validated intake and Structural IR",
+      "scope": "STRUCTURAL_IR_BRIDGE"
+    },
+    {
+      "id": "HC_STRUCTURAL_SEMANTICS_UNRESOLVED",
+      "rule": "geometry/index/UV/material/rig semantics remain unresolved without independent evidence",
+      "scope": "STRUCTURAL_IR"
+    },
+    {
+      "id": "HC_DATA2_STORED_LENGTH",
+      "rule": "stored_length = align8(logical_length) + 8",
+      "scope": "PROVEN_OUTER_DATA2_FRAMING"
+    },
+    {
+      "id": "HC_NO_FREE_OFFSETS",
+      "rule": "relative offsets must be bounded and anchored to Structural IR anchors",
+      "scope": "GEN0"
+    },
+    {
+      "id": "HC_SCOPE_MATCHED_CONSUMER_FACTS",
+      "rule": "consumer-side CONFIRMED facts are hard only inside their directly proven path/scope",
+      "scope": "MODELER"
+    }
+  ],
+  "registry": "IMMUTABLE_HARD_CONSTRAINT_REGISTRY",
+  "sha256": "5643cd88e111b12bca57deba704dd482ca4385e6cfb6df00f153884d581b1bbf",
+  "version": "0.1.0"
+}
