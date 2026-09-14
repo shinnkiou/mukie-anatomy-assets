@@ -1,0 +1,126 @@
+{
+  "schema_version": "csmc_analysis_c_controlled_fixture_c050_v1",
+  "run": "C-050",
+  "date_jst": "2026-09-14",
+  "source_provenance": {
+    "fixture_zip_sha256": "be6132ef83959167ffd19218810e099f0bd164714fbd1ec4770f9296b38643b6",
+    "blender_summary_sha256": "2a24112867f83e9e913d0685d0376efe1e5b00278b644ef3b9ef58554b277b28",
+    "blender_detail_sha256": "17d1de78d39ec39797021c907db9b1e1d3c909560e17a320f85a3030527f1766",
+    "blender_report_package_sha256": "84a596de04e45c76e493f23d8e53426a760b822621cf695bb6fcf0b8670dcb8e",
+    "fixture_count": 13,
+    "raw_private_bytes_published": false
+  },
+  "isolation": {
+    "branch": "csmc-analysis-companion-c-20260913",
+    "mainline_mutation": false,
+    "rio26_mutation": false,
+    "runtime": false,
+    "modeler": false,
+    "worker": false,
+    "canary": false,
+    "control_gate": false,
+    "automatic_merge": false,
+    "semantic_promotion_count": 0,
+    "blender_emit": false
+  },
+  "new_information": {
+    "outer_framing": {
+      "validated_files": 13,
+      "all_data2_character": true,
+      "all_u32_at_53_equal_2": true,
+      "all_framed_length_equals_payload_bytes": true,
+      "all_block_padding_rule_holds": true,
+      "rule": "framed_len = 8 + ceil(logical_len / 8) * 8",
+      "interpretation": "8-byte framed/padded transform; encryption/compression semantics remain unconfirmed"
+    },
+    "tail_cadence": {
+      "period_bytes": 2456,
+      "period_qwords": 307,
+      "candidate_relation": "tail cadence count = 2 + render-part count, where render-part count is one per implicit mesh part or explicit material partition",
+      "all_13_match": true,
+      "confidence": "HIGH semantic candidate, NOT CONFIRMED",
+      "controlled_support": "geometry complexity, UV edit, bone count, weight distribution do not change cadence; MAT2 and TWO_CUBES each add one cadence unit",
+      "vroid_independent_support": "8 material slots/render parts -> observed cadence 10 = 2 + 8"
+    },
+    "pairwise_qword_deltas": {
+      "F01_to_F02": {"framed_delta_qwords": 1, "tail_2456_cadence_delta": 0, "residual_after_cadence_qwords": 1},
+      "F02_to_F03": {"framed_delta_qwords": 32, "tail_2456_cadence_delta": 0, "residual_after_cadence_qwords": 32},
+      "F03_to_F04": {"framed_delta_qwords": 76, "tail_2456_cadence_delta": 0, "residual_after_cadence_qwords": 76},
+      "F03_to_F05": {"framed_delta_qwords": 7, "tail_2456_cadence_delta": 0, "residual_after_cadence_qwords": 7},
+      "F03_to_F06": {"framed_delta_qwords": 320, "tail_2456_cadence_delta": 1, "residual_after_cadence_qwords": 13},
+      "F03_to_F07": {"framed_delta_qwords": 332, "tail_2456_cadence_delta": 1, "residual_after_cadence_qwords": 25},
+      "R01_to_R02": {"framed_delta_qwords": 33, "tail_2456_cadence_delta": 0, "residual_after_cadence_qwords": 33},
+      "R02_to_R03": {"framed_delta_qwords": 9, "tail_2456_cadence_delta": 0, "residual_after_cadence_qwords": 9},
+      "R03_to_R04": {"framed_delta_qwords": 7, "tail_2456_cadence_delta": 0, "residual_after_cadence_qwords": 7},
+      "R04_to_R05": {"framed_delta_qwords": -1, "tail_2456_cadence_delta": 0, "residual_after_cadence_qwords": -1}
+    }
+  },
+  "render_part_formula_validation": {
+    "CSMC_F01_TRIANGLE": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_F02_QUAD": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_F03_CUBE": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_F04_CUBE_SUBDIV": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_F05_CUBE_UV": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_F06_CUBE_MAT2": {"known_render_parts": 2, "predicted_tail_cadence": 4, "observed_tail_cadence": 4, "match": true},
+    "CSMC_F07_TWO_CUBES": {"known_render_parts": 2, "predicted_tail_cadence": 4, "observed_tail_cadence": 4, "match": true},
+    "CSMC_R01_CUBE_B1_W0": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_R02_CUBE_B1_W100": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_R03_CUBE_B2_W100": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_R04_CUBE_B2_SPLIT": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_R05_CUBE_B2_MIX50": {"known_render_parts": 1, "predicted_tail_cadence": 3, "observed_tail_cadence": 3, "match": true},
+    "CSMC_V01_VROID_BODY_BASE": {"known_render_parts": 8, "predicted_tail_cadence": 10, "observed_tail_cadence": 10, "match": true}
+  },
+  "negative_controls": {
+    "literal_encoding_absence": "Known teacher counts 10567/17944/59 and f32 values 1.0/0.5 were not found as direct little- or big-endian 4-byte literals in tested framed payloads.",
+    "large_exact_block": {
+      "block_length_bytes": 7392,
+      "block_sha256": "c70ca7f86c4a780c147ff356d41072e5c7f2e55ca150ffe336f32aea01eb9a63",
+      "present_in": ["CSMC_F03_CUBE", "CSMC_F06_CUBE_MAT2", "CSMC_F07_TWO_CUBES", "CSMC_V01_VROID_BODY_BASE"],
+      "rejected_interpretation": "This block cannot be promoted to cube geometry because it also occurs unchanged in the independent VRoid corpus."
+    },
+    "fixture_design_warnings": [
+      "F03 vs F05 is not proven to be UV absence-to-presence: the supplied script does not explicitly remove UV from F03. Treat as UV layout/edit condition until per-fixture Blender inventory confirms baseline UV layer count.",
+      "R04 vs R05 changes both assignment multiplicity (8 to 16) and weight values (1.0 to 0.5); it does not isolate weight value alone.",
+      "SQLite file size is page-quantized, so character blob logical/framed lengths are the appropriate structural size metric."
+    ]
+  },
+  "semantic_candidates": [
+    {
+      "id": "TAIL_2456_RENDER_PART_CARDINALITY_CANDIDATE",
+      "relation": "observed cadence count = 2 + render-part count",
+      "confidence": "HIGH",
+      "promotion": "CANDIDATE_ONLY",
+      "controlled_fixture_correlation": true,
+      "vroid_independent_consistency": true,
+      "negative_controls_passed": true,
+      "required_next_evidence": "3 explicit material partitions and 3 mesh objects as separate controls; expect cadence 5 in both, then owner/consumer evidence before CONFIRMED"
+    },
+    {
+      "id": "FRAMED_QWORD_DIFFERENTIAL_CANDIDATE",
+      "relation": "feature changes produce integer 8-byte framed deltas; an extra render part contributes one 307-qword cadence unit plus feature-specific residual",
+      "confidence": "HIGH structural",
+      "promotion": "STRUCTURAL_ONLY"
+    },
+    {
+      "id": "RIG_WEIGHT_DELTA_CANDIDATE",
+      "relation": "within fixed 3-cadence cube rig family: W0 to W100 +33 qwords; +1 bone +9; group redistribution +7; mixed50 pair -1",
+      "confidence": "MEDIUM",
+      "promotion": "CANDIDATE_ONLY",
+      "required_next_evidence": "same assignment cardinality with different weight values, e.g. 25/75 vs 50/50"
+    }
+  ],
+  "rejected_interpretations": [
+    "file size directly equals geometry complexity",
+    "7392-byte shared block is cube vertex/index data",
+    "known teacher counts are directly serialized as plain u32/f32 literals",
+    "R04 to R05 isolates weight value only",
+    "F03 to F05 already proves UV presence/absence"
+  ],
+  "mainline_useful_result": {
+    "safe_to_consume": ["outer framing rule", "2456-byte / 307-qword tail cadence", "HIGH render-part cardinality candidate", "pairwise framed qword deltas", "fixture-design negative controls"],
+    "do_not_auto_promote": ["vertex/index/UV/material/bone/weight semantic binding", "Blender emit", "runtime policy changes"]
+  },
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion_count": 0,
+  "blender_emit_ready": false
+}
