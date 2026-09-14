@@ -1,0 +1,52 @@
+{
+  "schema_version": "csmc_data_scout_run_v1",
+  "date": "2026-09-14",
+  "lane": "CSMC_DATA_SCOUT",
+  "run": "FOCUSED_RANKING_AUTOMATION",
+  "decision": "CURRENT_TOOLCHAIN_SUFFICIENT",
+  "new_external_procurement_justified": false,
+  "reason": "Current proof-grade gaps remain addressable with the selected Ghidra/SQLite/controlled-fixture stack. The observed bottleneck is candidate ranking noise, not missing analysis capability.",
+  "new_public_safe_helper": {
+    "path": "research/csmc_data_scout/csmc_static_relevance_ranker.py",
+    "test_path": "research/csmc_data_scout/test_csmc_static_relevance_ranker.py",
+    "dependencies": "Python standard library only",
+    "purpose": "Re-rank generic static-analysis function candidates so direct target evidence dominates shared-runtime fan-in.",
+    "blind_safe": true,
+    "product_specific_names": false,
+    "product_specific_addresses": false,
+    "product_specific_bytes": false,
+    "semantic_promotion": false
+  },
+  "validation": {
+    "synthetic_tests": "3/3 PASS",
+    "private_snapshot_validation": {
+      "published_raw_snapshot_data": false,
+      "published_proprietary_addresses": false,
+      "aggregate_observation": "Three previously identified direct-evidence candidates moved from original ranks 76, 159, and 446 to focused ranks 1, 2, and 10 respectively.",
+      "interpretation": "Ranking quality improvement only; not semantic proof."
+    }
+  },
+  "downstream_open_targets": [
+    "EXPLICIT_SERIALIZER_FIELD_READ",
+    "CONTROLLED_FIXTURE_TO_CONSUMER_MATCH"
+  ],
+  "procurement": {
+    "new_sources": 0,
+    "new_datasets": 0,
+    "new_external_tools": 0,
+    "license_change": "NONE",
+    "install_batch": 0
+  },
+  "isolation": {
+    "mainline_mutation": false,
+    "companion_mutation": false,
+    "modeler_runtime_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "rio26_mutations": 0,
+    "supabase_runtime_writes": 0,
+    "base44_install_batch_actions": 0,
+    "semantic_promotion": false
+  }
+}
