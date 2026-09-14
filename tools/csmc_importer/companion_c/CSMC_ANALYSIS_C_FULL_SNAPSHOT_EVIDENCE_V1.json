@@ -1,0 +1,466 @@
+{
+  "analysis_mode": "INDEPENDENT_FULL_STATIC_SNAPSHOT_DEEP_PASS",
+  "call_flow_islands": {
+    "container_parse": {
+      "level": "CONFIRMED_DIRECT_CALL_EDGES",
+      "path": [
+        "0x141657970 -> 0x140d15a90",
+        "0x140d15a90 -> 0x1408c2d90 (BE-u64 thunk)",
+        "0x140d15a90 -> 0x1408c0d40",
+        "0x140d15a90 -> 0x1408c27c0",
+        "0x140d15a90 -> 0x1408c2f40",
+        "0x140d15a90 -> 0x1408c2dc0"
+      ]
+    },
+    "externalchunk_lookup": {
+      "level": "STRONG_LOCAL_CONVERGENCE_NOT_RESULT_TO_SEEK_PROOF",
+      "path": [
+        "0x1416578e0 -> 0x140d175d0"
+      ],
+      "same_function_callees": [
+        "0x1408c2d90",
+        "0x1408c27c0",
+        "0x1408c2f40",
+        "0x1408c2dc0",
+        "0x1408c0d40"
+      ],
+      "select_query": "SELECT Offset FROM ExternalChunk WHERE ExternalID='%s';"
+    },
+    "externalchunk_write": {
+      "insert_query": "INSERT INTO ExternalChunk VALUES('%s',%s);",
+      "level": "CONFIRMED_QUERY_XREF_AND_CALL_EDGES",
+      "paths": [
+        "0x141657540 -> 0x140d17e20",
+        "0x141657e60 -> 0x140d15700"
+      ]
+    },
+    "registry": {
+      "direct_registration_pairs": {
+        "BankData": "Canvas3DModelBank",
+        "Layer3DModelData": "ModelData3D",
+        "ModelData": "Canvas3DModelLoader",
+        "SceneData": "Manager3DOd"
+      },
+      "level": "CONFIRMED_REGISTRATION_NOT_LOAD_CALL",
+      "path": [
+        "0x14023a330 -> 0x140d45d30 -> 0x141657140 -> 0x141656a80"
+      ]
+    },
+    "typed_serializer_rtti": {
+      "level": "STRONG_ARCHITECTURE_UNBOUND_TO_CSMC_LOADER",
+      "selected_vtables": {
+        "ODDPresetVertexArray.Coordinate": [{"address":"1417e9468","parent_namespace":"ODCChunkCellImporterT<Odyssey::ODDPresetVertexArray,Odyssey::ODMplStringWrap<&public:_static_class_Planeswalker::PWString_const_Odyssey::serialize_traits<class_Odyssey::ODDPresetVertexArray>::kSerializeLabelCoordinate>_>"}],
+        "ODDPresetVertexArray.Normal": [{"address":"1417e94c0","parent_namespace":"ODCChunkCellImporterT<Odyssey::ODDPresetVertexArray,Odyssey::ODMplStringWrap<&public:_static_class_Planeswalker::PWString_const_Odyssey::serialize_traits<class_Odyssey::ODDPresetVertexArray>::kSerializeLabelNormal>_>"}],
+        "ODDPresetVertexArray.UV": [{"address":"1417e94e0","parent_namespace":"ODCChunkCellImporterT<Odyssey::ODDPresetVertexArray,Odyssey::ODMplStringWrap<&public:_static_class_Planeswalker::PWString_const_Odyssey::serialize_traits<class_Odyssey::ODDPresetVertexArray>::kSerializeLabelUV>_>"}],
+        "ODEditPresetHalfEdge.VertexIndex": [{"address":"1417e48f8","parent_namespace":"ODCChunkCellImporterT<Odyssey::ODDEditPresetHalfEdge,Odyssey::ODMplStringWrap<&public:_static_class_Planeswalker::PWString_const_Odyssey::serialize_traits<struct_Odyssey::ODDEditPresetHalfEdge>::kSerializeLabelVertexIndex>_>"}],
+        "ODDEditPresetHalfEdge.FaceIndex": [{"address":"1417e4990","parent_namespace":"ODCChunkCellImporterT<Odyssey::ODEditPresetHalfEdge,Odyssey::ODMplStringWrap<&public:_static_class_Planeswalker::PWString_const_Odyssey::serialize_traits<struct_Odyssey::ODDEditPresetHalfEdge>::kSerializeLabelFaceIndex>_>"}],
+        "ODDPresetSkin.WeightInfo": [{"address":"1417e8ad8","parent_namespace":"ODCChunkCellImporterT<Odyssey::ODDPresetSkin,Odyssey::ODMplStringWrap<&public:_static_class_Planeswalker::PWString_const_Odyssey::serialize_traits<class_Odyssey::ODDPresetSkin>::kSerializeLabelWeightInfo>_>"}],
+        "ODDPresetSkin.BindMatrix": [{"address":"1417e8af8","parent_namespace":"ODCChunkCellImporterT<Odyssey::ODDPresetSkin,Odyssey::ODMplStringWrap<&public:_static_class_Planeswalker::PWString_const_Odyssey::serialize_traits<class_Odyssey::ODDPresetSkin>::kSerializeLabelBindMatrix>_>"}]
+      }
+    }
+  },
+  "construction_edges": {
+    "confirmed_container_destination": [
+      "param_1+0x1e sized to 16 bytes receives exact 16-byte transfer",
+      "CHNKSQLi transfer buffer receives and forwards length-bounded chunks"
+    ],
+    "explicit_serializer_field_read": "UNRESOLVED",
+    "internal_mesh_node_material_bone_construction": "UNRESOLVED",
+    "typed_serializer_architecture": "STRONG_NOT_BOUND"
+  },
+  "direct_consumer_edges": [
+    {
+      "address": "0x140d15a90",
+      "classification": "DIRECT_CONTAINER_FIELD_READ_16B",
+      "destination": {
+        "logical_size_bytes": 16,
+        "meaning": "UNRESOLVED",
+        "object_relative_expression": "param_1 + 0x1e"
+      },
+      "facts": [
+        "Function performs CSFCHENK/CHNKHead-family tag validation before the field read.",
+        "An encoded integer is required to equal exactly 0x10 before the read is accepted.",
+        "FUN_1408c0d40 is called on object-relative destination param_1+0x1e with size 0x10.",
+        "FUN_1408c27c0 then transfers exactly 0x10 bytes from the parser/stream context into the returned destination pointer.",
+        "Failure of tag/length checks exits the parse path."
+      ],
+      "id": "E-C069-001",
+      "level": "CONFIRMED",
+      "negative_control": "Do not equate the 16-byte field with ExternalID: ExternalChunk declares ExternalID as BLOB and prior CHNKExta key evidence is 40 bytes; no direct identity edge exists.",
+      "not_equivalent_to": "EXPLICIT_SERIALIZER_FIELD_READ",
+      "reader_chain": [
+        "FUN_1408c2d90/thunk_FUN_1408c26e0 (pre-existing BE-u64 primitive)",
+        "FUN_1408c0d40 (buffer resize/ensure)",
+        "FUN_1408c27c0 (bounded stream-to-buffer transfer)"
+      ],
+      "semantic_claim": false
+    },
+    {
+      "address": "0x140d15a90",
+      "classification": "CHNKSQLI_LENGTH_BOUNDED_STREAM_COPY",
+      "facts": [
+        "After CHNKSQLi tag validation, a decoded u64 supplies remaining block length.",
+        "A 0x100000-byte transfer buffer is prepared.",
+        "Loop chunk size is min(remaining_length, buffer_capacity).",
+        "Each iteration transfers chunk_size from parser/stream into the buffer and then writes the same chunk_size to a destination object.",
+        "remaining_length is decremented by exactly the transferred chunk_size."
+      ],
+      "id": "E-C069-002",
+      "level": "CONFIRMED",
+      "new_relative_to_first_pass": true,
+      "semantic_claim": false
+    }
+  ],
+  "externalchunk_sql": {
+    "create": {
+      "value": "CREATE TABLE IF NOT EXISTS ExternalChunk(ExternalID BLOB, Offset INTEGER);",
+      "xrefs": [
+        {
+          "function_address": "140d18650",
+          "function_name": "FUN_140d18650",
+          "reference_from": "140d1868f"
+        },
+        {
+          "function_address": "140d15a90",
+          "function_name": "FUN_140d15a90",
+          "reference_from": "140d169c3"
+        }
+      ]
+    },
+    "delete": {
+      "value": "DELETE FROM ExternalChunk;",
+      "xrefs": [
+        {
+          "function_address": "140d18650",
+          "function_name": "FUN_140d18650",
+          "reference_from": "140d186e7"
+        },
+        {
+          "function_address": "140d15a90",
+          "function_name": "FUN_140d15a90",
+          "reference_from": "140d16a03"
+        }
+      ]
+    },
+    "insert": {
+      "value": "INSERT INTO ExternalChunk VALUES('%s',%s);",
+      "xrefs": [
+        {
+          "function_address": "140d17e20",
+          "function_name": "FUN_140d17e20",
+          "reference_from": "140d182ca"
+        },
+        {
+          "function_address": "140d15700",
+          "function_name": "FUN_140d15700",
+          "reference_from": "140d158c1"
+        }
+      ]
+    },
+    "select": {
+      "value": "SELECT Offset FROM ExternalChunk WHERE ExternalID='%s';",
+      "xrefs": [
+        {
+          "function_address": "140d175d0",
+          "function_name": "FUN_140d175d0",
+          "reference_from": "140d176de"
+        }
+      ]
+    }
+  },
+  "gate_state": {
+    "blender_emit_ready": false,
+    "c069_authorized": true,
+    "c069_reason": "New direct consumer/container field-read and length-bounded transfer edges beyond FIRST PASS.",
+    "mainline_mutations": 0,
+    "modeler_runtime_actions": 0,
+    "rio-26_mutations": 0,
+    "runtime_dispatch": false,
+    "semantic_binding_claimed": false,
+    "semantic_promotion_count": 0,
+    "worker_canary_actions": 0
+  },
+  "independence": {
+    "contamination_guard": "Existing advanced Companion branch content was not read after its newer head was observed; this pass branches from the pre-Full-Snapshot safe base.",
+    "isolated_branch": "csmc-analysis-companion-c-fullsnapshot-independent-20260915",
+    "mainline_new_full_snapshot_results_read": false,
+    "pre_snapshot_safe_base_commit": "0121fa9187d11a9578945ed2522787911fc8b3c4"
+  },
+  "negative_controls": [
+    {
+      "effect": "Reject string-hit-only semantic promotion.",
+      "finding": "Many semantic-looking names have drect xrefs that terminate in small global/string initializer functions.",
+      "id": "NC-001"
+    },
+    {
+      "effect": "EXPLICIT_MODELDATA_LOOKUP and EXPLICIT_CANVAS3D_LOAD_ENTRY remain unresolved.",
+      "finding": "ModelData -> Canvas3DModelLoader is a direct registry registration pair, but registration is not a proven load invocation.",
+      "id": "NC-002"
+    },
+    {
+      "effect": "EXPLICIT_SERIALIZER_FIELD_READ remains unresolved.",
+      "finding": "Typed ODCChunkCellImporterT vtables name coordinate/UV/index/weight/matrix fields, but no direct call edge from the CSMC/ModelData loader path to those vtables is present in this snapshot.",
+      "id": "NC-003"
+    },
+    {
+      "effect": "Reject premature ExternalID/UUID semantics for the 16-byte field.",
+      "finding": "The confirmed 16-byte container field has no direct identity edge to ExternalChunk.ExternalID or the prior 40-byte CHNKExta key.",
+      "id": "NC-004"
+    }
+  ],
+  "oracle_discrimination_map": {
+    "canonical_order_modified": false,
+    "canonical_sentinel9": [
+      "M01",
+      "M10",
+      "M13",
+      "M14",
+      "M15",
+      "M18",
+      "M22",
+      "M23",
+      "M30"
+    ],
+    "frozen_questions": {
+      "Q-BND-01": {
+        "mutations": [
+          "M13",
+          "M14",
+          "M15"
+        ],
+        "target_region": "PROVEN_INVARIANT_BOUNDARY"
+      },
+      "Q-BND-02": {
+        "mutations": [
+          "M11",
+          "M12",
+          "M13",
+          "M14",
+          "M15",
+          "M16",
+          "M17"
+        ],
+        "target_region": "BOUNDARY_NEIGHBORHOOD_3200_3232"
+      },
+      "Q-INV-01": {
+        "mutations": [
+          "M18",
+          "M19",
+          "M20",
+          "M21"
+        ],
+        "target_region": "PROVEN_INVARIANT_INTERIOR"
+      },
+      "Q-PFX-01": {
+        "mutations": [
+          "M01",
+          "M02",
+          "M03",
+          "M04",
+          "M05",
+          "M06",
+          "M07",
+          "M08",
+          "M09",
+          "M10"
+        ],
+        "target_region": "VARIABLE_PREFIX_CANDIDATE_REGION"
+      },
+      "Q-TERM-01": {
+        "mutations": [
+          "M22",
+          "M23",
+          "M24",
+          "M25",
+          "M26",
+          "M27",
+          "M28",
+          "M29",
+          "M30"
+        ],
+        "target_region": "TERMINAL_ALIGNMENT_AND_FRAMING"
+      }
+    },
+    "proposal_only": [
+      {
+        "hypothesis": "OUTER_ENVELOPE_ISOLATION_VS_INTEGRITY_COUPLING",
+        "most_relevant_existing_variants": [
+          "M01",
+          "M10",
+          "M13",
+          "M22",
+          "M30"
+        ],
+        "reason": "Spread across prefix, boundary, alignment extension and framing remainder; canonical Sentinel-9 already covers them, so no order change is proposed."
+      }
+    ],
+    "terminal_exact": {
+      "M22": {
+        "blob_offset": 17752,
+        "class": "TERMINAL_EXTENSION",
+        "mod8": 7,
+        "offset": 17687,
+        "phase": "ALIGNMENT_EXTENSION",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      },
+      "M23": {
+        "blob_offset": 17753,
+        "class": "TERMINAL_FRAMING",
+        "mod8": 0,
+        "offset": 17688,
+        "phase": "FRAMING_REMAINDER",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      },
+      "M24": {
+        "blob_offset": 17754,
+        "class": "TERMINAL_FRAMING",
+        "mod8": 1,
+        "offset": 17689,
+        "phase": "FRAMING_REMAINDER",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      },
+      "M25": {
+        "blob_offset": 17755,
+        "class": "TERMINAL_FRAMING",
+        "mod8": 2,
+        "offset": 17690,
+        "phase": "FRAMING_REMAINDER",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      },
+      "M26": {
+        "blob_offset": 17756,
+        "class": "TERMINAL_FRAMING",
+        "mod8": 3,
+        "offset": 17691,
+        "phase": "FRAMING_REMAINDER",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      },
+      "M27": {
+        "blob_offset": 17757,
+        "class": "TERMINAL_FRAMING",
+        "mod8": 4,
+        "offset": 17692,
+        "phase": "FRAMING_REMAINDER",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      },
+      "M28": {
+        "blob_offset": 17758,
+        "class": "TERMINAL_FRAMING",
+        "mod8": 5,
+        "offset": 17693,
+        "phase": "FRAMING_REMAINDER",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      },
+      "M29": {
+        "blob_offset": 17759,
+        "class": "TERMINAL_FRAMING",
+        "mod8": 6,
+        "offset": 17694,
+        "phase": "FRAMING_REMAINDER",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      },
+      "M30": {
+        "blob_offset": 17760,
+        "class": "TERMINAL_FRAMING",
+        "mod8": 7,
+        "offset": 17695,
+        "phase": "FRAMING_REMAINDER",
+        "questions": [
+          "Q-TERM-01"
+        ]
+      }
+    }
+  },
+  "provenance": {
+    "call_edges_count_observed": 267088,
+    "functions_count_observed": 75721,
+    "ghidra": "12.1.3",
+    "modeler": "CLIP STUDIO MODELER 1.10.13",
+    "modeler_exe_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+    "runner_schema": "csmc_full_snapshot_runner_v1_2",
+    "runtime_started": false,
+    "semantic_promotion": false,
+    "snapshot_filename": "CSMC_FULL_SNAPSHOT_20260914_214659.zip",
+    "snapshot_internal_inventory_hash_verified_count": 195,
+    "snapshot_internal_inventory_missing_count": 0,
+    "snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+    "strings_count_observed": 29883,
+    "symbols_count_observed": 669282
+  },
+  "reader_families": [
+    {
+      "classification": "BE_U64_READER",
+      "level": "CONFIRMED_PREEXISTING_FIRST_PASS",
+      "new_in_c069": false,
+      "primitive": "0x1408c2d90 -> 0x1408c26e0"
+    },
+    {
+      "classification": "BOUNDED_STREAM_TO_BUFFER_TRANSFER",
+      "level": "CONFIRMED_IN_DIRECT_LOCAL_USE; BODY_CALLS_MEMCPY",
+      "new_in_c069": true,
+      "primitive": "0x1408c27c0"
+    },
+    {
+      "body_callee": "memcmp",
+      "classification": "FIXED_LENGTH_COMPARE",
+      "level": "CONFIRMED",
+      "new_in_c069": true,
+      "primitive": "0x1408c2f40"
+    },
+    {
+      "classification": "BUFFER_RESIZE_ENSURE_AND_DATA_POINTER",
+      "facts": [
+        "grows allocation if capacity is insufficient",
+        "copies previous logical bytes",
+        "sets logical size field to requested size",
+        "returns data pointer"
+      ],
+      "level": "CONFIRMED",
+      "new_in_c069": true,
+      "primitive": "0x1408c0d40"
+    },
+    {
+      "classification": "CURSOR_OR_SKIP_LIKE",
+      "level": "CANDIDATE",
+      "primitive": "0x1408c2dc0",
+      "reason": "Called with freshly decoded lengths before subsequent tag reads; function body not present in targeted decompile."
+    },
+    {
+      "classification": "REMAINING_OR_SIZE_LIKE",
+      "level": "CANDIDATE",
+      "primitive": "0x1408c2db0",
+      "reason": "Return is compared against minimum parse size; function body not present."
+    }
+  ],
+  "run": "C-069",
+  "schema": "csmc_analysis_c_full_snapshot_evidence_v1",
+  "status": "SEALED_INDEPENDENT_ANALYSIS_READY_FOR_CROSS_LANE_COMPARE",
+  "unresolved": [
+    ".csmc exact dispatch handler/factory/load entry",
+    "Direct SELECT-result -> stream seek/position edge for ExternalChunk.Offset",
+    "CHNKExta key -> SQLite ExternalID identity bridge",
+    "ModelData registry lookup callsite and concrete Canvas3DModelLoader load entry",
+    "Canvas3DModelLoader/ModelData -> typed ODCChunkCellImporterT dispatch",
+    "EXPLICIT_SERIALIZER_FIELD_READ",
+    "EXPLICIT_INTERNAL_MODEL_CONSTRUCTION",
+    "CONTROLLED_FIXTURE_TO_CONSUMER_MATCH",
+    "Geometry/index/material/UV/bone/weight semantic binding",
+    "F02 physical oracle (still 0/30 before external recheck)"
+  ]
+}

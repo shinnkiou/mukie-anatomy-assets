@@ -1,0 +1,148 @@
+{
+  "guards": {
+    "blender_emit": false,
+    "mainline_answers_requested": false,
+    "runtime": false,
+    "semantic_promotion": false,
+    "sentinel9_reordered": false
+  },
+  "mainline_new_results_consulted": false,
+  "questions": [
+    {
+      "A": "physical offset",
+      "B": "metadata/reference scalar",
+      "evidence_needed": [
+        "targeted decompile of FUN_140d175d0",
+        "def-use of query result",
+        "bound call target receiving the result"
+      ],
+      "id": "DQ-01",
+      "kill_A": "no result-to-position flow",
+      "kill_B": "direct result-to-position flow",
+      "question": "Does the scalar returned by SELECT Offset FROM ExternalChunk WHERE ExternalID feed a stream/cursor-position operation before CHNKExta data is consumed?"
+    },
+    {
+      "A": "typed Odyssey serializer is on CSMC load path",
+      "B": "typed serializer is unrelated to CSMC path",
+      "evidence_needed": [
+        "concrete Canvas3DModelLoader method vtable slots",
+        "direct/virtual call target resolution",
+        "caller/callee provenance"
+      ],
+      "id": "DQ-02",
+      "kill_A": "no reachability under loader path",
+      "kill_B": "one proven dispatch edge",
+      "question": "Does Canvas3DModelLoader or its concrete factory/load entry directly dispatch to any ODCChunkCellImporterT instantiation named by the snapshot?"
+    },
+    {
+      "A": "numeric model-field read",
+      "B": "label/metadata-only importer operation",
+      "evidence_needed": [
+        "importer method body",
+        "reader primitive",
+        "read width",
+        "endianness",
+        "count/length source",
+        "destination offset/container",
+        "upstream/downstream dataflow"
+      ],
+      "id": "DQ-03",
+      "kill_A": "no numeric read/destination",
+      "kill_B": "direct numeric read into model-field destination",
+      "question": "For one bound typed importer (prefer Coordinate, VertexIndex, WeightInfo, or BindMatrix), what exact primitive reads the value and what destination member/container receives it?"
+    },
+    {
+      "A": "container identity/integrity descriptor",
+      "B": "opaque transport metadata",
+      "evidence_needed": [
+        "xref/dataflow from destination member",
+        "readers of same object field",
+        "negative control against ExternalID/key"
+      ],
+      "id": "DQ-04",
+      "kill_A": "unused by chunk/database/identity logic",
+      "kill_B": "direct identity/integrity consumer",
+      "question": "What downstream consumer reads the confirmed 16-byte field stored at object-relative param_1+0x1e by FUN_140d15a90?"
+    },
+    {
+      "A": "cursor advance/seek",
+      "B": "non-position accounting/state update",
+      "evidence_needed": [
+        "function body or instruction-level slice",
+        "state field modified",
+        "before/after cursor observation from static dataflow"
+      ],
+      "id": "DQ-05",
+      "kill_A": "no cursor/source-position state mutation",
+      "kill_B": "direct input cursor mutation",
+      "question": "Is FUN_1408c2dc0 a seek/skip/cursor-advance operation, and if so what coordinate space does its argument use?"
+    },
+    {
+      "A": "exact SQLite block byte length",
+      "B": "enclosing/chunk length with internal padding or metadata",
+      "evidence_needed": [
+        "writer-side symmetry",
+        "destination stream final length",
+        "record boundary relation"
+      ],
+      "id": "DQ-06",
+      "kill_A": "copied bytes != decoded length or extra framed bytes counted",
+      "kill_B": "writer emits exactly decoded/copied byte count",
+      "question": "Does the CHNKSQLi decoded u64 length describe exactly the SQLite byte stream copied by FUN_140d15a90, or a larger enclosing record?"
+    },
+    {
+      "A": "same identifier",
+      "B": "different identifiers/derived representation",
+      "evidence_needed": [
+        "producer of key",
+        "formatting/encoding before SQL %s",
+        "same bytes reaching SQLite and chunk record"
+      ],
+      "id": "DQ-07",
+      "kill_A": "different producer or non-bijective transformation without identity",
+      "kill_B": "same provenance-bound bytes/encoding chain",
+      "question": "Can the 40-byte CHNKExta key be directly bound to the ExternalChunk.ExternalID BLOB used by SELECT/INSERT?"
+    },
+    {
+      "A": "downstream payload only",
+      "B": "mutation region overlaps or is integrity-coupled to container header",
+      "evidence_needed": [
+        "file-coordinate map tying 65-byte envelope to FUN_140d15a90 record boundaries",
+        "oracle failure stage if any"
+      ],
+      "id": "DQ-08",
+      "kill_A": "mutation changes pre-payload container acceptance",
+      "kill_B": "coordinate proof plus unaffected pre-payload parse",
+      "question": "Do F02 M01-M30 mutations occur strictly downstream of the container 16-byte field and CHNKSQLi framing read?"
+    },
+    {
+      "A": "construction-related runtime tokens",
+      "B": "global names only",
+      "evidence_needed": [
+        "non-startup xrefs",
+        "direct load/construction caller"
+      ],
+      "id": "DQ-09",
+      "kill_A": "initializer-only xrefs",
+      "kill_B": "direct runtime consumer",
+      "question": "Do ModelInfo3D/ModelNodeInfo3D string initializers have any non-initializer consumer xrefs on the CSMC loader path?"
+    },
+    {
+      "A": "physical offset hypothesis predicts exact delta",
+      "B": "metadata/reference hypothesis does not require exact delta",
+      "evidence_needed": [
+        "provenance-bound control pair",
+        "ExternalID equality",
+        "physical location delta",
+        "ExternalChunk.Offset values"
+      ],
+      "id": "DQ-10",
+      "kill_A": "unchanged key+relocation but Offset not matching relocation",
+      "kill_B": "repeatable exact delta across independent controls",
+      "question": "Can an otherwise identical controlled fixture relocate an ExternalID-backed payload while preserving key identity, allowing Offset==relocation delta to be tested?"
+    }
+  ],
+  "run": "C-069",
+  "schema": "csmc_analysis_c_discriminating_questions_v1",
+  "status": "SEALED_INDEPENDENT_PACKET"
+}

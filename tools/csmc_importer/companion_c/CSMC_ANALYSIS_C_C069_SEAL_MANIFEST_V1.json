@@ -1,0 +1,21 @@
+{
+  "files": {
+    "CSMC_ANALYSIS_C_DISCRIMINATING_QUESTIONS_V1.json": {
+      "sha256": "b6d06410fcb1ed478f0bcbcd996d0bc9f5db18a13c1f1be3dea88ac63598a082",
+      "size": 6139
+    },
+    "CSMC_ANALYSIS_C_FULL_SNAPSHOT_EVIDENCE_V1.json": {
+      "sha256": "1b04b86cb44a86fc56c35b20664e842f1d2aa96322c18be2f9a32f4e35e2362f",
+      "size": 30637
+    },
+    "CSMC_ANALYSIS_C_FULL_SNAPSHOT_INDEPENDENT_V1.md": {
+      "sha256": "675dabb50817267fcc0c521e2457275f17e879226684c4c435efb222800dd6ee",
+      "size": 12107
+    }
+  },
+  "mainline_new_results_consulted": false,
+  "modeler_exe_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+  "run": "C-069",
+  "schema": "csmc_analysis_c_c069_seal_manifest_v1",
+  "snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342"
+}
