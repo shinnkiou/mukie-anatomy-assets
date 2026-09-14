@@ -1,0 +1,28 @@
+{
+  "schema_version": "csmc_controlled_size_law_probe_v1",
+  "candidate_family": {
+    "single_strides_bytes": [4, 8, 12, 16],
+    "vertex_strides_bytes": [12, 16],
+    "index_widths_bytes": [2, 4],
+    "triangle_strides_bytes": [4, 8, 12, 16]
+  },
+  "geometry_fixture_count": 4,
+  "rig_fixture_count": 5,
+  "geometry_whole_stored_single_count_exact_models": [],
+  "same_phase_geometry": {
+    "pair": "F02_F04",
+    "prefix_delta_bytes": 864,
+    "teacher_deltas": {"vertices": 22, "triangles": 46, "corners": 138},
+    "pure_single_count_exact_models": [],
+    "vertex_plus_corner_index_exact_models": [],
+    "vertex_plus_triangle_exact_models": []
+  },
+  "rig_whole_stored_single_count_exact_models": [],
+  "rig_whole_stored_bone_plus_weight_exact_models": [],
+  "simple_geometry_size_law_rejected": true,
+  "simple_rig_size_law_rejected": true,
+  "interpretation": "WHOLE_STORED_AND_PHASE_PREFIX_SIZE_NOT_SINGLE_SIMPLE_FIXED_STRIDE_ARRAY",
+  "semantic_promotion": false,
+  "blender_emit_ready": false,
+  "raw_values_embedded": false
+}
