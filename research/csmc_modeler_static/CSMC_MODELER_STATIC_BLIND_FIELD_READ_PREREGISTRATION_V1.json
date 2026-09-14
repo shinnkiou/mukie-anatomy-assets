@@ -1,0 +1,60 @@
+{
+  "schema": "csmc_modeler_static_blind_field_read_preregistration_v1",
+  "lane": "MODELER_CONSUMER_SIDE_STATIC_ANALYSIS",
+  "status": "PREREGISTERED_NOT_PROOF",
+  "binary_identity": {
+    "product": "CLIP STUDIO MODELER",
+    "version": "1.10.13",
+    "exe_sha256": "2EBE2D90F8609496CB2E81A7C9DEFAE4E851479B8E5DB76EB9DD8EC05D943150"
+  },
+  "question": "Which direct input-read primitive and data-flow consume the already-bounded F02 DATA2 variable-prefix region, independent of any physical mutation-oracle outcome or semantic label?",
+  "pre_oracle": true,
+  "oracle_results_visible_to_static_search": false,
+  "semantic_labels_used_for_target_selection": false,
+  "structural_target": {
+    "fixture_ref": "CSMC_F02_QUAD",
+    "payload_offset": 65,
+    "variable_prefix_candidate_start_payload_relative": 0,
+    "proven_invariant_start_payload_relative": 3216,
+    "target_relation": "VARIABLE_PREFIX_BEFORE_PROVEN_INVARIANT_CORE",
+    "boundary_sentinel_offsets_payload_relative": [3200, 3208, 3215, 3216, 3217, 3224, 3232]
+  },
+  "preferred_static_scope": [
+    "ODIChunkCellImporterT",
+    "ODCImporterT",
+    "serialize_traits",
+    "direct sequential input cursor/read primitives reachable from the existing CSMC consumer route"
+  ],
+  "required_for_confirmed_field_read": [
+    "direct_read_or_field_access",
+    "provenance_bound_function_or_call_addresses",
+    "width_bytes",
+    "endianness",
+    "count_or_length_source",
+    "destination_or_downstream_data_flow"
+  ],
+  "offset_binding_rule": "Report a payload-relative offset/range only if it is derived from instruction-level cursor/data-flow evidence. Do not infer offsets from nearby strings, RTTI, field names, or post-oracle outcome patterns.",
+  "consumer_name_rule": "A semantic-looking class or field label is not sufficient. The read primitive and destination/data-flow must be connected before the label can support a claim.",
+  "confidence": {
+    "CONFIRMED": "Direct executable read/field edge with width/endian/count-or-length and destination/data-flow, provenance-bound and not contradicted.",
+    "STRONG": "Multiple connected direct edges plus independent controlled evidence, with no missing bridge on the claimed relation.",
+    "CANDIDATE": "String/RTTI proximity or one unbound indirect xref only.",
+    "UNRESOLVED": "No direct field-read bridge found within the bounded search."
+  },
+  "forbidden": [
+    "first_pass_owner_edge_rescan",
+    "broad_strings_inventory",
+    "oracle_outcome_guided_semantic_name_search",
+    "runtime_execution",
+    "hook_injection_patch",
+    "save_or_ctrl_s",
+    "license_activation_drm_analysis",
+    "raw_decompiler_publication",
+    "semantic_promotion",
+    "mainline_mutation",
+    "rio26_mutation"
+  ],
+  "semantic_promotion": false,
+  "blender_emit": false,
+  "runtime_dispatch": false
+}
