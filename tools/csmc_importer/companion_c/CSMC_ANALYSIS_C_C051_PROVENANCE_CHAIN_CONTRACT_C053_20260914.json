@@ -1,0 +1,65 @@
+{
+  "schema_version": "csmc_analysis_c_c051_provenance_chain_contract_c053_v1",
+  "lane": "CSMC_ANALYSIS_COMPANION_C",
+  "status": "PROVENANCE_GATE_READY_INPUT_NOT_YET_ACQUIRED",
+  "question": "Can future C-051 aggregate observations be cryptographically bound to the exact Blender source fixture and teacher metadata that produced each external CSMC container without exposing raw payload bytes?",
+  "required_fixtures": [
+    "MAT3_ALLUSED",
+    "MAT3_ONEUSED",
+    "THREE_CUBES",
+    "UV_OFF",
+    "UV_ON",
+    "W50_50",
+    "W25_75"
+  ],
+  "provenance_chain": [
+    "source_blend_sha256",
+    "teacher_row_sha256",
+    "csmc_container_sha256",
+    "aggregate_observation"
+  ],
+  "teacher_binding": {
+    "source_blend_sha256": "required lowercase SHA-256",
+    "teacher_row_sha256": "SHA-256 over canonical public-safe teacher metadata + source_blend_sha256"
+  },
+  "conversion_binding": {
+    "source_blend_sha256": "must equal teacher binding",
+    "teacher_row_sha256": "must equal teacher binding",
+    "csmc_container_sha256": "required lowercase SHA-256",
+    "converter_id": "required non-empty identifier"
+  },
+  "analysis_binding": {
+    "source_blend_sha256": "must equal conversion binding",
+    "teacher_row_sha256": "must equal conversion binding",
+    "csmc_container_sha256": "must equal conversion binding",
+    "logical_length": "required non-negative integer",
+    "stored_length": "required non-negative integer",
+    "cadence_count": "required non-negative integer",
+    "outer_framing_rule": "stored_length = 8 + ceil(logical_length / 8) * 8"
+  },
+  "forbidden_public_fields": [
+    "raw_csmc_bytes",
+    "csmc_payload",
+    "csmc_blob",
+    "raw_payload",
+    "raw_blend_bytes",
+    "binary_blob",
+    "payload_base64"
+  ],
+  "safety": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "mainline_mutations": 0,
+    "rio26_mutations": 0,
+    "automatic_integration": false,
+    "raw_private_bytes_published": false
+  },
+  "current_boundary": "Validator and Blender provenance probe are ready. No actual C-051 Blender provenance manifest or converted CSMC set is claimed acquired.",
+  "semantic_claim": "NONE"
+}
