@@ -1,0 +1,76 @@
+{
+  "run_id": "C-064",
+  "date": "2026-09-14",
+  "classification": "RENDER_PART_RESIDUAL_LOCALIZATION_RECONCILED_LEVEL4_NOT_PROMOTED",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "source": {
+    "mainline_branch": "csmc-importer-experimental-20260902",
+    "mainline_head": "b4052f282d48508b8f8573d49b9240cf74ff2697",
+    "findings_commit": "1732f8c5918c8f9c46b812c8d33d61cf5c5d3e00",
+    "aggregate_commit": "5d09201522ab995676c34830a39e80172c739d8d",
+    "source_ci_run": 34825791598,
+    "source_ci_conclusion": "success",
+    "source_corpus_sha256": "be6132ef83959167ffd19218810e099f0bd164714fbd1ec4770f9296b38643b6",
+    "public_safe_aggregate_sha256": "3a09ac35d40a254b6e6fc3bbf1e004505d02ca732eb931152fbc618c1df3fc66"
+  },
+  "candidate": "TAIL_2456_RENDER_PART_CARDINALITY_CANDIDATE",
+  "confidence_before": "LEVEL_4_CANDIDATE",
+  "confidence_after": "LEVEL_4_CANDIDATE_REFINED_NOT_PROMOTED",
+  "triple_common": {
+    "length_qwords": 924,
+    "length_bytes": 7392,
+    "start_qwords": {"F03": 442, "F06": 453, "F07": 465},
+    "v01_occurrence_qword": 531781
+  },
+  "pre_common_shifts": {
+    "F06_minus_F03_bytes": 88,
+    "F07_minus_F03_bytes": 184,
+    "F07_minus_F06_bytes": 96
+  },
+  "logical_length_deltas": {
+    "F06_minus_F03": 2555,
+    "F07_minus_F03": 2651,
+    "F07_minus_F06": 96
+  },
+  "post_common_growth": {
+    "F06_minus_F03_bytes": 2467,
+    "F07_minus_F03_bytes": 2467
+  },
+  "cadence_bytes": 2456,
+  "other_bytes": 11,
+  "boundary_scalar_negative_control": {
+    "window_bytes": 2048,
+    "candidate_configurations_evaluated": 40928,
+    "hard_pass_count": 0,
+    "rejection_scope": "DIRECT_RAW_SHARED_BOUNDARY_RELATIVE_SCALAR_ONLY"
+  },
+  "semantic_state": {
+    "geometry": "UNRESOLVED",
+    "index_topology": "UNRESOLVED",
+    "serializer_field_read": "UNRESOLVED",
+    "controlled_fixture_to_consumer_match": "UNRESOLVED"
+  },
+  "interpretation": {
+    "positive_structural_update": "The Level-4 cadence candidate is more tightly localized: F06 and F07 share identical 2467-byte post-common growth decomposing as 2456+11, while their distinction appears as a 96-byte pre-common shift difference.",
+    "negative_control_update": "A shared boundary-relative direct raw u8/u16/u32 scalar equal to render-part count or cadence count is rejected only inside the preregistered final-2048-byte boundary window.",
+    "not_proven": [
+      "material record semantics",
+      "object record semantics",
+      "geometry/index semantics",
+      "encoded or indirect count representation",
+      "consumer field binding"
+    ]
+  },
+  "runtime_jobs": 0,
+  "modeler_actions": 0,
+  "worker_actions": 0,
+  "canary_actions": 0,
+  "control_gate_actions": 0,
+  "rio26_mutations": 0,
+  "mainline_mutations": 0,
+  "automatic_integration": false,
+  "semantic_promotion_count": 0,
+  "blender_emit_ready": false,
+  "runtime_dispatch": false,
+  "raw_private_bytes_published": false
+}

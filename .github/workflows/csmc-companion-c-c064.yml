@@ -1,0 +1,27 @@
+name: CSMC Companion C C064 structural reconciliation
+
+on:
+  push:
+    branches:
+      - csmc-analysis-companion-c-20260913
+    paths:
+      - 'tools/csmc_importer/companion_c/csmc_analysis_c_render_part_residual_reconcile_c064.py'
+      - 'tools/csmc_importer/companion_c/test_csmc_analysis_c_render_part_residual_reconcile_c064.py'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_RENDER_PART_RESIDUAL_RECONCILIATION_C064_20260914.json'
+      - 'tools/csmc_importer/companion_c/CSMC_ANALYSIS_C_RUN064_RENDER_PART_RESIDUAL_RECONCILIATION_20260914.md'
+      - '.github/workflows/csmc-companion-c-c064.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  c064-fail-closed:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run C064 reconciliation tests
+        working-directory: tools/csmc_importer/companion_c
+        run: python -m unittest -v test_csmc_analysis_c_render_part_residual_reconcile_c064.py
