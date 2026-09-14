@@ -1,0 +1,47 @@
+{
+  "schema": "never-tear-ai3d-runtime-delta-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "linear_issue": "RIO-60",
+  "status": "ACTIVE",
+  "stage": "QA",
+  "recorded_at": "2026-09-14T23:06:10+09:00",
+  "physical_canary": {
+    "job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-004",
+    "job_id": "b67624eb-6be0-4715-a1f5-0705286abeb0",
+    "command_id": "AI3D-013-STRUCTURE-CANARY-004-NEVER-TEAR",
+    "worker_version": "0.2.3-ai3d-structure-loaderfix",
+    "capability": "ai3d_structure_module_v1",
+    "stable_launcher_physical_activation": "PASS",
+    "claim_lease_heartbeat": "PASS",
+    "renderer": "Blender 2.83.20 / BLENDER_EEVEE",
+    "automated_qa": "PASS",
+    "visual_qa": "PENDING",
+    "canary_promoted": false,
+    "physical_execution_claimed": true
+  },
+  "artifact": {
+    "artifact_id": "structure-canary-v4-render-d97260a5ac3902a7",
+    "category": "PIXEL_RENDER_EVIDENCE",
+    "size_bytes": 432879,
+    "png_sha256": "d97260a5ac3902a7acbaa4d7d6c8c490ed33eb7959e996f8759e553236491940",
+    "raw_pixel_sha256": "28d99d6c4a4e2949a52699fc3eab53bbad2d1bde771da362364fa75b52ab73da",
+    "provider": "SUPABASE_STORAGE",
+    "storage_readback": "PASS",
+    "storage_readback_sha256": "d97260a5ac3902a7acbaa4d7d6c8c490ed33eb7959e996f8759e553236491940"
+  },
+  "checkpoint": {
+    "supabase_checkpoint_id": "cp-ai3d-013-8d903e3e913562f2",
+    "base44_checkpoint_id": "6aa7ffd4b59d05756e3d25d5",
+    "base44_commit": "d5dc3d4761d898a13086798aeca2d619e5b9b3d1"
+  },
+  "linear_comment_id": "4bf8a520-c655-4f30-bcdb-c632a7f5f41c",
+  "local_windows_evidence": "%LOCALAPPDATA%\\UKIE_AI_BRIDGE\\ai3d\\jobs\\56bc70dcff5bd421f082a945\\ai3d_structure_capability_canary.png",
+  "hard_boundary": {
+    "structure_module_capability_promoted": false,
+    "ai3d010_unblocked": false,
+    "geometry_research": "CLOSED",
+    "github_staged_evidence_is_physical": false
+  },
+  "next_action": "Perform real visual QA on the physical CANARY-004 PNG. Only on visual PASS promote ai3d_structure_module_v1, complete RIO-60, unblock AI3D-010, then execute module-plan-7d0ef550473d76e6."
+}
