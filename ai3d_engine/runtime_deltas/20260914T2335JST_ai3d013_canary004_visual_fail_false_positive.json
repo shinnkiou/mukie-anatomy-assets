@@ -1,0 +1,46 @@
+{
+  "schema": "never-tear-ai3d-runtime-delta-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "linear_issue": "RIO-60",
+  "status": "ACTIVE",
+  "stage": "QA_FAIL_FIX",
+  "recorded_at": "2026-09-14T23:35:00+09:00",
+  "physical_canary": {
+    "job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-004",
+    "job_id": "b67624eb-6be0-4715-a1f5-0705286abeb0",
+    "worker_version": "0.2.3-ai3d-structure-loaderfix",
+    "renderer": "Blender 2.83.20 / BLENDER_EEVEE",
+    "automated_qa_reported": "PASS",
+    "visual_qa": "FAIL",
+    "canary_promoted": false,
+    "visual_failure": "Expected central door-like opening is not visible; render shows a continuous solid wall.",
+    "artifact_id": "structure-canary-v4-render-d97260a5ac3902a7",
+    "png_sha256": "d97260a5ac3902a7acbaa4d7d6c8c490ed33eb7959e996f8759e553236491940",
+    "blend_sha256": "8ca9b7321d59d6870e28a13646e55fe261c52c43b56adff0e23a0300e205f55f"
+  },
+  "false_positive_diagnosis": {
+    "confirmed_code_defect": "opening_boolean_exact was computed as boolean_count == 1, so it verified command count rather than the existence of an opening in the resulting mesh.",
+    "physical_result_boolean_solver": "DEFAULT",
+    "compatibility_hypothesis": "On Blender 2.83 default Boolean, the cutter lower face is coplanar with the wall/floor boundary; this may cause a no-op/degenerate subtraction. Treat as hypothesis until bounded CANARY-005 proves the repair.",
+    "plan_boundary": "Synthetic canary only; production plan was not executed or mutated."
+  },
+  "repair_plan": {
+    "next_worker_version": "0.2.4-ai3d-structure-visualfix",
+    "next_canary": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-005",
+    "changes": [
+      "Apply a bounded execution-only overlap epsilon to a cutter whose lower boundary is coplanar with the wall lower boundary.",
+      "Verify the actual opening using a post-Boolean mesh ray probe through the opening center.",
+      "Verify a solid control ray still hits the wall so disappearance of the wall cannot false-pass.",
+      "Require the geometry probes server-side before accepting automated QA PASS.",
+      "Keep semantic promotion false until a new physical PNG passes visual QA."
+    ]
+  },
+  "hard_boundary": {
+    "structure_module_capability_promoted": false,
+    "ai3d010_unblocked": false,
+    "geometry_research": "CLOSED",
+    "production_plan_executed": false
+  },
+  "next_action": "Build/deploy v0.2.4 + isolated CANARY-005 transport, run one bounded physical retry through the Stable Launcher, require real geometry-probe QA + durable SHA readback + visual QA, then promote only on all PASS."
+}
