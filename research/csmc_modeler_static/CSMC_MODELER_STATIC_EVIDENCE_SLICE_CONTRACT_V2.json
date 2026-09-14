@@ -1,0 +1,109 @@
+{
+  "schema": "csmc_modeler_static_evidence_slice_v2",
+  "lane": "MODELER_CONSUMER_SIDE_STATIC_ANALYSIS",
+  "purpose": "Fail-closed public-safe intake for direct consumer-side static evidence. V2 makes direct-edge kind and completion gates machine-explicit.",
+  "binary_identity": {
+    "product": "CLIP STUDIO MODELER",
+    "version": "1.10.13",
+    "exe_sha256_required": "2EBE2D90F8609496CB2E81A7C9DEFAE4E851479B8E5DB76EB9DD8EC05D943150"
+  },
+  "accepted_evidence_classes": [
+    "EXPLICIT_CSMC_HANDLER_ENTRY",
+    "EXPLICIT_EXTERNALCHUNK_OFFSET_LOOKUP",
+    "EXPLICIT_MODELDATA_LOOKUP",
+    "EXPLICIT_CANVAS3D_LOAD_ENTRY",
+    "EXPLICIT_SERIALIZER_FIELD_READ",
+    "EXPLICIT_INTERNAL_MODEL_CONSTRUCTION",
+    "CONTROLLED_FIXTURE_TO_CONSUMER_MATCH"
+  ],
+  "accepted_confidence": ["CONFIRMED", "STRONG", "CANDIDATE", "REJECTED"],
+  "direct_edge_kinds": [
+    "DIRECT_CALL",
+    "DIRECT_READ",
+    "DIRECT_WRITE",
+    "EXPLICIT_REGISTRY_LOOKUP",
+    "EXPLICIT_FACTORY_SELECTION",
+    "EXPLICIT_FIELD_ACCESS",
+    "READER_WRITER_SYMMETRY",
+    "DIRECT_DATA_FLOW"
+  ],
+  "public_safe_fields": [
+    "schema_version",
+    "lane",
+    "evidence_id",
+    "evidence_class",
+    "confidence",
+    "evidence_source_kind",
+    "exe_sha256",
+    "direct_edge_kind",
+    "caller_va",
+    "callee_va",
+    "function_va",
+    "class_or_template",
+    "field_label",
+    "read_or_write_primitive_va",
+    "width_bytes",
+    "endianness",
+    "count_or_length_source",
+    "destination_summary",
+    "upstream_edge_summary",
+    "downstream_edge_summary",
+    "controlled_fixture_ref",
+    "negative_control",
+    "public_safe_pseudocode",
+    "provenance_hash",
+    "semantic_promotion",
+    "blender_emit",
+    "runtime_dispatch",
+    "raw_private_bytes_embedded"
+  ],
+  "forbidden_public_fields": [
+    "raw_exe_bytes",
+    "raw_dll_bytes",
+    "raw_decompiler_dump",
+    "raw_disassembly_dump",
+    "private_csmc_payload",
+    "purchased_model_bytes",
+    "credentials",
+    "license_or_activation_data"
+  ],
+  "confirmed_serializer_field_read_requires": [
+    "direct_edge_kind",
+    "function_va",
+    "read_or_write_primitive_va",
+    "width_bytes",
+    "endianness",
+    "count_or_length_source",
+    "destination_summary",
+    "upstream_edge_summary",
+    "downstream_edge_summary",
+    "negative_control",
+    "provenance_hash"
+  ],
+  "confirmed_fixture_match_requires": [
+    "controlled_fixture_ref",
+    "direct_edge_kind",
+    "upstream_edge_summary",
+    "downstream_edge_summary",
+    "negative_control",
+    "provenance_hash"
+  ],
+  "semantic_guard": {
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_dispatch": false,
+    "raw_private_bytes_embedded": false,
+    "candidate_is_not_fact": true,
+    "fixture_match_requires_both_sides": true
+  },
+  "isolation": {
+    "modeler_process_execution": false,
+    "modeler_process_mutation": false,
+    "hook_injection_patch": false,
+    "save_trigger": false,
+    "worker_mutation": false,
+    "rio26_mutation": false,
+    "mainline_branch_mutation": false,
+    "production_or_stable_mutation": false
+  }
+}
