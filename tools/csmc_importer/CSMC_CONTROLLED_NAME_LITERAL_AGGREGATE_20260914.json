@@ -1,0 +1,30 @@
+{
+  "schema_version": "csmc_controlled_name_literal_probe_v1",
+  "fixture_count": 12,
+  "teacher_identifier_count": 53,
+  "encoding_count": 3,
+  "encodings": ["ascii", "utf-16le", "utf-16be"],
+  "search_surfaces": ["sqlite_file_bytes", "character_blob_bytes"],
+  "literal_searches_per_surface": 159,
+  "literal_searches_total": 318,
+  "sqlite_file_literal_occurrences_total": 0,
+  "character_blob_literal_occurrences_total": 0,
+  "interpretation": "SOURCE_IDENTIFIER_PLAINTEXT_ASCII_UTF16_NOT_OBSERVED",
+  "semantic_promotion": false,
+  "name_metadata_region_confirmed": false,
+  "raw_values_embedded": false,
+  "fixtures": [
+    {"fixture_id":"CSMC_F01_TRIANGLE","teacher_identifier_count":2,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_F02_QUAD","teacher_identifier_count":2,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_F03_CUBE","teacher_identifier_count":2,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_F04_CUBE_SUBDIV","teacher_identifier_count":2,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_F05_CUBE_UV","teacher_identifier_count":3,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_F06_CUBE_MAT2","teacher_identifier_count":4,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_F07_TWO_CUBES","teacher_identifier_count":5,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_R01_CUBE_B1_W0","teacher_identifier_count":6,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_R02_CUBE_B1_W100","teacher_identifier_count":6,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_R03_CUBE_B2_W100","teacher_identifier_count":7,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_R04_CUBE_B2_SPLIT","teacher_identifier_count":7,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0},
+    {"fixture_id":"CSMC_R05_CUBE_B2_MIX50","teacher_identifier_count":7,"sqlite_file_literal_occurrences":0,"character_blob_literal_occurrences":0}
+  ]
+}
