@@ -20,6 +20,7 @@ jobs:
       - name: Compile Importer Lab public-safe infrastructure
         run: |
           python -m py_compile \
+            tools/csmc_importer/importer_lab/csmc_importer_lab_policy.py \
             tools/csmc_importer/importer_lab/csmc_importer_lab_manifest.py \
             tools/csmc_importer/importer_lab/csmc_importer_lab_runner.py \
             tools/csmc_importer/importer_lab/test_csmc_importer_lab_m0_m1_synthetic.py
