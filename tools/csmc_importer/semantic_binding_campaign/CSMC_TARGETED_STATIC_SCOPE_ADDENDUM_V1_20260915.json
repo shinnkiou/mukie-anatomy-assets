@@ -1,0 +1,70 @@
+{
+  "admission_effect": {
+    "blender_emit": false,
+    "dq_bridge_loader_ser_01": "UNCHANGED_WAIT_FOR_BRIDGE_PROOF",
+    "dq_ser_width_01": "UNCHANGED_WAIT_FOR_PROOF",
+    "proof_grade": false,
+    "runtime_dispatch": false,
+    "semantic_promotion": false
+  },
+  "addendum_id": "CSMC_TARGETED_STATIC_SCOPE_ADDENDUM_V1_20260915",
+  "applies_after": "CSMC_TARGETED_STATIC_EXTRACTION_REQUEST_V1_20260914",
+  "classification": "BOUNDED_PHASE_B_SCOPE_REFINEMENT_NOT_PROOF",
+  "conditional_container_wrapper": {
+    "condition": "Only if factory/vtable resolution points to 0x141658300",
+    "fact": "0x1416586c0 is the sole exported direct caller of 0x141658300",
+    "wrapper_va": "0x1416586c0"
+  },
+  "negative_controls": [
+    "None of 0x140f5ac20, 0x140f5e510, 0x140e7c270, 0x140e78810 appears in targeted_decompile_index.tsv.",
+    "The ancestry does not connect to C02 in the exported direct-call graph.",
+    "Direct-call ancestry alone does not prove PW3DModelDataLoader/PWCanvas3DModelLoader ownership or serializer semantics."
+  ],
+  "observed_direct_call_ancestry": [
+    {
+      "edge_kind": "DIRECT_CALL",
+      "note": "root-like external caller; target also self-recurses",
+      "source_va": "0x140e78810",
+      "target_va": "0x140e7c270"
+    },
+    {
+      "edge_kind": "DIRECT_CALL",
+      "note": "unique non-self forward ancestor in exported direct call graph",
+      "source_va": "0x140e7c270",
+      "target_va": "0x140f5e510"
+    },
+    {
+      "edge_kind": "DIRECT_CALL",
+      "note": "sole direct caller of 0x140f5ac20",
+      "source_va": "0x140f5e510",
+      "target_va": "0x140f5ac20"
+    },
+    {
+      "edge_kind": "DIRECT_CALL",
+      "note": "sole direct caller of 0x140f64600",
+      "source_va": "0x140f5ac20",
+      "target_va": "0x140f64600"
+    },
+    {
+      "edge_kind": "DIRECT_CALL",
+      "note": "sole direct caller of ModelData-string candidate function",
+      "source_va": "0x140f64600",
+      "target_va": "0x140f62d20"
+    },
+    {
+      "edge_kind": "DIRECT_CALL",
+      "note": "candidate transfer/stream-helper path",
+      "source_va": "0x140f62d20",
+      "target_va": "0x140f650c0"
+    }
+  ],
+  "phase_b_conditional_decompile_order": [
+    "0x140f5ac20",
+    "0x140f5e510",
+    "0x140e7c270",
+    "0x140e78810"
+  ],
+  "schema_version": "csmc_targeted_static_scope_addendum_v1",
+  "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+  "trigger": "Use only if the primary six-function extraction and vtable/factory trace do not establish or falsify the ownership/provenance bridge."
+}
