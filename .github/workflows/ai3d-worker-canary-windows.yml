@@ -27,6 +27,13 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Apply canary v0.1.1 compatibility patch
+        shell: pwsh
+        run: |
+          python ai3d_engine/windows_worker/apply_canary_compat_patch_v011.py
+          Select-String -Path ai3d_engine/windows_worker/ai3d_worker.py -Pattern '0.1.1-ai3d-canary-compat','--python-exit-code'
+          Select-String -Path ai3d_engine/windows_worker/blender_physical_mvp.py -Pattern 'BLENDER_EEVEE','actual_render_engine','actual_view_look'
+
       - name: Syntax and source self-test
         shell: pwsh
         run: |
@@ -62,12 +69,14 @@ jobs:
           $size = (Get-Item $exe).Length
           $manifest = [ordered]@{
             schema_version = "never-tear-ai3d-worker-release-v1"
-            worker_version = "0.1.0-ai3d-canary"
+            worker_version = "0.1.1-ai3d-canary-compat"
             protocol = "never-tear-ai3d-worker-v1"
             allowed_actions = @("ai3d_blender_physical_mvp_v1")
             arbitrary_shell = $false
             cloud_filesystem_paths = $false
             requires_existing_ukie_pairing = $true
+            blender_legacy_eevee_fallback = $true
+            blender_python_exit_code = 31
             exe_sha256 = $sha
             exe_size_bytes = $size
             source_commit = "${env:GITHUB_SHA}"
