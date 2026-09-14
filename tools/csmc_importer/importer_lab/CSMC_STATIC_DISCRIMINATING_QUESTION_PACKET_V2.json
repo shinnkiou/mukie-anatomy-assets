@@ -1,0 +1,82 @@
+{
+  "schema_version": "csmc_static_discriminating_question_packet_v2",
+  "packet_id": "CSMC_STATIC_DISCRIMINATING_QUESTION_PACKET_V2_20260914",
+  "canonical_input": {
+    "global_handoff_row": 212,
+    "companion_c069_row": 209,
+    "consumer_phase_row": 210,
+    "importer_lab_v12_row": 211
+  },
+  "source_identity": {
+    "source_binary_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+    "source_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342"
+  },
+  "questions": [
+    {
+      "question_id": "DQ-BRIDGE-LOADER-SER-01",
+      "priority": 0,
+      "target": "EXPLICIT_SERIALIZER_FIELD_READ",
+      "role": "ADDITIONAL_BINDING_PRECONDITION",
+      "question": "What provenance-bound direct/factory/vtable edge connects the confirmed ModelData -> Canvas3DModelLoader corridor to one concrete serializer/importer reader?",
+      "required_static_evidence": [
+        "C02 source anchor",
+        "source function VA",
+        "edge kind",
+        "target serializer/importer reader VA",
+        "consumer object provenance",
+        "negative control",
+        "provenance hash"
+      ],
+      "semantic_promotion": false
+    },
+    {
+      "question_id": "DQ-SER-WIDTH-01",
+      "priority": 1,
+      "target": "EXPLICIT_SERIALIZER_FIELD_READ",
+      "role": "FROZEN_WIDTH_DISCRIMINATOR",
+      "precondition": "DQ-BRIDGE-LOADER-SER-01 is admissible and the width evidence references that bridge; F02 pruning additionally requires the existing F02_DATA2_VARIABLE_PREFIX binding gate.",
+      "competing_hypotheses": ["16-bit direct primitive", "32-bit direct primitive"],
+      "accepted_width_bytes": [2, 4],
+      "canonical_gate_spec": "CSMC_DQ_SER_WIDTH_GATE_V1.json",
+      "canonical_gate_code": "csmc_serializer_field_read_gate.py",
+      "semantic_promotion": false
+    }
+  ],
+  "scope_firewall": [
+    {
+      "rule_id": "SF01",
+      "scope": "CHNKSQLI_EXTERNALCHUNK_CORRIDOR",
+      "evidence": "C-069 EDGE-C069-02",
+      "rule": "Confirmed BE-u64 reads in the CHNKSQLi/ExternalChunk routine do not answer ModelData serializer width/endian and cannot satisfy DQ-BRIDGE-LOADER-SER-01."
+    },
+    {
+      "rule_id": "SF02",
+      "scope": "CANDIDATE_SERIALIZER_FAMILY",
+      "evidence": "C-069 DQ-SER-01 / DQ-SER-02 typed ODCChunkCellImporterT families",
+      "rule": "Typed serializer/importer names are candidate-only until a provenance-bound bridge from C02 is admitted."
+    },
+    {
+      "rule_id": "SF03",
+      "scope": "MODELDATA_CONSUMER_PATH",
+      "evidence": "C02",
+      "rule": "ModelData -> Canvas3DModelLoader proves a consumer corridor only; it does not prove serializer width or geometry/index semantics."
+    }
+  ],
+  "cross_lane_alignment": {
+    "C069_DQ_SER_01": "ALIGNED_WITH_MAINLINE_WIDTH_ENDIAN_COUNT_DESTINATION_QUESTIONS_NOT_ANSWERED",
+    "C069_DQ_SER_02": "ALIGNED_WITH_DQ_SER_WIDTH_01_NOT_ANSWERED",
+    "automatic_promotion": false
+  },
+  "f02": {
+    "physical_oracle": "0/30 PENDING_MANUAL_ORACLE",
+    "frozen_questions_resolved": 0,
+    "canonical_order_overwrite": false,
+    "sentinel9_order": ["M01","M10","M13","M14","M15","M18","M22","M23","M30"]
+  },
+  "guards": {
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_dispatch": false,
+    "modeler_runtime_action": false
+  }
+}

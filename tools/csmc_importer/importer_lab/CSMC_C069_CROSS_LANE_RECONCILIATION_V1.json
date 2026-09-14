@@ -1,0 +1,57 @@
+{
+  "schema_version": "csmc_c069_cross_lane_reconciliation_v1",
+  "report_id": "CSMC_C069_CROSS_LANE_RECONCILIATION_V1_20260914",
+  "mainline_input": {
+    "global_handoff_row": 212,
+    "consumer_phase_row": 210,
+    "v12_row": 211
+  },
+  "companion_input": {
+    "run_id": "C-069",
+    "supabase_row": 209,
+    "github_head": "aad64b96fad0699426d36f1f0bfd290a4f5751ad"
+  },
+  "findings": [
+    {
+      "finding_id": "XR01",
+      "classification": "OUT_OF_SCOPE_FOR_MODELDATA_SERIALIZER_WIDTH",
+      "companion_evidence": "EDGE-C069-02 confirms repeated BE-u64 reads in the 0x140d15a90 CHNKSQLi/ExternalChunk routine.",
+      "mainline_effect": "SCOPE_FIREWALL",
+      "reason": "No provenance-bound bridge from this reader to the ModelData serializer field reader is proven."
+    },
+    {
+      "finding_id": "XR02",
+      "classification": "ALIGNED_NOT_MERGED",
+      "companion_evidence": "DQ-SER-01 asks width/endian/count/destination for a Coordinate specialization.",
+      "mainline_effect": "QUESTION_FAMILY_ALIGNMENT",
+      "reason": "It independently asks the same structural questions but does not prove target-path reachability."
+    },
+    {
+      "finding_id": "XR03",
+      "classification": "ALIGNED_NOT_MERGED",
+      "companion_evidence": "DQ-SER-02 asks 16/32/other width and destination for a VertexIndex specialization.",
+      "mainline_effect": "QUESTION_FAMILY_ALIGNMENT",
+      "reason": "It independently supports the discriminator design but does not answer DQ-SER-WIDTH-01."
+    },
+    {
+      "finding_id": "XR04",
+      "classification": "NO_DIRECT_PATH_OBSERVED_NOT_REJECTION",
+      "companion_evidence": "C-069 observed zero direct paths from the inspected chunk/registration sources to listed CrM construction targets.",
+      "mainline_effect": "NEGATIVE_CONTROL",
+      "reason": "Direct-call promotion is blocked; indirect/virtual construction bridges remain possible."
+    }
+  ],
+  "derived_next_step": {
+    "precondition_question": "DQ-BRIDGE-LOADER-SER-01",
+    "frozen_discriminator": "DQ-SER-WIDTH-01",
+    "target": "EXPLICIT_SERIALIZER_FIELD_READ",
+    "rule": "The existing fail-closed width gate remains canonical. A separate provenance bridge must be admitted before a width result is treated as belonging to the ModelData serializer corridor."
+  },
+  "promotions": {
+    "explicit_serializer_field_read": "UNRESOLVED",
+    "controlled_fixture_to_consumer_match": "UNRESOLVED",
+    "geometry": "UNRESOLVED",
+    "index_topology": "UNRESOLVED",
+    "semantic_promotion_count": 0
+  }
+}
