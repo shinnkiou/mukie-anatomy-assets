@@ -1,0 +1,33 @@
+{
+  "schema_version": "never-tear-ai3d-runtime-delta-v1",
+  "recorded_at_jst": "2026-09-14T14:03:00+09:00",
+  "task_id": "AI3D-002",
+  "status": "ACTIVE",
+  "stage": "IMPLEMENT",
+  "change": "VERIFIED_COMPANION_AUTO_ARM_GATE_INSTALLED",
+  "supabase": {
+    "project_id": "vbuokbwglauibabinaqs",
+    "migration_version": "20260914050300",
+    "migration_name": "ai3d_auto_arm_verified_companion_canary",
+    "trigger": "trg_ai3d002_auto_arm_verified_companion",
+    "trigger_function": "ai3d_internal.arm_ai3d002_canary_on_verified_companion",
+    "security": "SECURITY_INVOKER_PRIVATE_SCHEMA",
+    "security_advisor_checked": true,
+    "ai3d_worker_jobs_after_install": 0
+  },
+  "gate": {
+    "required_ai3d_worker_version": "0.1.0-ai3d-canary",
+    "required_ai3d_contract_version": "never-tear-ai3d-worker-v1",
+    "required_capability": "ai3d_blender_physical_mvp_v1",
+    "freshness_seconds": 90,
+    "heartbeat_alignment_seconds": 5,
+    "legacy_worker_eligible": false,
+    "fixed_job_key": "AI3D-002-PHYSICAL-CANARY-001",
+    "fixed_command_id": "AI3D-002-CANARY-001-NEVER-TEAR",
+    "max_attempts": 1,
+    "duplicate_guard": "UNIQUE_JOB_KEY_ON_CONFLICT_DO_NOTHING"
+  },
+  "physical_execution_claimed": false,
+  "canary_queued": false,
+  "next_action": "Start the verified AI3D companion on the already-paired Windows device. Its first fresh verified heartbeat now auto-queues exactly one physical CANARY. Observe claim/lease/heartbeat, durable PNG provider readback, automated QA, then visual QA before promotion."
+}
