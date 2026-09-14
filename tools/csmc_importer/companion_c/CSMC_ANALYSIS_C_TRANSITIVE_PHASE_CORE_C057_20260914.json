@@ -1,0 +1,60 @@
+{
+  "schema_version": "csmc_analysis_c_transitive_phase_core_c057_v1",
+  "run_id": "C-057",
+  "date_jst": "2026-09-14",
+  "classification": "PHASE_CLASS_TRANSITIVE_INVARIANT_SUFFIX_CORE_CANDIDATE",
+  "source": {
+    "mainline_phase_head": "1f47d9fad49d074fc199bca27291f96a32b4c01a",
+    "phase_aggregate_drive_id": "1GboKxGxYiM8IUrkht11HbL2jsHARpDle",
+    "phase_findings_drive_id": "1Jj6DVeTjp8S0wXOzm55NpL1TdaZoSiCm",
+    "raw_values_embedded": false
+  },
+  "mod7_transitive_core": {
+    "anchor": "F02",
+    "fixtures": ["F02", "F04", "R01"],
+    "phase": 7,
+    "pair_f02_f04": {"qword_counts":[2212,2320],"starts":[402,510],"length":1809,"tails":[1,1]},
+    "pair_f02_r01": {"qword_counts":[2212,2233],"starts":[402,423],"length":1809,"tails":[1,1]},
+    "common_exact_suffix_core_qwords": 1809,
+    "derived_ranges": {"F02":[402,2211],"F04":[510,2319],"R01":[423,2232]},
+    "trailing_qwords_each": 1
+  },
+  "mod1_transitive_core": {
+    "anchor": "F06",
+    "fixtures": ["F06", "F07", "R03"],
+    "phase": 1,
+    "pair_f06_f07": {"qword_counts":[2564,2576],"starts":[445,457],"length":2118,"tails":[1,1]},
+    "pair_f06_r03": {"qword_counts":[2564,2275],"starts":[762,473],"length":1801,"tails":[1,1]},
+    "common_exact_suffix_core_qwords": 1801,
+    "derived_ranges": {"F06":[762,2563],"F07":[774,2575],"R03":[473,2274]},
+    "pair_specific_f06_f07_extension_qwords": 317,
+    "trailing_qwords_each": 1
+  },
+  "accepted_structural_statement": "Within the tested corpus, phase 7 has a transitive 1809-qword exact suffix core shared by F02/F04/R01, and phase 1 has a transitive 1801-qword exact suffix core shared by F06/F07/R03. These cores are derived from pairwise exact-run aggregates through a common anchor and suffix alignment; no literal qword values are required.",
+  "scope_limit": "Observed phase-class core candidate only within the tested fixtures. This does not claim that logical_length mod 8 is globally sufficient or necessary for arbitrary CELSYS payloads.",
+  "not_accepted": [
+    "the invariant cores are geometry data",
+    "the invariant cores are material data",
+    "the invariant cores are rig data",
+    "phase determines semantics",
+    "owner/consumer binding is confirmed",
+    "semantic promotion is authorized",
+    "Blender emission is authorized"
+  ],
+  "verification": {"self_tests_passed":8,"self_tests_failed":0},
+  "isolation": {
+    "pipeline_stage":"STRUCTURAL_ONLY",
+    "semantic_promotion_count":0,
+    "blender_emit_ready":false,
+    "runtime_dispatch":false,
+    "runtime_jobs":0,
+    "modeler_actions":0,
+    "worker_actions":0,
+    "canary_actions":0,
+    "control_gate_actions":0,
+    "rio26_mutations":0,
+    "mainline_mutations":0,
+    "automatic_integration":false,
+    "raw_private_payload_publication":false
+  }
+}
