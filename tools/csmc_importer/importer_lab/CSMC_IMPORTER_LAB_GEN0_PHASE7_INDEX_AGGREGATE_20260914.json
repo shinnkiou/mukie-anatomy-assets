@@ -1,0 +1,37 @@
+{
+  "schema_version": "csmc_importer_lab_gen0_public_safe_aggregate_v0_1",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion": false,
+  "blender_emit": false,
+  "private_raw_bytes_embedded": false,
+  "phase_scope": {
+    "logical_mod8_phase": 7,
+    "train": ["CSMC_F02_QUAD", "CSMC_F04_CUBE_SUBDIV"],
+    "validation": ["CSMC_R01_CUBE_B1_W0"],
+    "region": "VALIDATED_VARIABLE_PREFIX_BEFORE_EXACT_INVARIANT_CORE"
+  },
+  "direct_count_seed": {
+    "family": "LOCAL_COUNTED_NUMERIC_BLOCK",
+    "tested_labels": ["vertices", "triangles", "corners"],
+    "tested_types": ["u16_be", "u16_le", "u32_be", "u32_le"],
+    "generated_candidate_count": 0,
+    "classification": "HARD_PRUNED_NO_SEED_OFFSETS"
+  },
+  "gen0": {
+    "family": "LOCAL_INDEX_RANGE_BLOCK",
+    "candidate_count": 48,
+    "windows_bytes": [128, 256, 512, 1024],
+    "types": ["u16_be", "u16_le", "u32_be", "u32_le"],
+    "shifts": "all_0_to_itemsize_minus_1",
+    "relationship": "REFERENCE_DOMAIN",
+    "pass_rule": ">=90% values in [0, vertex_count) and >=2 distinct in-domain values on both TRAIN and VALIDATION",
+    "hard_pass": 0,
+    "hard_fail": 48,
+    "classification": "GEN0_PHASE7_BOUNDARY_RELATIVE_RAW_INDEX_RANGE_FAMILY_REJECTED"
+  },
+  "rejection_scope": "Only raw contiguous u16/u32 BE/LE arrays occupying tested 128/256/512/1024-byte boundary-relative windows in the validated phase-7 prefixes. Encoded/delta/indirect/compressed/transformed/differently-bounded structures remain open.",
+  "semantic_binding": "UNRESOLVED",
+  "geometry": "UNRESOLVED",
+  "index_topology": "UNRESOLVED",
+  "next_action": "Do not widen the same raw-index family post hoc; prioritize mutation oracle, direct serializer field read, or a distinct bounded local-counted-subblock reseed."
+}
