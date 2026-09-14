@@ -1,0 +1,37 @@
+name: CSMC controlled fixture smoke
+
+on:
+  push:
+    branches:
+      - csmc-importer-experimental-20260902
+    paths:
+      - 'tools/csmc_importer/csmc_controlled_envelope.py'
+      - 'tools/csmc_importer/test_csmc_controlled_envelope_synthetic.py'
+      - 'tools/csmc_importer/csmc_controlled_evidence_ir.py'
+      - 'tools/csmc_importer/test_csmc_controlled_evidence_ir_synthetic.py'
+      - 'tools/csmc_importer/CSMC_CONTROLLED_FIXTURE_MAINLINE_FINDINGS_20260914.md'
+      - 'tools/csmc_importer/CSMC_CONTROLLED_FIXTURE_PUBLIC_INDEX_20260914.json'
+      - '.github/workflows/csmc-controlled-fixture-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  synthetic-controlled-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile controlled fixture parser and evidence sidecar
+        run: |
+          python -m py_compile \
+            tools/csmc_importer/csmc_controlled_envelope.py \
+            tools/csmc_importer/test_csmc_controlled_envelope_synthetic.py \
+            tools/csmc_importer/csmc_controlled_evidence_ir.py \
+            tools/csmc_importer/test_csmc_controlled_evidence_ir_synthetic.py
+      - name: Run controlled envelope synthetic tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_controlled_envelope_synthetic.py
+      - name: Run controlled evidence sidecar synthetic tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_controlled_evidence_ir_synthetic.py

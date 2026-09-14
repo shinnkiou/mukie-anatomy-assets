@@ -12,6 +12,8 @@ def main() -> None:
     assert out["status"] == "NO_ADMISSIBLE_ACTION_CURRENT_DURABLE_CORPUS"
     assert out["selected_static_actions"] == []
     assert out["runtime_dispatch"] is False
+    assert out["semantic_projection"] is False
+    assert out["blender_emit"] is False
 
     out = route(EvidenceState(
         i2_bits_by_record={2:1,3:0,8:1,14:0,15:1,21:0},
@@ -38,7 +40,31 @@ def main() -> None:
         "PROCESS_VALIDATED_STATIC_UNLOCK_ARTIFACT",
     }
     assert out["runtime_dispatch"] is False
-    print("PASS: next-evidence gate is fail-closed and does not reauthorize runtime")
+
+    out = route(EvidenceState(
+        controlled_fixture_bundle_present=True,
+        controlled_fixture_bundle_sha256="be6132ef83959167ffd19218810e099f0bd164714fbd1ec4770f9296b38643b6",
+        controlled_fixture_manifest_valid=True,
+        controlled_fixture_count=13,
+        controlled_i3_valid_pairs=0,
+    ))
+    assert out["status"] == "NEW_ADMISSIBLE_CONTROLLED_EVIDENCE"
+    assert out["selected_static_actions"][0]["action"] == "PROCESS_CONTROLLED_FIXTURE_CORPUS"
+    assert out["selected_static_actions"][0]["i3_valid_pairs_available"] == 0
+    assert out["selected_static_actions"][0]["semantic_gate_required"] is True
+    assert out["runtime_dispatch"] is False
+    assert out["semantic_projection"] is False
+    assert out["blender_emit"] is False
+
+    bad = route(EvidenceState(
+        controlled_fixture_bundle_present=True,
+        controlled_fixture_bundle_sha256="not-a-sha",
+        controlled_fixture_manifest_valid=True,
+        controlled_fixture_count=13,
+    ))
+    assert bad["status"] == "NO_ADMISSIBLE_ACTION_CURRENT_DURABLE_CORPUS"
+
+    print("PASS: next-evidence gate accepts controlled evidence while remaining fail-closed for runtime/semantic/emit")
 
 
 if __name__ == "__main__":
