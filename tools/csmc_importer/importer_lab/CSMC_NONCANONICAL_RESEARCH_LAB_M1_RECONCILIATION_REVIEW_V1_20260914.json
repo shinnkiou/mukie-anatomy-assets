@@ -1,0 +1,60 @@
+{
+  "canonical": {
+    "branch": "csmc-importer-experimental-20260902",
+    "head_before_review": "1d0659ce14e85644fc778e2e1fe3f5011f93279e",
+    "m1_acceptance_v2": "20/20 PASS",
+    "private_gen0_row": 191,
+    "question_packet_row": 192
+  },
+  "decision": {
+    "cherry_pick_code": false,
+    "copy_registries_as_authority": false,
+    "governance_concepts_reference_only": true,
+    "merge_branch": false,
+    "supersede_v5_current_pointer": false
+  },
+  "guards": {
+    "broad_static_hypothesis_expansion": false,
+    "modeler_execution": false,
+    "raw_private_bytes_published": false,
+    "rio26_mutations": 0,
+    "save_serialization": false,
+    "worker_canary_control_gate_actions": 0
+  },
+  "noncanonical": {
+    "ahead_by": 2,
+    "behind_by": 39,
+    "branch": "research-lab-m1-20260914",
+    "declared_acceptance": "16/16 local",
+    "declared_state": "M1_PASS__M2_ELIGIBLE_NOT_STARTED",
+    "head": "bc9f104a4b5f2876d8b6b6becd93b522068fbb38",
+    "merge_base": "b32e9b9acfaa199838e3b948e74bb1e4c127fa94"
+  },
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "proof_state": {
+    "blender_emit_ready": false,
+    "controlled_fixture_to_consumer_match": "UNRESOLVED",
+    "explicit_serializer_field_read": "UNRESOLVED",
+    "new_proof_grade_consumer_edges": 0,
+    "physical_observations_acquired": 0,
+    "physical_observations_expected": 30,
+    "runtime_dispatch": false,
+    "semantic_promotion_count": 0
+  },
+  "review": {
+    "frozen_scoring_spec": "CONCEPT_ALREADY_PRESENT_IN_CANONICAL_POLICY_AND_ACCEPTANCE",
+    "holdout_exposure_ledger": "CONCEPT_ALREADY_IMPLEMENTED; NONCANONICAL FIXTURE SNAPSHOT STALE",
+    "immutable_hard_constraints": "MOSTLY_OVERLAP_CANONICAL_POLICY; REFERENCE_ONLY",
+    "private_evaluator_boundary": "CONCEPT_ALREADY_TESTED_IN_CANONICAL_M1_V2",
+    "rejected_family_registry": "STALE_AND_INCOMPLETE_RELATIVE_TO_CURRENT_CLOSURES",
+    "semantic_promotion_firewall": "CONCEPT_ALREADY_TESTED_IN_CANONICAL_M1_V2"
+  },
+  "review_id": "CSMC_NONCANONICAL_RESEARCH_LAB_M1_RECONCILIATION_REVIEW_V1_20260914",
+  "schema_version": "csmc_noncanonical_research_lab_m1_reconciliation_review_v1",
+  "staleness_evidence": [
+    "noncanonical current-state says M2 not started while canonical has completed private GEN0 row191",
+    "noncanonical ledger labels F04 audit-only validation, while canonical private GEN0 used F04 as TRAIN",
+    "noncanonical rejected-family registry predates Phase-7/8/9, simple96, and bounded stride closures"
+  ],
+  "status": "REVIEW_COMPLETE_NO_MERGE_GOVERNANCE_REFERENCE_ONLY"
+}
