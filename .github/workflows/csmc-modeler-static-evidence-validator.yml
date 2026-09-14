@@ -32,3 +32,4 @@ jobs:
           python static_evidence_slice_validator.py --help >/dev/null
           python public_architecture_prior_guard.py --help >/dev/null
           python public_architecture_prior_guard.py CSMC_PUBLIC_CLIP_3D_ARCHITECTURE_PRIOR_V1.json >/dev/null
+          python public_architecture_prior_guard.py CSMC_PUBLIC_CLIP_3D_ARCHITECTURE_PRIOR_V2.json >/dev/null
