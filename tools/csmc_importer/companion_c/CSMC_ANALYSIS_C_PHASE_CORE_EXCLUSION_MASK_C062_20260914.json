@@ -1,0 +1,51 @@
+{
+  "run_id": "C-062",
+  "date_jst": "2026-09-14",
+  "classification": "PHASE_CORE_EXCLUSION_MASK_EXTENDED_PHASE3_READY",
+  "sources": {
+    "c060_side_head": "e1d574764c4c783be4670519c094078b460e3bae",
+    "c061_side_head": "10fedd81d49fdeb26d6e471b9b8d88fae639dec5",
+    "mainline_phase3_head": "7ab466ac495cbb09792fad20f0d30e2bb4ed551a",
+    "prefix_aggregate_path": "tools/csmc_importer/CSMC_CONTROLLED_PREFIX_EXTINCTION_AGGREGATE_20260914.json"
+  },
+  "fixture_count": 8,
+  "phase_groups": {
+    "phase7_transitive": ["F02", "F04", "R01"],
+    "phase1_transitive": ["F06", "F07", "R03"],
+    "phase3_independent_holdout_pair": ["R04", "V01"]
+  },
+  "totals": {
+    "total_qwords": 552204,
+    "excluded_qwords": 14430,
+    "remaining_search_qwords": 537774,
+    "excluded_fraction": 0.02613164700002173,
+    "remaining_fraction": 0.9738683529999783
+  },
+  "phase3_masks": {
+    "R04": {"search_prefix": [0,480], "exclude_core": [480,2280], "search_terminal": [2280,2282], "excluded_qwords": 1800, "remaining_search_qwords": 482},
+    "V01": {"search_prefix": [0,533940], "exclude_core": [533940,535740], "search_terminal": [535740,535742], "excluded_qwords": 1800, "remaining_search_qwords": 533942}
+  },
+  "scope": "EIGHT_FIXTURES_C060_PLUS_PHASE3_HOLDOUT",
+  "scope_notes": [
+    "C-060 six-fixture cores retain their existing transitive evidence class.",
+    "R04/V01 is an independent phase-3 holdout pair, not a three-fixture transitive core and not a same-identity semantic control.",
+    "A low global excluded fraction is caused by the large VRoid variable prefix and must not be interpreted as weaker validity of the 1800-qword holdout core."
+  ],
+  "validation": {"self_test": "13/13 PASS", "pytest": "2/2 PASS"},
+  "semantic_binding": "UNRESOLVED",
+  "semantic_promotion_count": 0,
+  "blender_emit_ready": false,
+  "runtime_dispatch": false,
+  "raw_private_bytes_published": false,
+  "isolation": {
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "automatic_integration": false
+  },
+  "next": "PREREGISTERED_BOUNDED_SIZE_STRIDE_COUNT_RELATIONSHIP_PROBE_ON_REMAINING_PREFIX_SURFACE"
+}
