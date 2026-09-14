@@ -18,6 +18,11 @@ import re
 from pathlib import Path
 from typing import Dict, Iterable, List
 
+# Some real static-analysis ranking rows contain very large comma-separated
+# reason fields. Python's csv module defaults to 128 KiB per field, which is too
+# small for those legitimate TSV rows. Keep a bounded but comfortably high cap.
+csv.field_size_limit(16 * 1024 * 1024)
+
 COMMON_HELPER_PATTERNS = (
     r"^_?free$",
     r"^_?malloc$",
