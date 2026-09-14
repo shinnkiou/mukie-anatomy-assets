@@ -1,0 +1,43 @@
+{
+  "schema_version": "never-tear-ai3d-runtime-delta-v1",
+  "recorded_at_jst": "2026-09-14T14:15:00+09:00",
+  "task_id": "AI3D-002",
+  "change": "VERIFIED_COMPANION_AUTO_ARM_CROSS_SERVICE_CLOSURE",
+  "status": "ACTIVE_WAITING_PHYSICAL_COMPANION_START",
+  "implementation": {
+    "supabase_migration": "20260914050300_ai3d_auto_arm_verified_companion_canary",
+    "supabase_trigger": "trg_ai3d002_auto_arm_verified_companion",
+    "migration_mirror_commit": "0eaceeeba7b2f4128bbd46b570e8cd72e96e612d",
+    "runtime_delta_commit": "fcc5e0f51d3758f2e880ef8e7e095394023df924",
+    "legacy_noop_trigger_test": "PASS_NO_JOB_CREATED",
+    "worker_jobs_after_test": 0,
+    "queued_jobs_after_test": 0
+  },
+  "cross_service": {
+    "drive_master_section25": "READBACK_PASS",
+    "drive_master_revision": "ANLCKQlDf60Yh0VHph2E57hu_bwWOjLNio08Hi5rrfzpfyLPr6Gk6ZvJ2oe1F3DaR9SjT2P6A15UGWCqsBjvozTC0ogP-q9eeDZ_A5Kdh68",
+    "base44_checkpoint": "6aa782cb64859114d79c12e4",
+    "base44_commit": "493b75cd7bce7d6fe167be81c49c0d02143dc900",
+    "supabase_run": "AI3D-002-AUTO-ARM-20260914T1403JST",
+    "linear_comment": "f4c3e788-841e-4cd0-a4ce-63aabd0c1125"
+  },
+  "external_boundary_readback": {
+    "walkmyplan_revision_count": 423,
+    "walkmyplan_walls": 50,
+    "walkmyplan_doors": 21,
+    "walkmyplan_windows": 5,
+    "walkmyplan_rooms": 14,
+    "walkmyplan_total_wall_length_m": 678.4,
+    "walkmyplan_footprint_m": [74, 44.2],
+    "walkmyplan_storey_height_m": 3.4,
+    "adobe_reference_count": 6,
+    "adobe_boundary": "NON_CANONICAL_VISUAL_REFERENCE",
+    "to3d_job": "8b16ab22-ef00-487a-b47f-ee01c947e991",
+    "to3d_status": "failed",
+    "to3d_output": null,
+    "to3d_policy": "NO_RETRY"
+  },
+  "physical_execution_claimed": false,
+  "canary_queued": false,
+  "next_action": "Physically start the verified AI3D companion. The first fresh heartbeat matching version 0.1.0-ai3d-canary, contract never-tear-ai3d-worker-v1, and capability ai3d_blender_physical_mvp_v1 will auto-queue exactly one physical CANARY. Observe real physical evidence and visual QA before AI3D-004 promotion."
+}
