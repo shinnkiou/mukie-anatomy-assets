@@ -1,0 +1,25 @@
+name: CSMC F02 Mutation Oracle Intake
+
+on:
+  push:
+    branches:
+      - csmc-f02-mutation-oracle-intake-20260914
+    paths:
+      - 'tools/csmc_importer/oracle_intake/**'
+      - '.github/workflows/csmc-f02-mutation-oracle-intake.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  oracle-intake-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run fail-closed oracle intake tests
+        run: python -m unittest discover -s tools/csmc_importer/oracle_intake -p 'test_*.py' -v

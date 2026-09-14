@@ -1,0 +1,66 @@
+{
+  "schema_version": "csmc_f02_mutation_oracle_intake_contract_v1",
+  "status": "ORACLE_INTAKE_CONTRACT_READY_PHYSICAL_ORACLE_PENDING",
+  "source_batch_id": "CSMC_F02_SINGLE_BYTE_XOR01_30_20260914",
+  "source_fixture": "CSMC_F02_QUAD",
+  "source_manifest_sha256": "751f05dfff9d5308dfd96421d5bce43e6785de2cb385fb28a8c97c565c6cc891",
+  "expected_variant_count": 30,
+  "allowed_oracle_results": [
+    "LOAD_ACCEPTED",
+    "LOAD_REJECTED",
+    "PARTIAL_LOAD",
+    "ERROR_DIALOG",
+    "CRASH",
+    "UNKNOWN"
+  ],
+  "allowed_visible_effects": [
+    "VISIBLE_MODEL_CHANGED",
+    "VISIBLE_MODEL_UNCHANGED",
+    "NOT_VISIBLE",
+    "UNKNOWN"
+  ],
+  "required_per_variant": [
+    "variant_id",
+    "source_offset",
+    "structural_region",
+    "variant_file_sha256",
+    "variant_character_blob_sha256",
+    "oracle_result",
+    "visible_effect",
+    "error_class",
+    "process_survival",
+    "evidence_strength",
+    "save_action_performed",
+    "observer_session_id",
+    "observed_at"
+  ],
+  "optional_public_safe": [
+    "error_text_sha256",
+    "load_time_ms",
+    "affected_visible_component",
+    "viewport_result_sha256",
+    "screenshot_sha256"
+  ],
+  "session_guards": {
+    "save_actions_performed": false,
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_mutation": false,
+    "new_mutation_generation": false,
+    "plugin_injection": false,
+    "hook": false,
+    "process_memory_write": false
+  },
+  "public_projection": {
+    "raw_byte_before_after": "STRIPPED",
+    "raw_private_csmc": "FORBIDDEN",
+    "semantic_claims": "FORBIDDEN",
+    "xor01": "VERIFIED_FROM_SOURCE_MANIFEST_ONLY"
+  },
+  "interpretation": {
+    "visible_change": "OBSERVATION_ONLY_NOT_SEMANTIC_PROOF",
+    "load_reject": "SENSITIVITY_EVIDENCE_ONLY",
+    "load_accept": "TOLERANCE_EVIDENCE_ONLY",
+    "complete_30": "PHYSICAL_ORACLE_COMPLETE_NOT_SEMANTIC_PROMOTION"
+  }
+}
