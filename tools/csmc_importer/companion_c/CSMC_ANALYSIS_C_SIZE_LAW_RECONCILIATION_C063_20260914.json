@@ -1,0 +1,67 @@
+{
+  "schema_version": "csmc_analysis_c_c063_v1",
+  "run": "C-063",
+  "date": "2026-09-14",
+  "lane": "CSMC_ANALYSIS_COMPANION_C",
+  "classification": "BOUNDED_SIMPLE_FIXED_STRIDE_SIZE_LAW_REJECTED",
+  "source": {
+    "mainline_branch": "csmc-importer-experimental-20260902",
+    "mainline_head": "09e94e541fa9c061d4d62c077c3f773764c17e18",
+    "source_classification": "WHOLE_STORED_AND_PHASE_PREFIX_SIZE_NOT_SINGLE_SIMPLE_FIXED_STRIDE_ARRAY",
+    "source_base44_id": "6aa77f990619a4c022cfc1cb",
+    "source_supabase_row": 156,
+    "source_drive_findings_id": "1YI5eChOVEswWqy5298e-93jRyVYaQVy4",
+    "source_drive_aggregate_id": "1QzaYosXSVMO9FzKEYcSE99Cj_Gj3e_VV",
+    "source_importer_ci_run": 34805004059,
+    "source_controlled_ci_run": 34805004049,
+    "c062_side_head": "b8a45a34efd036ef06ad0bb66c06c61beb506d63"
+  },
+  "candidate_family": {
+    "single_strides_bytes": [4, 8, 12, 16],
+    "vertex_strides_bytes": [12, 16],
+    "index_widths_bytes": [2, 4],
+    "triangle_strides_bytes": [4, 8, 12, 16],
+    "post_hoc_widening_allowed": false
+  },
+  "result": {
+    "geometry_whole_stored_single_count_exact_models": 0,
+    "f02_f04_prefix_delta_bytes": 864,
+    "f02_f04_teacher_deltas": {"vertices": 22, "triangles": 46, "corners": 138},
+    "f02_f04_pure_single_count_exact_models": 0,
+    "f02_f04_vertex_plus_corner_index_exact_models": 0,
+    "f02_f04_vertex_plus_triangle_exact_models": 0,
+    "rig_whole_stored_single_count_exact_models": 0,
+    "rig_whole_stored_bone_plus_weight_exact_models": 0,
+    "mask_changed": false,
+    "c062_remaining_search_qwords": 537774,
+    "next_search": "INTERNAL_SUBBLOCK_BOUNDARY_RELATIONSHIPS_ONLY"
+  },
+  "interpretation": {
+    "rejected_scope": "ONLY_THE_PREREGISTERED_NAIVE_FIXED_STRIDE_WHOLE_REGION_FAMILY",
+    "geometry_absent_from_prefix": "NOT_PROVEN",
+    "indices_absent_from_prefix": "NOT_PROVEN",
+    "bones_or_weights_absent": "NOT_PROVEN",
+    "codec_cipher_compression_claim": "NONE",
+    "semantic_binding": "UNRESOLVED"
+  },
+  "validation": {
+    "companion_c_local_pytest_passed": 12,
+    "companion_c_local_pytest_failed": 0,
+    "source_controlled_size_law_workflow": "SUCCESS",
+    "source_importer_workflow": "SUCCESS"
+  },
+  "isolation": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "automatic_integration": false,
+    "raw_private_bytes_published": false
+  }
+}
