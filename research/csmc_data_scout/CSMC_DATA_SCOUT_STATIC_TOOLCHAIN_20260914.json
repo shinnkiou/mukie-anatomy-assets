@@ -1,0 +1,59 @@
+{
+  "schema_version": "csmc_data_scout_static_toolchain_v1",
+  "date": "2026-09-14",
+  "lane": "CSMC_DATA_SCOUT",
+  "mode": "RESEARCH_PROCUREMENT_ONLY",
+  "isolation": {
+    "mainline_mutation": false,
+    "modeler_runtime_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "production_stable_actions": 0,
+    "rio26_mutations": 0,
+    "install_batch_actions": 0,
+    "proprietary_binary_publication": false
+  },
+  "toolchain": {
+    "MINIMAL": [
+      {"tool":"SHA-256","purpose":"inventory/hash"},
+      {"tool":"LIEF 1.0.0","automation_score":5,"license":"Apache-2.0","decision":"EMBED_OK","purpose":"PE imports/exports/sections/debug metadata"},
+      {"tool":"pefile 2024.8.26","automation_score":5,"license":"MIT","decision":"EMBED_OK","purpose":"independent PE parser cross-check"},
+      {"tool":"basic strings","purpose":"ASCII/UTF-16 baseline"}
+    ],
+    "STANDARD": [
+      {"tool":"Ghidra 12.1.3","automation_score":5,"license":"Apache-2.0 main; bundled components vary","decision":"EXTERNAL_TOOL_ONLY","purpose":"headless xref/decompile/MS RTTI/class/function candidate analysis"},
+      {"tool":"FLOSS 3.1.1","automation_score":5,"license":"Apache-2.0","decision":"EXTERNAL_TOOL_ONLY","purpose":"ASCII/UTF-16LE/stack/tight/decoded strings + JSON"},
+      {"tool":"capa 9.4.0","automation_score":5,"license":"Apache-2.0","decision":"EXTERNAL_TOOL_ONLY","purpose":"secondary capability triage with Ghidra/PyGhidra backend"},
+      {"tool":"SQLite Tools 3.53.4","automation_score":5,"license":"Public Domain","decision":"EMBED_OK_OR_EXTERNAL","purpose":"sqlite3/sqldiff/sqlite3_analyzer deterministic DB comparison"}
+    ],
+    "DEEP": [
+      {"tool":"Ghidra scripting/BSim","automation_score":5,"decision":"EXTERNAL_TOOL_ONLY","purpose":"consumer graph/xref and cross-version similarity"},
+      {"tool":"Google BinDiff 8","automation_score":4,"license":"Apache-2.0","decision":"EXTERNAL_TOOL_ONLY","purpose":"function matching across executable versions"},
+      {"tool":"radare2 6.2.2","automation_score":5,"license":"mostly LGPLv3; component licenses vary","decision":"EXTERNAL_TOOL_ONLY","purpose":"radiff2/r2pipe fallback for block/xref/diff"}
+    ]
+  },
+  "holds": [
+    {"tool":"Ghidriff 1.0.0","reason":"latest release explicitly targets Ghidra 11.4; selected Ghidra is 12.1.3; compatibility unverified"},
+    {"tool":"Diaphora 3.4.x","reason":"strong diff engine but IDA-dependent and AGPL; reference only for current free automated pipeline"},
+    {"tool":"Detect It Easy","reason":"source/license verified, but stable binary/tag pin must be resolved before acquisition"}
+  ],
+  "numeric_detector": {
+    "foundation":"NumPy 2.5.3",
+    "license":"BSD-3-Clause",
+    "decision":"EMBED_OK",
+    "required_signals":["f32","f64","u16","u32","endianness","16-byte alignment","repeated stride","NaN/Inf rejection","normalized 0..1","group weight sum","vec2/vec3/vec4","matrix4","quaternion norm","index range","monotonic integer pattern","histogram"],
+    "semantic_promotion": false
+  },
+  "current_gap_matrix": [
+    {"gap":"EXPLICIT_CONSUMER_CROSSREF","best_tool":"Ghidra headless + FLOSS","expected_evidence":"known loader/model vocabulary -> string/data xref -> function/class candidate -> consumer edge candidate"},
+    {"gap":"EXPLICIT_PARENT_RECORD_BOUNDARY","best_tool":"Construct/Kaitai + controlled differential + SQLite extraction","expected_evidence":"reproducible repeated record/alignment schema across known-variable fixtures"},
+    {"gap":"EXPLICIT_PARENT_LENGTH_FIELD","best_tool":"Construct/Kaitai + controlled length perturbations","expected_evidence":"field whose value tracks controlled parent payload length across fixtures"},
+    {"gap":"WEIGHT_SCALAR","best_tool":"controlled rig fixtures + public-safe numeric candidate probe","expected_evidence":"same structural slot with numeric candidate shift consistent with 0/50/100 controls, without automatic semantic promotion"},
+    {"gap":"MODELER_VERSION_FUNCTION_DIFF","best_tool":"Google BinDiff + Ghidra/BinExport","expected_evidence":"stable/mutated loader/serializer/consumer functions across executable versions"},
+    {"gap":"SQLITE_BLOB_OR_ROW_CHANGE","best_tool":"sqlite3 + sqldiff + sqlite3_analyzer","expected_evidence":"deterministic schema/row diff and isolated BLOB candidates"}
+  ],
+  "ground_truth_decision": {
+    "new_fixture_acquired": false,
+    "reason":"Existing Khronos/Assimp/AOUSD plus controlled CSMC corpus already cover current triangle/UV/material/morph/matrix/quaternion/rig negative-control needs. Current bottleneck is consumer-side/static evidence, not another generic mesh corpus."
+  }
+}
