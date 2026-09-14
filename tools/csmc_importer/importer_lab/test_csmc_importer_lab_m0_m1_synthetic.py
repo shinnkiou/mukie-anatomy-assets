@@ -2,14 +2,23 @@
 from __future__ import annotations
 import copy
 from csmc_importer_lab_manifest import HypothesisManifest, ManifestError, validate_child_mutation
+from csmc_importer_lab_policy import build_holdout_ledger, record_exposure
 from csmc_importer_lab_runner import run_batch, RunnerError
 
 
-def base(hid="H1", offset=0, stride=2, relationship="COUNT_EQUALS_LABEL", semantic="GEOMETRY_OR_TOPOLOGY_TARGET"):
+def base(
+    hid="H1",
+    offset=0,
+    stride=2,
+    relationship="COUNT_EQUALS_LABEL",
+    semantic="GEOMETRY_OR_TOPOLOGY_TARGET",
+    family="LOCAL_COUNTED_NUMERIC_BLOCK",
+):
     return {
         "hypothesis_id": hid,
         "generation": 0,
         "engine_mode": "SYNTHETIC_ONLY",
+        "candidate_family": family,
         "region_class": "SYNTHETIC_REGION",
         "region_id": "A",
         "anchor_id": "SYNTH_START",
@@ -41,6 +50,7 @@ def fixtures():
         {"fixture_id": "V1", "split": "VALIDATION", "regions": {"A": "00010002"}, "labels": {"target": 2}},
         {"fixture_id": "N1", "split": "NEGATIVE", "regions": {"A": "000100020003"}, "labels": {"target": 7}},
         {"fixture_id": "HOLD", "split": "HOLDOUT", "regions": {"A": "00010002000300040005"}, "labels": {"target": 5}},
+        {"fixture_id": "EXT", "split": "EXTERNAL_BENCHMARK", "regions": {"A": "000100020003000400050006"}, "labels": {"target": 6}},
     ]
 
 
@@ -64,6 +74,14 @@ def main():
     except ManifestError:
         pass
 
+    bad = base()
+    bad["candidate_family"] = "WHOLE_PAYLOAD_SIMPLE_FIXED_STRIDE"
+    try:
+        HypothesisManifest.from_mapping(bad)
+        raise AssertionError("rejected family reopened")
+    except ManifestError:
+        pass
+
     child = base("H2")
     child["generation"] = 1
     child["parent_hypothesis_id"] = "H1"
@@ -81,14 +99,16 @@ def main():
         pass
 
     rows = [base("GOOD"), base("GOOD_DUP")]
-    rows.append(base("DECOY", relationship="NULL_DECOY", semantic="NULL_DECOY"))
+    rows.append(base("DECOY", relationship="NULL_DECOY", semantic="NULL_DECOY", family="NULL_DECOY"))
     out = run_batch(rows, fixtures(), concurrency=2, timeout_seconds=10.0)
     assert out["candidate_count_input"] == 3 and out["candidate_count_unique"] == 2
     assert len(out["duplicates"]) == 1
     good = next(row for row in out["results"] if row["hypothesis_id"] == "GOOD")
     assert good["status"] == "EVALUATED" and good["score"] > 90
-    assert all(row["fixture_id"] != "HOLD" for row in good["fixture_results"])
+    assert all(row["fixture_id"] not in {"HOLD", "EXT"} for row in good["fixture_results"])
     assert out["holdout_used_for_selection"] is False
+    assert out["holdout_ledger"]["entries"]["HOLD"]["exposure_count"] == 0
+    assert out["holdout_ledger"]["entries"]["EXT"]["exposure_count"] == 0
 
     out2 = run_batch(list(reversed(rows)), fixtures(), concurrency=1, timeout_seconds=10.0)
     assert [
@@ -96,6 +116,23 @@ def main():
     ] == [
         (row["canonical_key"], row["score"], row["status"]) for row in out2["results"]
     ]
+    assert out["deterministic_result_sha256"] == out2["deterministic_result_sha256"]
+
+    audit = run_batch([base("AUDIT")], fixtures(), allow_holdout_audit=True, timeout_seconds=10.0)
+    assert audit["holdout_used_for_selection"] is False
+    assert audit["holdout_ledger"]["entries"]["HOLD"]["exposure_count"] == 1
+    assert audit["holdout_ledger"]["entries"]["HOLD"]["used_for_selection"] is False
+    assert audit["holdout_ledger"]["entries"]["EXT"]["exposure_count"] == 1
+
+    ledger = build_holdout_ledger(fixtures())
+    contaminated = record_exposure(
+        ledger,
+        fixture_id="HOLD",
+        generation=5,
+        used_for_selection=True,
+    )
+    assert contaminated["entries"]["HOLD"]["current_split"] == "VALIDATION_CONTAMINATED"
+    assert contaminated["entries"]["HOLD"]["used_for_selection"] is True
 
     crash = base("CRASH")
     crash["synthetic_fault"] = "CRASH"
