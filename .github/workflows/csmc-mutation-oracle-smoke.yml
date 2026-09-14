@@ -1,0 +1,28 @@
+name: CSMC mutation oracle contract smoke
+
+on:
+  push:
+    branches:
+      - csmc-importer-experimental-20260902
+    paths:
+      - 'tools/csmc_importer/csmc_mutation_oracle_contract.py'
+      - 'tools/csmc_importer/test_csmc_mutation_oracle_contract_synthetic.py'
+      - '.github/workflows/csmc-mutation-oracle-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  oracle-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile read-only oracle contract
+        run: |
+          python -m py_compile \
+            tools/csmc_importer/csmc_mutation_oracle_contract.py \
+            tools/csmc_importer/test_csmc_mutation_oracle_contract_synthetic.py
+      - name: Run synthetic oracle contract test
+        working-directory: tools/csmc_importer
+        run: python test_csmc_mutation_oracle_contract_synthetic.py
