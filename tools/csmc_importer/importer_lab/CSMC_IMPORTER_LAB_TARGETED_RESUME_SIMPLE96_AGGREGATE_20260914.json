@@ -1,0 +1,51 @@
+{
+  "blender_emit": false,
+  "frontier_decision": "RETURN_TO_PAUSED_WAITING_NEW_INDEPENDENT_EVIDENCE",
+  "next_action": "Physical F02 read-only mutation oracle or proof-grade direct serializer field-read/data-flow evidence.",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "preserved_state": {
+    "controlled_fixture_to_consumer_match": "UNRESOLVED",
+    "geometry": "UNRESOLVED",
+    "index_topology": "UNRESOLVED",
+    "render_part_residual_candidate": "LEVEL_4_REFINED_NOT_PROMOTED",
+    "serializer_field_read": "UNRESOLVED"
+  },
+  "private_raw_bytes_embedded": false,
+  "schema_version": "csmc_importer_lab_targeted_resume_public_safe_v0_1",
+  "semantic_promotion": false,
+  "source_evidence": {
+    "pre_common_shift_bytes": {
+      "F06_minus_F03": 88,
+      "F07_minus_F03": 184,
+      "F07_minus_F06": 96
+    },
+    "prior_candidate": "TAIL_2456_RENDER_PART_CARDINALITY_CANDIDATE",
+    "prior_confidence": "LEVEL_4_REFINED_NOT_PROMOTED",
+    "triple_common_exact_bytes": 7392
+  },
+  "targeted_test": {
+    "classification": "TARGETED_SIMPLE_96B_INSERTION_FAMILY_REJECTED",
+    "delete_from": "F07_PRE_COMMON",
+    "delete_length_bytes": 96,
+    "exact_equality_required": true,
+    "family": "SIMPLE_96B_SINGLE_INSERTION_BEFORE_COMMON_BLOCK",
+    "fixtures": [
+      "CSMC_F06_CUBE_MAT2",
+      "CSMC_F07_TWO_CUBES"
+    ],
+    "multi_delete_allowed": false,
+    "scopes": [
+      {
+        "hits": 0,
+        "scope": "FULL_PRE_COMMON"
+      },
+      {
+        "hits": 0,
+        "longer_bytes": 2144,
+        "scope": "TRAILING_2048_PLUS_INSERTION",
+        "shorter_bytes": 2048
+      }
+    ],
+    "tolerance": 0
+  }
+}
