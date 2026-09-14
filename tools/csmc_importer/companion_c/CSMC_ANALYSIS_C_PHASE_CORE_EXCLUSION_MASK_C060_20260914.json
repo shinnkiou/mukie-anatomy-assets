@@ -1,0 +1,21 @@
+{
+  "run_id":"C-060",
+  "date_jst":"2026-09-14",
+  "classification":"PHASE_CORE_EXCLUSION_MASK_READY",
+  "source_c057_head":"6297df77d3007b95d8f2213f0b96cab350f1d51d",
+  "fixture_count":6,
+  "total_qwords":14180,
+  "excluded_qwords":10830,
+  "remaining_search_qwords":3350,
+  "excluded_fraction":0.7637517630465444,
+  "remaining_fraction":0.23624823695345557,
+  "scope":"CURRENT_SIX_FIXTURES_ONLY",
+  "semantic_binding":"UNRESOLVED",
+  "pipeline_stage":"STRUCTURAL_ONLY",
+  "self_tests_passed":10,
+  "semantic_promotion_count":0,
+  "blender_emit_ready":false,
+  "runtime_dispatch":false,
+  "raw_private_bytes_published":false,
+  "next":"APPLY_MASK_ONLY_TO_GENUINELY_NEW_PUBLIC_SAFE_DIFFERENTIALS"
+}
