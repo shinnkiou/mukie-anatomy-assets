@@ -1,0 +1,87 @@
+{
+  "schema_version": "csmc_analysis_c_c051_teacher_manifest_contract_c052_v1",
+  "run": "C-052",
+  "date": "2026-09-14",
+  "purpose": "Validate that C-051 Blender source fixtures actually realize the preregistered same-identity controls before any CSMC conversion evidence is considered.",
+  "required_fixture_ids": [
+    "MAT3_ALLUSED",
+    "MAT3_ONEUSED",
+    "THREE_CUBES",
+    "UV_OFF",
+    "UV_ON",
+    "W50_50",
+    "W25_75"
+  ],
+  "required_public_safe_fields": [
+    "fixture_id",
+    "mesh_object_names",
+    "mesh_data_names",
+    "mesh_object_count",
+    "vertices_total",
+    "triangles_total",
+    "material_slot_names",
+    "material_slots_total",
+    "used_material_indices_total",
+    "uv_layers_total",
+    "armature_object_names",
+    "bone_names",
+    "bones_total",
+    "vertex_group_names",
+    "weight_assignments_total",
+    "weight_histogram"
+  ],
+  "controls": {
+    "material_pair": {
+      "same_identity_fields": [
+        "mesh_object_names",
+        "mesh_data_names",
+        "vertices_total",
+        "triangles_total",
+        "material_slot_names",
+        "material_slots_total"
+      ],
+      "material_slots_each": 3,
+      "used_material_indices": {"MAT3_ALLUSED": 3, "MAT3_ONEUSED": 1}
+    },
+    "object_control": {"THREE_CUBES_mesh_object_count": 3},
+    "uv_pair": {
+      "same_identity_fields": [
+        "mesh_object_names",
+        "mesh_data_names",
+        "vertices_total",
+        "triangles_total",
+        "material_slot_names",
+        "material_slots_total"
+      ],
+      "uv_layers": {"UV_OFF": 0, "UV_ON": 1}
+    },
+    "weight_pair": {
+      "bones_each": 2,
+      "weight_assignments_each": 16,
+      "same_identity_fields": [
+        "mesh_object_names",
+        "mesh_data_names",
+        "armature_object_names",
+        "bone_names",
+        "vertex_group_names",
+        "vertices_total",
+        "triangles_total",
+        "bones_total",
+        "weight_assignments_total"
+      ],
+      "weight_histograms_must_differ": true
+    }
+  },
+  "fail_closed": {
+    "raw_csmc_fields_rejected": true,
+    "unknown_fixture_rejected": true,
+    "duplicate_fixture_rejected": true,
+    "incomplete_fixture_set_rejected": true,
+    "identity_mismatch_rejected": true,
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_dispatch": false
+  },
+  "current_status": "VALIDATOR_READY_TEACHER_MANIFEST_NOT_YET_ACQUIRED",
+  "pipeline_stage": "STRUCTURAL_ONLY"
+}
