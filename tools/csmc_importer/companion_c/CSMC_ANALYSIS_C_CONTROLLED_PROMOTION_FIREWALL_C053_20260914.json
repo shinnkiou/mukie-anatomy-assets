@@ -1,0 +1,46 @@
+{
+  "run_id": "C-053",
+  "date_jst": "2026-09-14",
+  "title": "controlled-evidence promotion firewall",
+  "source": {
+    "mainline_head": "e486b99a69a1a7a89de15af4dcfc6d64c8209c46",
+    "c050_head": "dd58c29c504c54f00e3d2506204b8097d5b5aef9",
+    "c051_head": "915367cf83f7b096591d18ac5cf9010851df96e0",
+    "c052_head": "68a7e0d8311de3ef7f89d6b1a876ae485a26f99b"
+  },
+  "current_evidence": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "render_part_cardinality_level": 4,
+    "render_part_confidence": "HIGH_NOT_CONFIRMED",
+    "i3_partial_pairs": 10,
+    "i3_valid_pairs": 0,
+    "c051_fixture_predictions": 7,
+    "c051_observations": 0,
+    "c052_teacher_manifest_state": "VALIDATOR_READY_TEACHER_MANIFEST_NOT_YET_ACQUIRED",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false
+  },
+  "firewall": {
+    "state": "ACTIVE_FAIL_CLOSED",
+    "render_part_claim_ceiling": "LEVEL_4_CANDIDATE_ONLY",
+    "prediction_as_observation": "REJECT",
+    "candidate_as_confirmed": "REJECT",
+    "i3_partial_as_valid": "REJECT",
+    "semantic_promotion_request": "REJECT",
+    "blender_emit": "REJECT",
+    "runtime_dispatch": "REJECT",
+    "raw_private_payload_fields": "REJECT",
+    "owner_consumer_evidence": "ROUTE_TO_DEDICATED_C040_C045_UNLOCK_PATH"
+  },
+  "next_static_action": "WAIT_FOR_C051_TEACHER_MANIFEST",
+  "isolation": {
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0,
+    "semantic_promotion_count": 0,
+    "automatic_integration": false
+  }
+}
