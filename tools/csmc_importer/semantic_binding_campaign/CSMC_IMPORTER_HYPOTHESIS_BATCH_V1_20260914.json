@@ -1,0 +1,46 @@
+{
+  "schema_version": "csmc_constraint_guided_beam_v1",
+  "created_utc": "2026-09-14T15:08:53Z",
+  "logical_batch_size": 16,
+  "padding_used": false,
+  "classic_ga_used": false,
+  "semantic_promotion": 0,
+  "blender_emit_ready": false,
+  "physical_oracle": "0/30 PENDING",
+  "hard_constraints": [
+    "C02 source must resolve from 0x140d45d30",
+    "edge kind must be DIRECT_CALL, FACTORY_LOOKUP, VTABLE_DISPATCH, or PROVENANCE_BOUND_INDIRECT",
+    "reader must have exact VA and read/write direction",
+    "width/endian/count must agree with loop and allocation",
+    "destination/data-flow must be explicit",
+    "controlled response and negative control are required",
+    "counterexample count must be zero before promotion"
+  ],
+  "beam_layers": ["bridge_owner", "direction_destination", "width_endian", "count_loop_container"],
+  "candidates": [
+    {"id":"H01","layer":"bridge_owner","claim":"C02 creates PWCanvas3DModelLoader and dispatches through its vtable to PW3DModelDataLoader","status":"SURVIVES_BRIDGE_PENDING","falsifier":"vtable and factory xrefs show no such ownership or dispatch"},
+    {"id":"H02","layer":"bridge_owner","claim":"registry helper 0x141656a80 stores a creator later invoked on the path to 0x140f64600","status":"SURVIVES_FACTORY_PENDING","falsifier":"factory lookup resolves to another concrete type or call graph"},
+    {"id":"H03","layer":"direction_destination","claim":"0x140f62d20 reads inbound modeldata and materializes model_tmp","status":"SURVIVES_BODY_PENDING","competes_with":["H04"],"falsifier":"body proves outbound cache/file writes"},
+    {"id":"H04","layer":"direction_destination","claim":"0x140f62d20 writes outbound cache/export data","status":"SURVIVES_BODY_PENDING","competes_with":["H03"],"falsifier":"body proves source-stream reads into an internal destination"},
+    {"id":"H05","layer":"direction_destination","claim":"0x140f650c0 is an inbound bounded blob transfer","status":"SURVIVES_BODY_PENDING","competes_with":["H06"],"falsifier":"data flow proves outbound write direction"},
+    {"id":"H06","layer":"direction_destination","claim":"0x140f650c0 is an outbound bounded writer","status":"SURVIVES_BODY_PENDING","competes_with":["H05"],"falsifier":"data flow proves inbound read direction"},
+    {"id":"H07","layer":"bridge_owner","claim":"0x141658300 is a reader reached through a provenance-bound indirect edge","status":"DEFERRED_OWNER_UNKNOWN","falsifier":"owner lies outside the C02 consumer"},
+    {"id":"H08","layer":"bridge_owner","claim":"0x1416586f0 is a reader reached through a provenance-bound indirect edge","status":"DEFERRED_OWNER_UNKNOWN","falsifier":"owner lies outside the C02 consumer"},
+    {"id":"H09","layer":"width_endian","claim":"first bound scalar is u16 little-endian","status":"BLOCKED_BY_BRIDGE","competes_with":["H10","H11","H12"]},
+    {"id":"H10","layer":"width_endian","claim":"first bound scalar is u16 big-endian","status":"BLOCKED_BY_BRIDGE","competes_with":["H09","H11","H12"]},
+    {"id":"H11","layer":"width_endian","claim":"first bound scalar is u32 little-endian","status":"BLOCKED_BY_BRIDGE","competes_with":["H09","H10","H12"]},
+    {"id":"H12","layer":"width_endian","claim":"first bound scalar is u32 big-endian","status":"BLOCKED_BY_BRIDGE","competes_with":["H09","H10","H11"]},
+    {"id":"H13","layer":"count_loop_container","claim":"count comes from explicit parent length","status":"BLOCKED_BY_BRIDGE","competes_with":["H14","H15","H16"]},
+    {"id":"H14","layer":"count_loop_container","claim":"count comes from a local scalar","status":"BLOCKED_BY_BRIDGE","competes_with":["H13","H15","H16"]},
+    {"id":"H15","layer":"count_loop_container","claim":"count is derived from remaining bytes and tuple width","status":"BLOCKED_BY_BRIDGE","competes_with":["H13","H14","H16"]},
+    {"id":"H16","layer":"count_loop_container","claim":"iteration is sentinel-terminated","status":"BLOCKED_BY_BRIDGE","competes_with":["H13","H14","H15"]}
+  ],
+  "hard_rejections": [
+    {"claim":"modeldata string proximity proves a reader","reason":"no body, owner, direction, width or destination"},
+    {"claim":"C-069 BE-u64 is ModelData width","reason":"out-of-scope corridor without bridge"},
+    {"claim":"direct-call graph bridges C02 to candidates","reason":"BFS negative control found zero paths"},
+    {"claim":"F02 contains a plaintext tagged ModelData record","reason":"specified tags absent"},
+    {"claim":"raw fixed-offset F02 scalar is admissible","reason":"no decoded provenance, width/endian/count or destination agreement"}
+  ],
+  "next_discriminator": "DQ-BRIDGE-LOADER-SER-01"
+}
