@@ -1,0 +1,92 @@
+{
+  "schema_version": "csmc_targeted_static_extraction_intake_contract_v1",
+  "request_id": "CSMC_TARGETED_STATIC_EXTRACTION_REQUEST_V1_20260914",
+  "classification": "INTAKE_CONTRACT_NOT_PROOF",
+  "purpose": "Validate completeness, provenance, binary identity, and safety of the targeted static extraction package before DQ-BRIDGE-LOADER-SER-01 review.",
+  "expected_exe_sha256": "2ebe2d90f8609496cb2e81a7c9defae4e851479b8e5db76eb9dd8ec05d943150",
+  "baseline_snapshot_sha256": "afefd623f1eecdca1da692078230b41ea9c890b7aaa41985524001405dcc7342",
+  "required_functions": [
+    "0x140f62d20",
+    "0x140f64600",
+    "0x140f650c0",
+    "0x140f622f0",
+    "0x140f63200",
+    "0x140f635d0"
+  ],
+  "conditional_functions": [
+    "0x141658300",
+    "0x1416586f0"
+  ],
+  "factory_trace_root": "0x141656a80",
+  "vtable_intervals": [
+    {
+      "label": "PW3DModelDataLoader",
+      "start_va": "0x14195fad0",
+      "end_va_exclusive": "0x14195fb18",
+      "interval_bytes": 72,
+      "pointer_width_bytes": 8,
+      "slot_count": 9
+    },
+    {
+      "label": "PWCanvas3DModelLoader",
+      "start_va": "0x1417f6d30",
+      "end_va_exclusive": "0x1417f6d78",
+      "interval_bytes": 72,
+      "pointer_width_bytes": 8,
+      "slot_count": 9
+    }
+  ],
+  "required_manifest_fields": [
+    "schema_version",
+    "request_id",
+    "source_binary_sha256",
+    "baseline_snapshot_sha256",
+    "extraction_tool",
+    "extraction_tool_version",
+    "generated_at",
+    "private_analysis_archive",
+    "publication_allowed",
+    "functions",
+    "vtable_interval_exports",
+    "factory_trace",
+    "conditional_resolution",
+    "guards"
+  ],
+  "required_function_record_fields": [
+    "va",
+    "decompile_present",
+    "instruction_listing_present",
+    "xrefs_exported",
+    "decompile_sha256",
+    "instruction_listing_sha256",
+    "private_output"
+  ],
+  "factory_edge_kinds": [
+    "DIRECT_CALL",
+    "FACTORY_LOOKUP",
+    "VTABLE_DISPATCH",
+    "PROVENANCE_BOUND_INDIRECT"
+  ],
+  "factory_resolution_statuses": [
+    "RESOLVED",
+    "NO_PROVENANCE_BOUND_RESOLUTION"
+  ],
+  "guard_requirements": {
+    "semantic_promotion": false,
+    "blender_emit": false,
+    "runtime_dispatch": false,
+    "modeler_runtime_started": false,
+    "save_triggered": false,
+    "hook_or_patch": false,
+    "f02_runtime_observation": false,
+    "proprietary_executable_embedded": false
+  },
+  "admission_semantics": {
+    "successful_intake_status": "INTAKE_COMPLETE_STATIC_REVIEW_REQUIRED",
+    "intake_success_is_proof": false,
+    "bridge_admission_automatic": false,
+    "serializer_field_read_admission_automatic": false,
+    "semantic_promotion_automatic": false,
+    "blender_emit_automatic": false
+  }
+}

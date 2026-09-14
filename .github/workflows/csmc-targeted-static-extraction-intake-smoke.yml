@@ -1,0 +1,33 @@
+name: CSMC targeted static extraction intake smoke
+on:
+  push:
+    branches: [csmc-importer-experimental-20260902]
+    paths:
+      - 'tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_INTAKE_CONTRACT_V1.json'
+      - 'tools/csmc_importer/semantic_binding_campaign/csmc_targeted_static_extraction_intake.py'
+      - 'tools/csmc_importer/semantic_binding_campaign/test_csmc_targeted_static_extraction_intake.py'
+      - '.github/workflows/csmc-targeted-static-extraction-intake-smoke.yml'
+  workflow_dispatch:
+jobs:
+  targeted-static-intake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Validate contract JSON
+        run: python -m json.tool tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_INTAKE_CONTRACT_V1.json >/dev/null
+      - name: Compile and test targeted static intake
+        working-directory: tools/csmc_importer/semantic_binding_campaign
+        run: |
+          python -m py_compile csmc_targeted_static_extraction_intake.py test_csmc_targeted_static_extraction_intake.py
+          python test_csmc_targeted_static_extraction_intake.py
+      - name: Re-run provenance bridge gate
+        working-directory: tools/csmc_importer/importer_lab
+        run: python test_csmc_modeldata_serializer_bridge_gate.py
+      - name: Re-run serializer width gate
+        working-directory: tools/csmc_importer/importer_lab
+        run: python test_csmc_serializer_field_read_gate.py
+      - name: Re-run M1 acceptance v2
+        working-directory: tools/csmc_importer/importer_lab
+        run: python test_csmc_importer_lab_m1_acceptance_v2.py
