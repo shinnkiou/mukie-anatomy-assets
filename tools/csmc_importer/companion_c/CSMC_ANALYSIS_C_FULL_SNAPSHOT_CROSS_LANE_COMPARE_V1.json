@@ -1,0 +1,53 @@
+{
+  "schema_version": "csmc_analysis_c_full_snapshot_cross_lane_compare_v1",
+  "status": "CROSS_LANE_COMPARE_COMPLETE_FAIL_CLOSED",
+  "numbered_run_created": false,
+  "latest_numbered_companion_run": "C-069",
+  "independent_seal": {
+    "supabase_row": 209,
+    "github_head": "aad64b96fad0699426d36f1f0bfd290a4f5751ad",
+    "report_sha256": "c69210650141db74ab3fc17a835a5d42c86c840a5c31bd34abb9de38cb423bdd",
+    "evidence_sha256": "5901afd90b42261cc57f95508aa89c40c978ae4e4ceebee4bcc3c4cff781b5b5",
+    "questions_sha256": "22dde754c1e7e777ed3732a011ca63d18f7db64f6979dfb2e2db5a9fd628fb8b"
+  },
+  "mainline_sources": {
+    "full_snapshot_reconciliation_row": 207,
+    "static_head": "fa3c3a7af57342eee9178cd78a65c11a83f8c471",
+    "followup_current_row": 214,
+    "followup_width_gate": "WAIT_FOR_PROOF"
+  },
+  "agreements": [
+    {"evidence": "EXPLICIT_CSMC_HANDLER_ENTRY", "state": "UNRESOLVED"},
+    {"evidence": "EXTERNALCHUNK_EXACT_SELECT_FACT", "state": "DIRECT_FACT_AGREED", "function": "0x140d175d0", "caller": "0x1416578e0"},
+    {"evidence": "MODELDATA_CANVAS3D_REGISTRATION_FACT", "state": "DIRECT_FACT_AGREED", "function": "0x140d45d30", "helper": "0x141657140"},
+    {"evidence": "EXPLICIT_SERIALIZER_FIELD_READ", "state": "UNRESOLVED"},
+    {"evidence": "CONTROLLED_FIXTURE_TO_CONSUMER_MATCH", "state": "UNRESOLVED"},
+    {"evidence": "F02_PHYSICAL_ORACLE", "state": "0/30 PENDING_MANUAL_ORACLE"},
+    {"evidence": "SEMANTIC_PROMOTION", "state": 0}
+  ],
+  "classification_disagreements": [
+    {"evidence": "EXPLICIT_EXTERNALCHUNK_OFFSET_LOOKUP", "companion": "CANDIDATE_RESULT_FLOW_UNRESOLVED", "mainline": "CONFIRMED_PROOF_GRADE", "factual_contradiction": false, "reason": "admission threshold differs", "discriminator": "DQ-EXT-01"},
+    {"evidence": "EXPLICIT_MODELDATA_LOOKUP", "companion": "UNRESOLVED_RUNTIME_LOOKUP", "mainline": "CONFIRMED_FROM_REGISTRATION", "factual_contradiction": false, "reason": "registration-vs-runtime-lookup definition differs", "discriminator": "DQ-LOAD-01"},
+    {"evidence": "EXPLICIT_INTERNAL_MODEL_CONSTRUCTION", "companion": "UNRESOLVED_NO_DIRECT_BRIDGE", "mainline": "CANDIDATE_GADCHARACTER_RTTI", "factual_contradiction": false, "reason": "candidate target/evidence threshold differs", "discriminator": "DQ-CONSTRUCT-01"}
+  ],
+  "fail_closed_reconciliation": {
+    "externalchunk_exact_lookup_fact": "CONFIRMED",
+    "externalchunk_result_to_physical_seek": "UNRESOLVED",
+    "modeldata_canvas3d_registration": "CONFIRMED",
+    "modeldata_runtime_lookup_factory_invocation": "UNRESOLVED",
+    "explicit_serializer_field_read": "UNRESOLVED",
+    "explicit_internal_model_construction": "UNRESOLVED_TO_CANDIDATE_ONLY_NO_PROMOTION",
+    "controlled_fixture_to_consumer_match": "UNRESOLVED"
+  },
+  "next_questions": ["DQ-EXT-01", "DQ-LOAD-01", "DQ-SER-WIDTH-01", "DQ-CONSTRUCT-01"],
+  "guards": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false,
+    "modeler_runtime_actions": 0,
+    "worker_canary_actions": 0,
+    "rio26_mutations": 0,
+    "mainline_mutations": 0
+  }
+}
