@@ -1,0 +1,33 @@
+{
+  "schema_version": "csmc_importer_lab_gen0_public_safe_aggregate_v0_1",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion": false,
+  "blender_emit": false,
+  "private_raw_bytes_embedded": false,
+  "phase_scope": {
+    "logical_mod8_phase": 2,
+    "train": ["CSMC_F01_TRIANGLE"],
+    "validation": ["CSMC_R05_CUBE_B2_MIX50"],
+    "region": "VALIDATED_VARIABLE_PREFIX_BEFORE_EXACT_INVARIANT_CORE"
+  },
+  "gen0": {
+    "family": "LOCAL_LENGTH_CHAIN",
+    "window_bytes": 1024,
+    "header_types": ["u16_le", "u16_be", "u32_le", "u32_be"],
+    "scale_bytes": [1, 2, 4, 8],
+    "end_anchor_relative_bytes": [0, 8, 16, 32, 64, 128, 256],
+    "natural_alignment_required": true,
+    "padding_allowed": false,
+    "max_header_value": 4096,
+    "train_chain_hits": 0,
+    "validation_chain_hits": 0,
+    "cross_fixture_common_format_count": 0,
+    "classification": "GEN0_PHASE9_LOCAL_LENGTH_CHAIN_FAMILY_REJECTED_PHASE2"
+  },
+  "rejection_scope": "Only exact two-stage local length chains in the final 1024 bytes of the validated phase-2 variable prefix, under the frozen header widths, endianness, scales, end anchors, natural alignment, maximum header value, and zero-padding policy.",
+  "semantic_binding": "UNRESOLVED",
+  "geometry": "UNRESOLVED",
+  "index_topology": "UNRESOLVED",
+  "frontier_decision": "PAUSE_STATIC_GEN0_AFTER_THREE_CONSECUTIVE_GENERATIONS_WITHOUT_VALIDATION_FRONTIER_IMPROVEMENT",
+  "next_action": "Require new independent evidence: read-only F02 mutation oracle or proof-grade direct serializer field read. Do not widen Phase-7, Phase-8, or Phase-9 families post hoc."
+}
