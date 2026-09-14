@@ -1,0 +1,149 @@
+{
+  "canonical_oracle_order_unchanged": true,
+  "created_at": "2026-09-14T23:18:45+09:00",
+  "evidence_levels": {
+    "CANDIDATE": "RTTI/string proximity, single indirect xref, or incomplete decompiler inference",
+    "CONFIRMED": "direct code/data-flow",
+    "REJECTED": "dead/UI/resource-only, counterexample, wrong call-path, or unreachable interpretation",
+    "STRONG": "multiple direct edges plus consistent destination"
+  },
+  "independence": "Generated before reading any Mainline new Full Snapshot result.",
+  "questions": [
+    {
+      "evidence_needed": [
+        "targeted decompile",
+        "SQL result destination",
+        "dataflow into seek/0x1408c2dc0 or equivalent",
+        "negative control"
+      ],
+      "hypothesis_A": "Offset is a physical payload locator.",
+      "hypothesis_B": "Offset is cached metadata or an intermediate value not used for payload positioning.",
+      "id": "DQ-EXT-01",
+      "kill_A": "Result does not reach any position/read operation.",
+      "kill_B": "Result directly sets the cursor/seek used to read an external payload.",
+      "question": "Does the SELECT Offset result directly control a cursor seek/advance or a CHNKExta payload read?",
+      "target": "0x140d175d0"
+    },
+    {
+      "evidence_needed": [
+        "targeted decompile",
+        "placeholder argument provenance",
+        "CHNKExta key origin",
+        "offset origin"
+      ],
+      "hypothesis_A": "CHNKExta key -> ExternalID and record position -> Offset.",
+      "hypothesis_B": "Both SQL fields are derived from separate metadata.",
+      "id": "DQ-EXT-02",
+      "question": "Which exact bytes feed ExternalID and Offset in INSERT INTO ExternalChunk VALUES('%s',%s)?",
+      "target": "0x140d15700 / 0x140d17e20"
+    },
+    {
+      "evidence_needed": [
+        "direct lookup callsite",
+        "returned function/factory target",
+        "load-entry call",
+        "ModelData acquisition"
+      ],
+      "hypothesis_A": "Registered pair is used by the target external-data load path.",
+      "hypothesis_B": "Registration exists but is unrelated to the CSMC path examined here.",
+      "id": "DQ-LOAD-01",
+      "question": "Where is the later lookup/factory call that resolves ModelData and invokes Canvas3DModelLoader?",
+      "target": "registry around 0x141657140 / 0x141656a80"
+    },
+    {
+      "evidence_needed": [
+        "vtable slot target",
+        "direct input-read primitive",
+        "width/endian",
+        "count/length source",
+        "destination",
+        "up/downstream dataflow"
+      ],
+      "hypothesis_A": "Coordinate specialization consumes a mesh coordinate array.",
+      "hypothesis_B": "It serializes preset/editor metadata outside the target load path.",
+      "id": "DQ-SER-01",
+      "question": "Which vtable method performs the field read, with what width/endian/count and destination?",
+      "target": "ODCChunkCellImporterT<ODDPresetVertexArray,...Coordinate> vftable 0x1417e9468"
+    },
+    {
+      "evidence_needed": [
+        "vtable slot target",
+        "integer primitive",
+        "width/endian",
+        "loop/count source",
+        "destination container"
+      ],
+      "hypothesis_A": "Index-like topology stream.",
+      "hypothesis_B": "Object/reference ID stream.",
+      "id": "DQ-SER-02",
+      "question": "Is the underlying integer reader 16-bit, 32-bit, or other, and what destination container receives it?",
+      "target": "ODCChunkCellImporterT<ODDEditPresetHalfEdge,...VertexIndex> vftable 0x1417e48f8"
+    },
+    {
+      "evidence_needed": [
+        "reader",
+        "element layout/count",
+        "destination array/object",
+        "downstream construction edge"
+      ],
+      "hypothesis_A": "Skinning weight data.",
+      "hypothesis_B": "Preset/editor metadata.",
+      "id": "DQ-WGT-01",
+      "question": "What is the WeightInfo destination type and does it flow to a bone/skin consumer?",
+      "target": "ODCChunkCellImporterT<ODDPresetSkin,...WeightInfo> vftable 0x1417e8ad8"
+    },
+    {
+      "evidence_needed": [
+        "xref after initialization",
+        "consumer function",
+        "direct/indirect callsite"
+      ],
+      "hypothesis_A": "DATA2 identifies the target serialized payload path.",
+      "hypothesis_B": "It is registered/static metadata not used by this load path.",
+      "id": "DQ-DATA2-01",
+      "question": "What function, if any, consumes the initialized DATA2 identifier in actual load dispatch?",
+      "target": "CLIP_STUDIO_3D_DATA2 initializer 0x140025c00"
+    },
+    {
+      "evidence_needed": [
+        "vtable slot resolution",
+        "function-pointer target",
+        "destination object provenance",
+        "callsite"
+      ],
+      "hypothesis_A": "Indirect dispatch bridges loader/serializer to model construction.",
+      "hypothesis_B": "These CrM functions are a separate format/path.",
+      "id": "DQ-CONSTRUCT-01",
+      "question": "Is the missing serializer→construction connection an indirect/virtual dispatch edge absent from call_edges.tsv?",
+      "target": "CrMVertex / CrMDocObjBone / CrMDocObjUV candidates"
+    },
+    {
+      "evidence_needed": [
+        "bound cursor/dataflow",
+        "direct consumer offsets",
+        "M13/M14/M15 observations later"
+      ],
+      "hypothesis_A": "3216 is a consumer-visible boundary.",
+      "hypothesis_B": "3216 is only a statistical/structural boundary.",
+      "id": "DQ-F02-BND-01",
+      "question": "After a direct F02 consumer binding is found, does one read span cross or change at offset 3216?",
+      "target": "F02 payload 3215/3216/3217"
+    },
+    {
+      "evidence_needed": [
+        "length source",
+        "cursor limit",
+        "framing handler",
+        "M22/M23/M30 observations later"
+      ],
+      "hypothesis_A": "Logical payload end is explicitly bounded before framing bytes.",
+      "hypothesis_B": "One enclosing reader consumes the whole stored span uniformly.",
+      "id": "DQ-F02-TERM-01",
+      "question": "Does the consumer distinguish logical/alignment end 17687 from framing remainder beginning 17688?",
+      "target": "F02 payload 17687/17688/17695"
+    }
+  ],
+  "run_id": "C-069",
+  "schema_version": "csmc_analysis_c_discriminating_questions_v1",
+  "status": "READY_FOR_CROSS_LANE_COMPARE"
+}
