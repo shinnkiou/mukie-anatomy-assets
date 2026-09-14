@@ -14,17 +14,23 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from csmc_importer_lab_manifest import HypothesisManifest
+from csmc_importer_lab_policy import (
+    FROZEN_SCORE_SPEC,
+    HARD_CONSTRAINTS,
+    POLICY_VERSION,
+    build_holdout_ledger,
+    record_exposure,
+)
 
-SCHEMA_VERSION = "csmc_importer_lab_runner_v0_1"
-MAX_BATCH = 50
-MAX_CONCURRENCY = 2
+SCHEMA_VERSION = "csmc_importer_lab_runner_v0_2"
+MAX_BATCH = int(HARD_CONSTRAINTS["max_logical_batch"])
+MAX_CONCURRENCY = max(HARD_CONSTRAINTS["allowed_concurrency"])
 FROZEN_SCORE_WEIGHTS = {
-    "train_relationship": 35.0,
-    "validation_generalization": 25.0,
-    "negative_control_resistance": 20.0,
-    "cross_fixture_stability": 10.0,
-    "parsimony": 10.0,
+    key: float(value)
+    for key, value in FROZEN_SCORE_SPEC.items()
+    if key not in {"parse_success_points", "visual_similarity_points"}
 }
+SEALED_SPLITS = {"HOLDOUT", "EXTERNAL_BENCHMARK"}
 
 
 class RunnerError(ValueError):
@@ -93,39 +99,33 @@ def _evaluate_one(m: HypothesisManifest, fixtures: list[dict[str, Any]]) -> dict
     for fixture in fixtures:
         region_hex = fixture.get("regions", {}).get(m.region_id)
         if region_hex is None:
-            results.append(
-                {
-                    "fixture_id": fixture["fixture_id"],
-                    "split": fixture["split"],
-                    "parse_valid": False,
-                    "match": False,
-                }
-            )
+            results.append({
+                "fixture_id": fixture["fixture_id"],
+                "split": fixture["split"],
+                "parse_valid": False,
+                "match": False,
+            })
             continue
         try:
             values = _decode_numeric(bytes.fromhex(region_hex), m)
             label = fixture.get("labels", {}).get(fixture.get("target_label", "target"))
             match = _relationship_match(values, label, m)
-            results.append(
-                {
-                    "fixture_id": fixture["fixture_id"],
-                    "split": fixture["split"],
-                    "parse_valid": True,
-                    "match": match,
-                    "sample_count": len(values),
-                }
-            )
+            results.append({
+                "fixture_id": fixture["fixture_id"],
+                "split": fixture["split"],
+                "parse_valid": True,
+                "match": match,
+                "sample_count": len(values),
+            })
         except Exception:
-            results.append(
-                {
-                    "fixture_id": fixture["fixture_id"],
-                    "split": fixture["split"],
-                    "parse_valid": False,
-                    "match": False,
-                }
-            )
+            results.append({
+                "fixture_id": fixture["fixture_id"],
+                "split": fixture["split"],
+                "parse_valid": False,
+                "match": False,
+            })
 
-    if not results or not all(r["parse_valid"] for r in results if r["split"] != "HOLDOUT"):
+    if not results or not all(r["parse_valid"] for r in results):
         return {
             "status": "PARSE_REJECTED",
             "score": 0.0,
@@ -142,12 +142,8 @@ def _evaluate_one(m: HypothesisManifest, fixtures: list[dict[str, Any]]) -> dict
     train = ratio("TRAIN", True)
     validation = ratio("VALIDATION", True)
     negative = ratio("NEGATIVE", False)
-    non_holdout = [r for r in results if r["split"] != "HOLDOUT"]
-    stability = sum(1 for r in non_holdout if r["parse_valid"]) / max(1, len(non_holdout))
-    complexity = min(
-        1.0,
-        (m.stride + m.components + (1 if m.relative_offset else 0)) / 40.0,
-    )
+    stability = sum(1 for r in results if r["parse_valid"]) / max(1, len(results))
+    complexity = min(1.0, (m.stride + m.components + (1 if m.relative_offset else 0)) / 40.0)
     parsimony = 1.0 - complexity
     components = {
         "train_relationship": train,
@@ -189,19 +185,9 @@ def _run_subprocess(
         fixtures_path.write_text(json.dumps(fixtures))
         command = [sys.executable, __file__, "--worker", str(manifest_path), str(fixtures_path), str(output_path)]
         try:
-            completed = subprocess.run(
-                command,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
-            )
+            completed = subprocess.run(command, capture_output=True, text=True, timeout=timeout_seconds)
         except subprocess.TimeoutExpired:
-            return {
-                "status": "TIMEOUT_ISOLATED",
-                "score": 0.0,
-                "components": {},
-                "fixture_results": [],
-            }
+            return {"status": "TIMEOUT_ISOLATED", "score": 0.0, "components": {}, "fixture_results": []}
         if completed.returncode != 0:
             return {
                 "status": "CRASH_ISOLATED",
@@ -233,8 +219,23 @@ def run_batch(
     manifests = [HypothesisManifest.from_mapping(row) for row in manifest_rows]
     if len(manifests) > MAX_BATCH:
         raise RunnerError("logical batch exceeds 50 candidates")
-    if concurrency not in {1, 2}:
+    if concurrency not in HARD_CONSTRAINTS["allowed_concurrency"]:
         raise RunnerError("concurrency must be 1 or 2")
+
+    holdout_ledger = build_holdout_ledger(fixtures)
+    if allow_holdout_audit:
+        generation = max((m.generation for m in manifests), default=0)
+        for fixture in fixtures:
+            if fixture["split"] in SEALED_SPLITS:
+                holdout_ledger = record_exposure(
+                    holdout_ledger,
+                    fixture_id=fixture["fixture_id"],
+                    generation=generation,
+                    used_for_selection=False,
+                )
+        evaluation_fixtures = list(fixtures)
+    else:
+        evaluation_fixtures = [f for f in fixtures if f["split"] not in SEALED_SPLITS]
 
     seen: dict[str, str] = {}
     unique: list[HypothesisManifest] = []
@@ -242,13 +243,11 @@ def run_batch(
     for manifest in manifests:
         key = manifest.canonical_key()
         if key in seen:
-            duplicates.append(
-                {
-                    "hypothesis_id": manifest.hypothesis_id,
-                    "duplicate_of": seen[key],
-                    "canonical_key": key,
-                }
-            )
+            duplicates.append({
+                "hypothesis_id": manifest.hypothesis_id,
+                "duplicate_of": seen[key],
+                "canonical_key": key,
+            })
         else:
             seen[key] = manifest.hypothesis_id
             unique.append(manifest)
@@ -256,33 +255,40 @@ def run_batch(
     unique = sorted(unique, key=lambda m: (m.canonical_key(), m.hypothesis_id))
 
     def task(manifest: HypothesisManifest):
-        result = _run_subprocess(manifest, fixtures, timeout_seconds)
-        if not allow_holdout_audit and result.get("fixture_results"):
-            result["fixture_results"] = [
-                row for row in result["fixture_results"] if row["split"] != "HOLDOUT"
-            ]
-        return manifest, result
+        return manifest, _run_subprocess(manifest, evaluation_fixtures, timeout_seconds)
 
     results: list[dict[str, Any]] = []
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
         futures = [executor.submit(task, manifest) for manifest in unique]
         for future in as_completed(futures):
             manifest, result = future.result()
-            results.append(
-                {
-                    "hypothesis_id": manifest.hypothesis_id,
-                    "manifest_hash": manifest.manifest_hash(),
-                    "canonical_key": manifest.canonical_key(),
-                    **result,
-                    "semantic_promotion": False,
-                    "diagnostic_only": True,
-                    "blender_emit": False,
-                }
-            )
+            results.append({
+                "hypothesis_id": manifest.hypothesis_id,
+                "manifest_hash": manifest.manifest_hash(),
+                "canonical_key": manifest.canonical_key(),
+                **result,
+                "semantic_promotion": False,
+                "diagnostic_only": True,
+                "blender_emit": False,
+            })
 
     results = sorted(results, key=lambda row: row["canonical_key"])
+    selection_fingerprint_payload = [
+        {
+            "canonical_key": row["canonical_key"],
+            "status": row["status"],
+            "score": row["score"],
+            "components": row["components"],
+        }
+        for row in results
+    ]
+    deterministic_result_sha256 = sha256(
+        json.dumps(selection_fingerprint_payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
     public = {
         "schema_version": SCHEMA_VERSION,
+        "policy_version": POLICY_VERSION,
         "mode": (
             "SYNTHETIC_M1"
             if all(m.engine_mode == "SYNTHETIC_ONLY" for m in unique)
@@ -294,15 +300,18 @@ def run_batch(
         "concurrency": concurrency,
         "timeout_seconds": timeout_seconds,
         "score_weights": FROZEN_SCORE_WEIGHTS,
-        "parse_success_points": 0,
+        "parse_success_points": FROZEN_SCORE_SPEC["parse_success_points"],
+        "visual_similarity_points": FROZEN_SCORE_SPEC["visual_similarity_points"],
         "holdout_used_for_selection": False,
         "holdout_audit_exposed": bool(allow_holdout_audit),
+        "holdout_ledger": holdout_ledger,
         "semantic_promotion": False,
         "blender_emit": False,
         "results": results,
+        "deterministic_result_sha256": deterministic_result_sha256,
     }
     encoded = json.dumps(public, sort_keys=True, separators=(",", ":")).encode()
-    public["deterministic_replay_sha256"] = sha256(encoded).hexdigest()
+    public["run_fingerprint_sha256"] = sha256(encoded).hexdigest()
     return public
 
 
