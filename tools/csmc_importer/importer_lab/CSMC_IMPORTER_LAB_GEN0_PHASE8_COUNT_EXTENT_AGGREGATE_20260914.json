@@ -1,0 +1,31 @@
+{
+  "schema_version": "csmc_importer_lab_gen0_public_safe_aggregate_v0_1",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "semantic_promotion": false,
+  "blender_emit": false,
+  "private_raw_bytes_embedded": false,
+  "phase_scope": {
+    "logical_mod8_phase": 5,
+    "train": ["CSMC_F05_CUBE_UV"],
+    "validation": ["CSMC_R02_CUBE_B1_W100"],
+    "region": "VALIDATED_VARIABLE_PREFIX_BEFORE_EXACT_INVARIANT_CORE"
+  },
+  "gen0": {
+    "family": "LOCAL_COUNT_TO_ANCHOR_EXTENT",
+    "window_bytes": 1024,
+    "count_types": ["u16_le", "u16_be", "u32_le", "u32_be"],
+    "unit_extents_bytes": [1, 2, 4, 8, 12, 16, 24, 32],
+    "end_anchor_relative_bytes": [0, 8, 16, 32, 64, 128, 256],
+    "natural_alignment_required": true,
+    "padding_allowed": false,
+    "train_candidate_hits": 1,
+    "validation_candidate_hits": 0,
+    "cross_fixture_common_format_count": 0,
+    "classification": "GEN0_PHASE8_LOCAL_COUNT_TO_ANCHOR_EXTENT_FAMILY_REJECTED_PHASE5"
+  },
+  "rejection_scope": "Only exact local count-to-anchor-extent relations in the final 1024 bytes of the validated phase-5 variable prefix, for the frozen count types, unit extents, end anchors, natural alignment, and zero-padding policy. Other counted grammar, nested records, variable-length headers, transformed counts, and other phases remain open.",
+  "semantic_binding": "UNRESOLVED",
+  "geometry": "UNRESOLVED",
+  "index_topology": "UNRESOLVED",
+  "next_action": "Do not widen this count-to-anchor family post hoc. Prefer the read-only F02 mutation oracle when MODELER access exists, direct serializer field-read evidence, or a structurally distinct nested/local-record grammar family."
+}
