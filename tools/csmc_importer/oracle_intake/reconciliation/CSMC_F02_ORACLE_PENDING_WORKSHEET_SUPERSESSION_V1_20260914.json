@@ -1,0 +1,60 @@
+{
+  "authoritative_current_operator_order": {
+    "current_external_pointer_supabase_row": 197,
+    "oracle_branch_head": "5db89bc6f0ca20dcb2646b89202ead6b8b53bde2",
+    "sentinel9": [
+      "M01",
+      "M10",
+      "M13",
+      "M14",
+      "M15",
+      "M18",
+      "M22",
+      "M23",
+      "M30"
+    ],
+    "source_oracle_intake_v2_supabase_row": 180,
+    "source_structural_map_supabase_row": 190,
+    "source_supabase_row": 186
+  },
+  "current_proof_state": {
+    "blender_emit_ready": false,
+    "controlled_fixture_to_consumer_match": "UNRESOLVED",
+    "explicit_serializer_field_read": "UNRESOLVED",
+    "physical_observations_acquired": 0,
+    "physical_observations_expected": 30,
+    "physical_oracle_status": "PENDING_MANUAL_ORACLE",
+    "runtime_dispatch": false,
+    "semantic_promotion_count": 0
+  },
+  "guards": {
+    "delete_historical_artifact": false,
+    "mainline_production_mutation": false,
+    "modeler_execution": false,
+    "new_hypothesis_family": false,
+    "new_proof_claim": false,
+    "overwrite_historical_artifact": false,
+    "rio26_mutation": false,
+    "save_or_serialization_action": false,
+    "worker_canary_control_gate_action": false
+  },
+  "historical_artifact": {
+    "classification": "HISTORICAL_REFERENCE_ONLY_DO_NOT_USE_AS_CURRENT_OPERATOR_ORDER",
+    "created_time": "2026-09-14T08:46:38.992Z",
+    "drive_id": "1X5q9vtb54g3kEl_xqX2OKHAaPYUpjTsN",
+    "historical_operational_order": [
+      "M11-M17",
+      "M01-M10",
+      "M18-M21",
+      "M22-M30"
+    ],
+    "title": "CSMC_F02_MUTATION_ORACLE_30_V1_PENDING.md"
+  },
+  "packet_id": "CSMC_F02_ORACLE_PENDING_WORKSHEET_SUPERSESSION_V1_20260914",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "project": "CSMC",
+  "reason": "Historical pending worksheet contains an obsolete operational order that conflicts with the later frozen Sentinel-9 operator order.",
+  "status": "SUPERSESSION_NOTICE_VERIFIED_NOT_EVIDENCE",
+  "supersedes_current_pointer": false,
+  "use_rule": "Future manual observation must use the validated v2 operator packet and frozen Sentinel-9 sequence. The historical pending worksheet may be retained only for audit/history."
+}
