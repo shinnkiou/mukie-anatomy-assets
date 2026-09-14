@@ -99,7 +99,8 @@ jobs:
           $ErrorActionPreference = 'Stop'
           Set-Location -LiteralPath $PSScriptRoot
           function Get-Sha256([string]$Path) {
-              $stream = [System.IO.File]::OpenRead($Path)
+              $resolved = (Resolve-Path -LiteralPath $Path).Path
+              $stream = [System.IO.File]::OpenRead($resolved)
               $sha = [System.Security.Cryptography.SHA256]::Create()
               try {
                   return ([System.BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-', '').ToLowerInvariant()
