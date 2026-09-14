@@ -1,0 +1,22 @@
+{
+  "schema_version": "csmc_f02_information_gain_proposal_v1",
+  "created_utc": "2026-09-14T15:08:53Z",
+  "physical_observations": "0/30 PENDING",
+  "canonical_sentinel9_order": ["M01","M10","M13","M14","M15","M18","M22","M23","M30"],
+  "order_changed": false,
+  "highest_information_gain_proposal": {
+    "variant_id": "M14",
+    "payload_relative_offset": 3216,
+    "region": "INVARIANT_BOUNDARY",
+    "reason": "exact first byte of the proven invariant region; best current split among prefix ownership, exact-boundary ownership and invariant-core handling"
+  },
+  "next_physical_operation": "M01",
+  "proposal_only": true,
+  "observation_channels": ["load success/failure","save normalization","visual or structural response"],
+  "interpretation_firewall": [
+    "one oracle result is not semantic proof",
+    "success does not establish geometry",
+    "failure does not identify a field",
+    "bridge and destination data-flow remain mandatory"
+  ]
+}
