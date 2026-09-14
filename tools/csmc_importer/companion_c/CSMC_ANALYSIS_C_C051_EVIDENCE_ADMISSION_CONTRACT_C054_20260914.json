@@ -1,0 +1,49 @@
+{
+  "schema_version": "csmc_analysis_c_c051_evidence_admission_c054_v1",
+  "lane": "CSMC_ANALYSIS_COMPANION_C",
+  "status": "ADMISSION_STATE_MACHINE_READY_INPUT_NOT_YET_ACQUIRED",
+  "required_order": [
+    "C051_SOURCE_MANIFEST_PRESENT",
+    "C052_TEACHER_VALIDATION_PASS",
+    "EXTERNAL_CONVERSION_MANIFEST_PRESENT",
+    "C053_PROVENANCE_VALIDATION_PASS",
+    "C051_AGGREGATE_MANIFEST_PRESENT",
+    "C051_AGGREGATE_VALIDATION_PASS"
+  ],
+  "states": [
+    "WAITING_C051_SOURCE_MANIFEST",
+    "SOURCE_REALIZATION_REJECTED",
+    "SOURCE_VALIDATED_WAITING_EXTERNAL_CONVERSION",
+    "PROVENANCE_REJECTED",
+    "PROVENANCE_VALIDATED_WAITING_AGGREGATE",
+    "AGGREGATE_REJECTED",
+    "C051_EVIDENCE_ADMISSIBLE_STRUCTURAL_ONLY"
+  ],
+  "stage_skip_policy": "FAIL_CLOSED_REJECT",
+  "fixture_set": [
+    "MAT3_ALLUSED",
+    "MAT3_ONEUSED",
+    "THREE_CUBES",
+    "UV_OFF",
+    "UV_ON",
+    "W50_50",
+    "W25_75"
+  ],
+  "safety": {
+    "pipeline_stage": "STRUCTURAL_ONLY",
+    "semantic_promotion_count": 0,
+    "blender_emit_ready": false,
+    "runtime_dispatch": false,
+    "runtime_jobs": 0,
+    "modeler_actions": 0,
+    "worker_actions": 0,
+    "canary_actions": 0,
+    "control_gate_actions": 0,
+    "mainline_mutations": 0,
+    "rio26_mutations": 0,
+    "automatic_integration": false,
+    "raw_private_bytes_published": false
+  },
+  "semantic_claim": "NONE",
+  "current_boundary": "No actual C-051 source, conversion, provenance-pass, or aggregate-pass input is claimed acquired."
+}
