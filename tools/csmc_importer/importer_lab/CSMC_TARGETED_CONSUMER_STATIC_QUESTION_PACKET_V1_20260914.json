@@ -1,0 +1,112 @@
+{
+  "blind_stage": {
+    "allowed_evidence": [
+      "DIRECT_INPUT_READ_PRIMITIVE",
+      "BOUND_FUNCTION_VA",
+      "READ_WIDTH",
+      "ENDIANNESS",
+      "COUNT_OR_LENGTH_SOURCE",
+      "DESTINATION",
+      "UPSTREAM_DATA_FLOW_SUMMARY",
+      "DOWNSTREAM_DATA_FLOW_SUMMARY",
+      "NEGATIVE_CONTROL",
+      "PROVENANCE_HASH"
+    ],
+    "proof_admission_contract": "CSMC_MODELER_STATIC_EVIDENCE_SLICE_CONTRACT_V2",
+    "public_clip_prior_allowed_for_target_selection": false,
+    "public_semantic_names_allowed": false
+  },
+  "hard_guards": {
+    "blender_emit": false,
+    "broad_static_hypothesis_expansion": false,
+    "modeler_execution": false,
+    "raw_private_bytes_published": false,
+    "rio26_mutation": false,
+    "runtime_dispatch": false,
+    "save_or_serialization_trigger": false,
+    "semantic_promotion": false,
+    "worker_canary_control_gate_actions": 0
+  },
+  "packet_id": "CSMC_TARGETED_CONSUMER_STATIC_QUESTION_PACKET_V1_20260914",
+  "pipeline_stage": "STRUCTURAL_ONLY",
+  "post_blind_stage": {
+    "cannot_upgrade_to_proof_without_direct_csmc_consumer_edge": true,
+    "enabled_only_after_blind_result_is_sealed": true,
+    "public_clip_prior_may_be_used": true,
+    "purpose": "NON_PROOF_CORROBORATION_ONLY"
+  },
+  "questions": [
+    {
+      "decisive_evidence": [
+        "instruction-level cursor/data-flow tied to the bounded input region",
+        "exact read width and endianness",
+        "count/length source if present",
+        "destination object/field or buffer",
+        "negative control showing nearby unrelated read is not being conflated"
+      ],
+      "id": "Q-BND-01",
+      "property": "BOUNDARY_TRANSITION",
+      "question": "Does one direct consumer read/data-flow cross, terminate at, or change behavior at the variable-to-invariant boundary 3215/3216/3217?",
+      "structural_offsets_payload_relative": [3215,3216,3217]
+    },
+    {
+      "decisive_evidence": [
+        "loop bounds or read-span derivation",
+        "allocation/copy length source",
+        "destination range",
+        "direct edge provenance"
+      ],
+      "id": "Q-BND-02",
+      "property": "BOUNDARY_LOCALITY",
+      "question": "Is the 3200..3232 neighborhood consumed by one bounded loop/read span, or does the consumer partition it into multiple scopes?",
+      "structural_offsets_payload_relative": [3200,3208,3215,3216,3217,3224,3232]
+    },
+    {
+      "decisive_evidence": [
+        "same/different direct read primitive",
+        "same/different destination",
+        "same/different controlling loop/count",
+        "provenance-bound instruction addresses"
+      ],
+      "id": "Q-INV-01",
+      "property": "INVARIANT_CORE_PARTITION",
+      "question": "Do separated invariant-core positions flow through the same direct consumer loop/destination, or through distinct substructure consumers?",
+      "structural_offsets_payload_relative": [3728,7312,11408,15216]
+    },
+    {
+      "decisive_evidence": [
+        "direct read/copy/allocation edge",
+        "read width and endianness",
+        "count/length source",
+        "destination and downstream flow"
+      ],
+      "id": "Q-PFX-01",
+      "property": "VARIABLE_PREFIX_PARTITION",
+      "question": "Is the bounded variable prefix consumed uniformly by one direct read path, or partitioned into local subranges by instruction-level data-flow?",
+      "structural_offsets_payload_relative": [8,64,128,256,512,1024,1536,2048,2560,3072]
+    },
+    {
+      "decisive_evidence": [
+        "logical-length bound",
+        "alignment calculation",
+        "terminal read bound",
+        "different destination or ignored remainder behavior"
+      ],
+      "id": "Q-TERM-01",
+      "property": "LOGICAL_END_VS_FRAMING_REMAINDER",
+      "question": "Does the consumer distinguish the alignment-extension byte at 17687 from the framing remainder beginning at 17688?",
+      "structural_offsets_payload_relative": [17687,17688,17689,17690,17691,17692,17693,17694,17695]
+    }
+  ],
+  "resume_rule": "A new proof run is authorized only when an instruction-level private static slice/package or another concrete direct consumer edge becomes available. This packet alone is not evidence.",
+  "schema_version": "csmc_targeted_consumer_static_question_packet_v1",
+  "source_state": {
+    "companion_preregistration": {"sentinel9":["M01","M10","M13","M14","M15","M18","M22","M23","M30"],"supabase_row":186},
+    "f02_structural_map": {"discrimination_question_count":5,"mutation_count":30,"physical_observations":0,"supabase_row":190},
+    "m1_acceptance_v2": {"checks_failed":0,"checks_passed":20,"status":"PASS","supabase_row":187},
+    "private_gen0": {"cross_fixture_survivors":0,"family":"LOCAL_BOUNDED_STRIDE_PERIODICITY","supabase_row":191,"tested":32},
+    "public_clip_architecture_prior": {"allowed_use":"POST_BLIND_CORROBORATION_ONLY","classification":"STRONG_PUBLIC_ARCHITECTURE_PRIOR_NOT_CSMC_PROOF","supabase_row":184},
+    "static_validator_v2": {"new_proof_grade_consumer_edges":0,"supabase_row":182}
+  },
+  "status": "PREREGISTERED_QUESTION_PACKET_NOT_PROOF"
+}
