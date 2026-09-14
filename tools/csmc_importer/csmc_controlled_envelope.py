@@ -32,7 +32,10 @@ class CharacterEnvelope:
     guid_hex: str
     inner_version: int
     logical_length: int
+    aligned_logical_length: int
+    alignment_extension_length: int
     stored_length: int
+    framing_remainder_length: int
     payload_offset: int
     align8_plus8_expected: int
     align8_plus8_holds: bool
@@ -90,7 +93,8 @@ def parse_character_blob(blob: bytes, *, file_sha256: str = "0" * 64, outer_vers
     if len(blob) != PAYLOAD_OFFSET + stored_length:
         raise EnvelopeError("character blob size does not match stored length")
 
-    expected = align8(logical_length) + 8
+    aligned = align8(logical_length)
+    expected = aligned + 8
     payload = blob[PAYLOAD_OFFSET:]
     return CharacterEnvelope(
         file_sha256=file_sha256,
@@ -100,7 +104,10 @@ def parse_character_blob(blob: bytes, *, file_sha256: str = "0" * 64, outer_vers
         guid_hex=guid.hex(),
         inner_version=inner_version,
         logical_length=logical_length,
+        aligned_logical_length=aligned,
+        alignment_extension_length=aligned - logical_length,
         stored_length=stored_length,
+        framing_remainder_length=stored_length - aligned,
         payload_offset=PAYLOAD_OFFSET,
         align8_plus8_expected=expected,
         align8_plus8_holds=(stored_length == expected),

@@ -15,7 +15,7 @@ from pathlib import Path
 from csmc_core import probe
 from csmc_controlled_envelope import EnvelopeError, parse_csmc_file
 
-SCHEMA_VERSION = "csmc_import_intake_v0_2"
+SCHEMA_VERSION = "csmc_import_intake_v0_3"
 PIPELINE_STAGE = "STRUCTURAL_ONLY"
 
 
@@ -35,8 +35,11 @@ class ImportIntake:
     guid_hex: str
     inner_version: int
     logical_length: int
+    aligned_logical_length: int
+    alignment_extension_length: int
     logical_mod8_phase: int
     stored_length: int
+    framing_remainder_length: int
     payload_offset: int
     payload_size_available: int
     frame_rule: str
@@ -61,8 +64,6 @@ def inspect_csmc(path: str | Path) -> ImportIntake:
     except EnvelopeError as exc:
         raise ImportIntakeError(f"controlled envelope rejected: {exc}") from exc
 
-    # Controlled corpus evidence validates exactly this CSMC route. Do not
-    # silently generalize the result to other CELSYS table/column variants.
     if core.sqlite_table != "character" or core.blob_column != "character":
         raise ImportIntakeError(
             f"unsupported controlled route: {core.sqlite_table}.{core.blob_column}"
@@ -89,6 +90,8 @@ def inspect_csmc(path: str | Path) -> ImportIntake:
         )
     if not env.align8_plus8_holds:
         raise ImportIntakeError("validated align8(logical)+8 frame rule does not hold")
+    if env.framing_remainder_length != 8:
+        raise ImportIntakeError("validated framing remainder is not 8 bytes")
 
     return ImportIntake(
         schema_version=SCHEMA_VERSION,
@@ -101,8 +104,11 @@ def inspect_csmc(path: str | Path) -> ImportIntake:
         guid_hex=env.guid_hex,
         inner_version=env.inner_version,
         logical_length=env.logical_length,
+        aligned_logical_length=env.aligned_logical_length,
+        alignment_extension_length=env.alignment_extension_length,
         logical_mod8_phase=env.logical_length % 8,
         stored_length=env.stored_length,
+        framing_remainder_length=env.framing_remainder_length,
         payload_offset=env.payload_offset,
         payload_size_available=core.payload_size_available,
         frame_rule="stored_length = align8(logical_length) + 8",
