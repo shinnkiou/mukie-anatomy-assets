@@ -1,0 +1,85 @@
+{
+  "schema": "csmc_public_clip_3d_architecture_prior_v1",
+  "lane": "PUBLIC_EXTERNAL_ARCHITECTURE_CORROBORATION",
+  "status": "PUBLIC_PRIOR_NOT_CSMC_PROOF",
+  "observed_format": ".clip",
+  "target_format": ".csmc",
+  "direct_csmc_evidence": false,
+  "may_guide_blind_preregistration": false,
+  "may_close_static_evidence_gate": false,
+  "semantic_promotion": false,
+  "blender_emit": false,
+  "runtime_dispatch": false,
+  "sources": [
+    {
+      "repo": "Aodaruma/clipfile-rs",
+      "commit": "bd88467fa80e63ad48c6c713fbfb5a8a116d798a",
+      "license": "MIT",
+      "source_kind": "READ_ONLY_LOCAL_CORPUS_PLUS_PUBLIC_IMPLEMENTATION",
+      "evidence": {
+        "external_chunk_rows_checked": 5889,
+        "external_chunk_offset_mismatches": 0,
+        "external_table_columns": [
+          "Canvas3DModelBank.BankData",
+          "Canvas3DModelLoader.ModelData",
+          "Manager3DOd.SceneData",
+          "ModelData3D.Layer3DModelData"
+        ]
+      }
+    },
+    {
+      "repo": "youichi-uda/clip-clai",
+      "commit": "76edfbf393868687107c2cdfdb750a70ca9ba7fe",
+      "license": "MIT",
+      "source_kind": "COMMUNITY_REVERSE_ENGINEERING_PLUS_REAL_FILE_ANALYSIS",
+      "evidence": {
+        "canvas_field": "Canvas.Canvas3DModelDataLoaderIndex",
+        "external_table_columns": [
+          "Canvas3DModelBank.BankData",
+          "Canvas3DModelLoader.ModelData",
+          "Manager3DOd.SceneData",
+          "ModelData3D.Layer3DModelData"
+        ]
+      }
+    },
+    {
+      "repo": "LavenderSnek/clipdecode",
+      "commit": "e5347a65202bc399bdd730d13187bc32aabdd4fa",
+      "license": "LGPL-2.1",
+      "source_kind": "PUBLIC_INCOMPLETE_FORMAT_SPEC",
+      "evidence": {
+        "generic_external_mapping": "ExternalTableAndColumnName declares external-ID-bearing columns and ExternalChunk stores offsets"
+      }
+    }
+  ],
+  "public_architecture_prior": {
+    "external_id_indirection_for_clip": "STRONG_CORROBORATED_STRUCTURAL_PRIOR",
+    "clip_3d_payloads_may_be_externalized": "STRONG_PUBLIC_PRIOR_NOT_CSMC_PROOF",
+    "candidate_public_names": [
+      "ExternalChunk",
+      "ExternalTableAndColumnName",
+      "Canvas3DModelBank",
+      "BankData",
+      "Canvas3DModelLoader",
+      "ModelData",
+      "ModelData3D",
+      "Layer3DModelData",
+      "Manager3DOd",
+      "SceneData",
+      "Canvas3DModelDataLoaderIndex"
+    ],
+    "candidate_name_usage": "POST_BLIND_NON_PROOF_CORROBORATION_ONLY"
+  },
+  "non_transfer_rules": [
+    ".clip outer container structure must not be asserted for .csmc",
+    ".clip table names must not be asserted to exist in .csmc",
+    "public names must not retroactively guide or score the existing blind field-read preregistration",
+    "string or RTTI presence in MODELER is candidate-only without a direct read/data-flow edge",
+    "external architecture prior cannot promote vertex/index/material/UV/bone/weight semantics"
+  ],
+  "source_dependency_warning": "Public projects may share earlier community references; agreement is corroboration, not a guarantee of statistical independence.",
+  "next_use": {
+    "blind_lane": "UNCHANGED_AND_SEALED",
+    "post_blind_lane": "If a future blind static slice independently lands near an external-ID/model-data path, use these public names only as non-proof corroboration and require the v2 direct-edge validator for any CONFIRMED claim."
+  }
+}
