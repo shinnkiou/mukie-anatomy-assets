@@ -97,6 +97,7 @@ jobs:
 
           @'
           $ErrorActionPreference = 'Stop'
+          Set-Location -LiteralPath $PSScriptRoot
           function Get-Sha256([string]$Path) {
               $stream = [System.IO.File]::OpenRead($Path)
               $sha = [System.Security.Cryptography.SHA256]::Create()
