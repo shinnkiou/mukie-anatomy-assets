@@ -1,0 +1,31 @@
+{
+  "schema_version": "csmc_controlled_mutation_batch_public_index_v1",
+  "batch_id": "CSMC_F02_SINGLE_BYTE_XOR01_30_20260914",
+  "base_fixture": "CSMC_F02_QUAD",
+  "base_file_sha256": "d7b36076348035a6965890ee19c00f5487de94aa6db5b23ff2459b75ae815eab",
+  "variant_count": 30,
+  "mutation_rule": "exactly one extracted character-BLOB byte XOR 0x01 per variant",
+  "structural_landmarks": {
+    "logical_length": 17687,
+    "stored_length": 17696,
+    "payload_offset": 65,
+    "proven_invariant_start_payload_offset": 3216,
+    "aligned_logical_length": 17688,
+    "framing_remainder_start_payload_offset": 17688
+  },
+  "region_counts": {
+    "PREFIX_INTERIOR": 10,
+    "INVARIANT_BOUNDARY": 7,
+    "INVARIANT_INTERIOR": 4,
+    "ALIGNMENT_EXTENSION": 1,
+    "FRAMING_REMAINDER": 8
+  },
+  "detailed_public_manifest_sha256": "751f05dfff9d5308dfd96421d5bce43e6785de2cb385fb28a8c97c565c6cc891",
+  "private_mutation_zip_sha256": "93b7bb5a55d862d86ada76a13473618385ec7c72d270ea97e77e5b4d298b1689",
+  "observation_sheet_sha256": "78c59aad2e3baf7628ce6d69539094254e911e74fecac6dfdc42a0175d65b32b",
+  "raw_private_bytes_published": false,
+  "modeler_results": "PENDING_MANUAL_ORACLE",
+  "semantic_promotion": false,
+  "blender_emit_ready": false,
+  "runtime_dispatch": false
+}

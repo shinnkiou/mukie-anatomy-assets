@@ -23,6 +23,8 @@ on:
       - 'tools/csmc_importer/test_csmc_controlled_prefix_extinction_probe_synthetic.py'
       - 'tools/csmc_importer/csmc_controlled_size_law_probe.py'
       - 'tools/csmc_importer/test_csmc_controlled_size_law_probe_synthetic.py'
+      - 'tools/csmc_importer/csmc_controlled_mutation_batch.py'
+      - 'tools/csmc_importer/test_csmc_controlled_mutation_batch_synthetic.py'
       - 'tools/csmc_importer/CSMC_CONTROLLED_FIXTURE_MAINLINE_FINDINGS_20260914.md'
       - 'tools/csmc_importer/CSMC_CONTROLLED_FIXTURE_PUBLIC_INDEX_20260914.json'
       - 'tools/csmc_importer/CSMC_IMPORT_INTAKE_V01_20260914.md'
@@ -34,6 +36,8 @@ on:
       - 'tools/csmc_importer/CSMC_CONTROLLED_PREFIX_EXTINCTION_AGGREGATE_20260914.json'
       - 'tools/csmc_importer/CSMC_CONTROLLED_SIZE_LAW_FINDINGS_20260914.md'
       - 'tools/csmc_importer/CSMC_CONTROLLED_SIZE_LAW_AGGREGATE_20260914.json'
+      - 'tools/csmc_importer/CSMC_CONTROLLED_MUTATION_BATCH_FINDINGS_20260914.md'
+      - 'tools/csmc_importer/CSMC_CONTROLLED_MUTATION_BATCH_PUBLIC_INDEX_20260914.json'
       - '.github/workflows/csmc-controlled-fixture-smoke.yml'
   workflow_dispatch:
 
@@ -65,7 +69,9 @@ jobs:
             tools/csmc_importer/csmc_controlled_prefix_extinction_probe.py \
             tools/csmc_importer/test_csmc_controlled_prefix_extinction_probe_synthetic.py \
             tools/csmc_importer/csmc_controlled_size_law_probe.py \
-            tools/csmc_importer/test_csmc_controlled_size_law_probe_synthetic.py
+            tools/csmc_importer/test_csmc_controlled_size_law_probe_synthetic.py \
+            tools/csmc_importer/csmc_controlled_mutation_batch.py \
+            tools/csmc_importer/test_csmc_controlled_mutation_batch_synthetic.py
       - name: Run controlled envelope synthetic tests
         working-directory: tools/csmc_importer
         run: python test_csmc_controlled_envelope_synthetic.py
@@ -93,3 +99,6 @@ jobs:
       - name: Run bounded size-law synthetic tests
         working-directory: tools/csmc_importer
         run: python test_csmc_controlled_size_law_probe_synthetic.py
+      - name: Run controlled mutation-plan synthetic tests
+        working-directory: tools/csmc_importer
+        run: python test_csmc_controlled_mutation_batch_synthetic.py
