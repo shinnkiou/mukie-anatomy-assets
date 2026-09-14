@@ -1,0 +1,58 @@
+{
+  "schema": "never-tear-ai3d-runtime-delta-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-012",
+  "status": "COMPLETE",
+  "stage": "COMPLETE",
+  "completion_scope": "DETERMINISTIC_SURFACE_PREFLIGHT_ONLY",
+  "evidence_class": "LOGIC_QA_ONLY_NOT_PHYSICAL",
+  "physical_execution_claimed": false,
+  "canary_promoted": false,
+  "promotion_allowed": false,
+  "structure_geometry_mutated": false,
+  "surface_execution_performed": false,
+  "runtime_qa": {
+    "status": "PASS",
+    "github_run_id": 34817911769,
+    "github_job_id": 103892545142,
+    "workflow_head_sha": "8acb7f90ff9df80c9d845513cf7c931cbe7d49b5",
+    "actions_artifact_id": 10336522500,
+    "actions_artifact_zip_sha256": "56c0dc4f39272528755c6b360e5d928ab7fe9c1095c6a9705c6b8d11d536b0d7",
+    "evidence_json_sha256": "09150ed855362be50204fbc61256eb09b861d9bbb55750f1451986547b4fd85a",
+    "binding_contract_sha256": "02e59a7ebbe0057fb81180d673a6adfb87c63a51e46e29a73a708643dabb5f80",
+    "assignment_sha256": "28f061c8cdb278ee8f79774b1bc9154da3fd0223f684122c29a54c3828496009",
+    "reuse_inventory_sha256": "5cf496edb25b8dfbd8207d56989dabbd3723feb73f78dec61928619629617288",
+    "binding_count": 16,
+    "unique_surface_asset_count": 12,
+    "legacy_surface_asset_count": 5,
+    "failed_checks": []
+  },
+  "durable_refs": {
+    "drive_evidence_file_id": "16aj454-r3ZMUG8EKh47D4RD_JCODW5as",
+    "drive_evidence_exact_sha_readback": "PASS",
+    "base44_contract_evidence_readback": "PASS",
+    "base44_mirror_checkpoint": "6aa7a2b418df40e32d56f20a",
+    "base44_mirror_commit": "0e121ee5f7adc49e460904a8b435eed56f968037",
+    "base44_machine_canon_checkpoint": "6aa7a3a7ea3653565934aec0",
+    "base44_machine_canon_commit": "d950186b20efa040344f6ac03412619427d89b93",
+    "linear_issue": "RIO-57_DONE",
+    "linear_closure_comment": "a7c913ea-4d0c-4358-bf3e-cb821fb279ac"
+  },
+  "authority": {
+    "walkmyplan_plan_id": "aacb32598eb746758d60c8",
+    "structure_geometry_authority_revision": 380,
+    "walkmyplan_current_revision": 423,
+    "post_authority_wall_or_opening_edits": 0,
+    "geometry_sha256": "0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb",
+    "adobe_reference_count": 6,
+    "adobe_role": "NON_CANONICAL_VISUAL_REFERENCE",
+    "to3d_job_id": "8b16ab22-ef00-487a-b47f-ee01c947e991",
+    "to3d_status": "FAILED_OUTPUT_NULL_NO_RETRY"
+  },
+  "promotion_gates": [
+    "AI3D-002 physical CANARY PASS",
+    "AI3D-004 real Physical QA PASS",
+    "Central Corridor physical Structure Module QA PASS"
+  ],
+  "next_action": "AI3D-012 preflight is complete. Keep Surface execution on physical HOLD. Physically start the verified separate AI3D companion; after the auto-armed exactly-one AI3D-002 CANARY passes and AI3D-004 real Physical QA passes, execute and QA the Central Corridor physical Structure Module. Only then apply the verified Surface binding contract and run material/render/visual QA."
+}
