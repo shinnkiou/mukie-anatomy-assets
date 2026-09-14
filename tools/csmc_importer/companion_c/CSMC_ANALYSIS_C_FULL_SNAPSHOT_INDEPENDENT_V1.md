@@ -1,7 +1,7 @@
 # CSMC ANALYSIS COMPANION C — FULL STATIC SNAPSHOT INDEPENDENT DEEP PASS V1
 
 - Run: **C-069**
-- Date: 2026-09-14T23:16:18+09:00
+- Date: 2026-09-14T23:18:45+09:00
 - Status: **READY_FOR_CROSS_LANE_COMPARE**
 - Classification: `FULL_SNAPSHOT_DIRECT_CHUNK_SQLITE_CONSUMER_CHAIN_CONFIRMED_SEMANTICS_UNPROMOTED`
 - Pipeline: `STRUCTURAL_ONLY`
@@ -32,8 +32,8 @@ This report was produced from the user-supplied Full Static Snapshot plus **pre-
 - bad hash: 0
 - summary function count: 76,803
 - direct call edges: 267,088
-- strings: 29,883
-- string xrefs: 34,232
+- strings: 29,886
+- string xrefs: 34,233
 - symbols: 669,282
 - target keyword hits: 1,715
 - targeted decompiles: 180
