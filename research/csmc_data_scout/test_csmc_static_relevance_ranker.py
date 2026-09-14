@@ -1,3 +1,4 @@
+import csv
 import json
 import tempfile
 import unittest
@@ -80,6 +81,42 @@ class RankerTests(unittest.TestCase):
             self.assertFalse(payload["semantic_promotion"])
             self.assertFalse(payload["product_specific_constants"])
             self.assertIn("focused_score", out.read_text(encoding="utf-8"))
+
+    def test_read_tsv_accepts_large_reason_field(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "large.tsv"
+            huge_reason = "caller_of:x," * 12000 + "target_string:omega"
+            with path.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(
+                    handle,
+                    fieldnames=[
+                        "rank",
+                        "score",
+                        "address",
+                        "name",
+                        "caller_count",
+                        "callee_count",
+                        "targets",
+                        "reasons",
+                    ],
+                    delimiter="\t",
+                )
+                writer.writeheader()
+                writer.writerow(
+                    {
+                        "rank": "1",
+                        "score": "1",
+                        "address": "6000",
+                        "name": "FUN_6000",
+                        "caller_count": "1",
+                        "callee_count": "1",
+                        "targets": "omega",
+                        "reasons": huge_reason,
+                    }
+                )
+            rows = ranker.read_tsv(path)
+            self.assertEqual(len(rows), 1)
+            self.assertIn("target_string:omega", rows[0]["reasons"])
 
 
 if __name__ == "__main__":
