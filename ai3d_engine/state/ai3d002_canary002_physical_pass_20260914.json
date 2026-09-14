@@ -1,0 +1,62 @@
+{
+  "schema_version": "never-tear-ai3d-physical-canary-closure-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "source_task_id": "AI3D-002",
+  "physical_gate_task_id": "AI3D-004",
+  "canary": {
+    "job_id": "f65a2e26-4601-401f-93bf-34b8a10a26ed",
+    "job_key": "AI3D-002-PHYSICAL-CANARY-002",
+    "command_id": "AI3D-002-CANARY-002-NEVER-TEAR",
+    "max_attempts": 1,
+    "worker_version": "0.1.1-ai3d-canary-compat",
+    "contract_version": "never-tear-ai3d-worker-v1",
+    "capability": "ai3d_blender_physical_mvp_v1",
+    "claim_lease_heartbeat": "PASS",
+    "renderer": "Blender 2.83.20 / BLENDER_EEVEE",
+    "blender_version": "2.83.20",
+    "png_size_bytes": 496863,
+    "png_sha256": "35cefa6f7be61abab63840735b4d266e2081f38ee7a011743cdc79631acc926d",
+    "raw_pixel_sha256": "5d060d07819a923070ebc074166e7590edab174a18521c19ec782a841fb0ece1",
+    "artifact_id": "worker-render-35cefa6f7be61aba",
+    "storage_readback": "PASS",
+    "automated_qa": "PASS",
+    "visual_qa": "PASS"
+  },
+  "compatibility_repair": {
+    "canary_001_failure_class": "BLENDER_2_83_MISSING_BLENDER_EEVEE_NEXT",
+    "worker_source_commit": "b223668695ce67968ecae3385ceaf369871401a7",
+    "github_actions_run": "34824149331",
+    "github_actions_result": "PASS",
+    "exe_sha256": "471592395a70805579008aebd834ce52447684a033cff0e1a96ab9dfa0e649a0",
+    "legacy_blender_fallback": "BLENDER_EEVEE",
+    "python_exit_code_guard": 31,
+    "arbitrary_shell_added": false,
+    "arbitrary_python_added": false,
+    "cloud_path_or_url_added": false
+  },
+  "durable_evidence": {
+    "drive_file_id": "1A-h1qULVuaIzQ7X8RgXLoVTpA9N-_9WP",
+    "drive_file_name": "AI3D-002_CANARY-002_PHYSICAL_EVIDENCE_20260914.zip",
+    "drive_zip_size_bytes": 499555,
+    "drive_zip_sha256": "8459a69aec23b93936c76b4ab359840c518be65894f9dc2b0c13e1bf760d2578",
+    "drive_exact_sha_readback": "PASS",
+    "supabase_artifact_id": "worker-render-35cefa6f7be61aba",
+    "supabase_physical_gate_checkpoint": "cp-ai3d004-physical-pass-dd4cec9efacdd0be",
+    "drive_master_section29": "READBACK_PASS",
+    "drive_master_revision": "ANLCKQmoEBBR_Wld4JvcTcyoRIy6G19tuGYDnNT07vPOkLxXy27X1EcqF6iEbCfQaE9pwlyotbbuatOQPZA8EGYKIyhqm7pd0wa0EkY3PEs",
+    "base44_checkpoint": "6aa7bac084368c5426e157b3",
+    "base44_commit": "4f6878285550df32be5b15ce4d8367ff30caa895"
+  },
+  "gate": {
+    "real_physical_worker": "PASS",
+    "real_pixels": "PASS",
+    "durable_provider_readback": "PASS",
+    "automated_qa": "PASS",
+    "visual_qa": "PASS",
+    "result": "PASS_PROMOTE",
+    "promoted_capability": "ai3d_blender_physical_mvp_v1",
+    "structure_module_capability": "ai3d_structure_module_v1",
+    "structure_module_capability_promoted": false
+  },
+  "next_action": "Keep AI3D-010 READY. Separately canary/promote ai3d_structure_module_v1 before executing module-plan-7d0ef550473d76e6 physically. Do not widen the MVP-only allowlist without that gate."
+}
