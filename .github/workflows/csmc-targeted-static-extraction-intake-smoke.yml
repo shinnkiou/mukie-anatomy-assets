@@ -6,8 +6,11 @@ on:
       - 'tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_INTAKE_CONTRACT_V1.json'
       - 'tools/csmc_importer/semantic_binding_campaign/CSMC_TARGETED_STATIC_EXTRACTION_MANIFEST_TEMPLATE_V1.json'
       - 'tools/csmc_importer/semantic_binding_campaign/csmc_targeted_static_extraction_intake.py'
+      - 'tools/csmc_importer/semantic_binding_campaign/csmc_targeted_static_archive_integrity.py'
       - 'tools/csmc_importer/semantic_binding_campaign/validate_csmc_targeted_static_extraction.py'
+      - 'tools/csmc_importer/semantic_binding_campaign/validate_csmc_targeted_static_package.py'
       - 'tools/csmc_importer/semantic_binding_campaign/test_csmc_targeted_static_extraction_intake.py'
+      - 'tools/csmc_importer/semantic_binding_campaign/test_csmc_targeted_static_archive_integrity.py'
       - '.github/workflows/csmc-targeted-static-extraction-intake-smoke.yml'
   workflow_dispatch:
 jobs:
@@ -24,8 +27,9 @@ jobs:
       - name: Compile and test targeted static intake
         working-directory: tools/csmc_importer/semantic_binding_campaign
         run: |
-          python -m py_compile csmc_targeted_static_extraction_intake.py validate_csmc_targeted_static_extraction.py test_csmc_targeted_static_extraction_intake.py
+          python -m py_compile csmc_targeted_static_extraction_intake.py csmc_targeted_static_archive_integrity.py validate_csmc_targeted_static_extraction.py validate_csmc_targeted_static_package.py test_csmc_targeted_static_extraction_intake.py test_csmc_targeted_static_archive_integrity.py
           python test_csmc_targeted_static_extraction_intake.py
+          python test_csmc_targeted_static_archive_integrity.py
           ! python validate_csmc_targeted_static_extraction.py CSMC_TARGETED_STATIC_EXTRACTION_MANIFEST_TEMPLATE_V1.json >/tmp/template_rejection.json
           grep -q 'INTAKE_REJECTED' /tmp/template_rejection.json
       - name: Re-run provenance bridge gate
