@@ -56,6 +56,13 @@ Additional audit note: the validator checks manifest SHA syntax/identity but doe
 
 `archive SHA recompute -> inventory -> member hash/readback verification -> intake validator -> separate bridge evidence review`.
 
+## Recovered generation/toolchain context
+The public-safe Data Scout helper pinned by the original automation was recovered at commit `281a663fd5b1ac7b0845bb9ba5ad3b8ba659efc9`.
+
+The recovered `csmc_static_relevance_ranker.py` is a blind-safe post-ranker only. It consumes an existing `analysis_ranking.tsv`, contains no product-specific addresses/names/bytes, and explicitly sets `semantic_promotion=false`. It is not a snapshot/decompile generator and therefore cannot reconstruct the missing focused ZIP by itself.
+
+The corresponding Data Scout run classified the current static toolchain as `CURRENT_TOOLCHAIN_SUFFICIENT`; the bottleneck was candidate-ranking noise rather than missing static-analysis capability. Existing Ghidra 12.1.3 / FLOSS / LIEF-pefile / SQLite / controlled-fixture tooling remains sufficient for the current proof gaps. No new external analysis tool is justified by the present evidence.
+
 ## Evidence-constrained hypothesis reduction
 Existing durable evidence already rejects a direct-call bridge from C02/factory helpers to the candidate reader set in the exported graph. This is a negative control, not proof against indirect dispatch.
 
