@@ -1,3 +1,13 @@
+# DURABLE POINTER AFTER HANDOFF PERSISTENCE
+
+- Supabase `HANDOFF_CURRENT`: row **223**
+- Base44 handoff: `6aa8912945eb8a9401f3a27d`
+- Drive handoff MD: `19J-LKcD_-igTdevd00Yot8wEKODI3kB-`
+- GitHub full handoff: branch `csmc-next-chat-handoff-20260915-0924`, commit `c542567c7068c6c99f3f902184f63055480099d4`
+- GitHub mainline READ_FIRST pointer: commit `d8f88e7fe5a7b86314b49a37dbe07c08c98f4d4`
+- mainline pointer smoke: run `34913401235` = **SUCCESS**
+- prior row218 is superseded as the global current pointer; its targeted-static intake contract remains valid historical input.
+
 # CSMC NEXT CHAT HANDOFF — 2026-09-15 09:24 JST
 
 ## READ FIRST
