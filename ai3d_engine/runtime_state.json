@@ -3,11 +3,11 @@
   "project_key": "never_tear_ai3d_engine",
   "canonical_name": "NEVER TEAR AI 3D Production Engine",
   "status": "ACTIVE",
-  "stage": "IMPLEMENT",
-  "active_task": "AI3D-002",
+  "stage": "QA",
+  "active_task": "AI3D-013",
   "secondary_ready_task": "AI3D-010",
-  "updated_at": "2026-09-14T12:30:20+09:00",
-  "next_action": "AI3D-002 remains the only physical execution gate. Geometry research is closed. AI3D-011 staged Structure Production Worker adapter is COMPLETE and runtime-tested on the exact AI3D-010 Central Corridor plan in Blender 4.2.23, but it remains VIRTUAL_GITHUB_ACTIONS_BLENDER_NOT_PHYSICAL and is not in the deployed physical allowlist. Start the verified companion, require ai3d_blender_physical_mvp_v1 telemetry, queue exactly ONE AI3D-002 physical CANARY, pass AI3D-004 real Physical QA, then separately review promotion of ai3d_structure_module_v1 before physical AI3D-010 production.",
+  "updated_at": "2026-09-19T00:45:00+09:00",
+  "next_action": "Launch the already-installed NEVER TEAR AI3D Structure Worker Stable Launcher once. Require verified worker 0.2.4-ai3d-structure-visualfix, exact sole capability ai3d_structure_module_v1, then let the already-queued CANARY-005 run once. Require geometry-probe automated QA + durable provider SHA readback + real visual QA. Promote only on all PASS; only then start Central Corridor module-plan-7d0ef550473d76e6.",
   "implementation": {
     "production_protocol": "ai3d_engine/src/productionProtocol.js",
     "module_assembly": "ai3d_engine/src/moduleAssembly.js",
@@ -22,7 +22,9 @@
     "windows_blender_action": "ai3d_engine/windows_worker/blender_physical_mvp.py",
     "staged_structure_blender_action": "ai3d_engine/windows_worker/blender_structure_module_stage.py",
     "staged_structure_visual_qa": "ai3d_engine/data/ai3d011_structure_stage_visual_qa.json",
-    "worker_action_allowlist": ["ai3d_blender_physical_mvp_v1"],
+    "worker_action_allowlist": [
+      "ai3d_blender_physical_mvp_v1"
+    ],
     "staged_structure_action": "ai3d_structure_module_v1",
     "staged_structure_action_allowlisted": false,
     "worker_arbitrary_shell": false,
@@ -36,35 +38,109 @@
     "ai3d_companion_capability_gate": "HOLD",
     "required_capability": "ai3d_blender_physical_mvp_v1",
     "ai3d_worker_jobs_count": 0,
-    "physical_windows_canary": "NOT_EXECUTED",
+    "physical_windows_canary": "PASS_AI3D002",
     "ai3d004_evidence_class": "LOGIC_ONLY_NOT_PHYSICAL",
-    "ai3d004_physical_execution_claimed": false,
+    "ai3d004_physical_execution_claimed": true,
     "ai3d011_staged_runtime_qa": "PASS_NOT_PROMOTED",
     "ai3d011_physical_execution_claimed": false,
     "ai3d011_canary_promoted": false,
-    "ai3d011_promotion_allowed": false
+    "ai3d011_promotion_allowed": false,
+    "ai3d002_status": "COMPLETE",
+    "ai3d004_status": "COMPLETE_PASS_PROMOTE",
+    "structure_handler_task": "AI3D-013",
+    "structure_handler_capability": "ai3d_structure_module_v1",
+    "structure_handler_promoted": false,
+    "canary004_status": "PHYSICAL_PASS_AUTOMATED_QA_VISUAL_FAIL_FALSE_POSITIVE",
+    "canary004_artifact_id": "structure-canary-v4-render-d97260a5ac3902a7",
+    "canary005_job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-005",
+    "canary005_job_id": "597c99dc-132d-4f42-ad85-a46b814e0990",
+    "canary005_status": "QUEUED",
+    "canary005_attempt_count": 0,
+    "canary005_max_attempts": 1,
+    "canary005_required_worker_version": "0.2.4-ai3d-structure-visualfix",
+    "canary005_required_geometry_probe": "CANARY005_OPENING_RAY_V1",
+    "last_observed_structure_companion_version": "0.2.3-ai3d-structure-loaderfix",
+    "last_observed_structure_companion_seen": "2026-09-15T14:33:27.495Z",
+    "current_gate": "WAITING_FOR_V024_STABLE_LAUNCHER_HEARTBEAT"
   },
   "completed_tasks": {
-    "AI3D-001": {"status":"COMPLETE","physical_render":"PASS","visual_qa":"PASS","checkpoint_id":"cp-ai3d001-visualpass-7eb045faac51e35c"},
-    "AI3D-003": {"status":"COMPLETE","github_run_id":"34746031705","checkpoint_id":"cp-8034a2400197dc64","linear":"RIO-45_DONE"},
-    "AI3D-005": {"status":"COMPLETE","artifact_id":"assembly-3506ef9c9ed984f6","checkpoint_id":"cp-ai3d005-module-d1b26b164d3ae210","linear":"RIO-47_DONE"},
-    "AI3D-006": {"status":"COMPLETE","room_registry_authority":true,"module_count":14,"artifact_id":"floorplan-8deef39ab59ba414","walkmyplan_counts":{"walls":50,"openings":26,"fixtures":87,"rooms":14},"checkpoint_id":"cp-ai3d006-floorplan-951c9653824bed58","linear":"RIO-49_DONE"},
-    "AI3D-007": {"status":"COMPLETE","gate_logic":"PASS","artifact_id":"structure-gate-04e0b366cf076c44","checkpoint_id":"cp-ai3d007-structure-gate-81ca89e39acef1db","linear":"RIO-50_DONE"},
-    "AI3D-008": {"status":"COMPLETE","compiler_runtime_qa":"PASS","github_run_id":"34755081555","drive_file_id":"17Y2D0Ltn1Oan4GNH4pHi5SXa7KVe9DPb","checkpoint_id":"cp-ai3d008-structure-compiler-d40f605aafeb038e","linear":"RIO-51_DONE"},
+    "AI3D-001": {
+      "status": "COMPLETE",
+      "physical_render": "PASS",
+      "visual_qa": "PASS",
+      "checkpoint_id": "cp-ai3d001-visualpass-7eb045faac51e35c"
+    },
+    "AI3D-003": {
+      "status": "COMPLETE",
+      "github_run_id": "34746031705",
+      "checkpoint_id": "cp-8034a2400197dc64",
+      "linear": "RIO-45_DONE"
+    },
+    "AI3D-005": {
+      "status": "COMPLETE",
+      "artifact_id": "assembly-3506ef9c9ed984f6",
+      "checkpoint_id": "cp-ai3d005-module-d1b26b164d3ae210",
+      "linear": "RIO-47_DONE"
+    },
+    "AI3D-006": {
+      "status": "COMPLETE",
+      "room_registry_authority": true,
+      "module_count": 14,
+      "artifact_id": "floorplan-8deef39ab59ba414",
+      "walkmyplan_counts": {
+        "walls": 50,
+        "openings": 26,
+        "fixtures": 87,
+        "rooms": 14
+      },
+      "checkpoint_id": "cp-ai3d006-floorplan-951c9653824bed58",
+      "linear": "RIO-49_DONE"
+    },
+    "AI3D-007": {
+      "status": "COMPLETE",
+      "gate_logic": "PASS",
+      "artifact_id": "structure-gate-04e0b366cf076c44",
+      "checkpoint_id": "cp-ai3d007-structure-gate-81ca89e39acef1db",
+      "linear": "RIO-50_DONE"
+    },
+    "AI3D-008": {
+      "status": "COMPLETE",
+      "compiler_runtime_qa": "PASS",
+      "github_run_id": "34755081555",
+      "drive_file_id": "17Y2D0Ltn1Oan4GNH4pHi5SXa7KVe9DPb",
+      "checkpoint_id": "cp-ai3d008-structure-compiler-d40f605aafeb038e",
+      "linear": "RIO-51_DONE"
+    },
     "AI3D-009": {
       "status": "COMPLETE",
       "promotion": "STRUCTURE_GEOMETRY_AUTHORITY_PROMOTED",
       "source_provider": "WALKMYPLAN",
       "plan_id": "aacb32598eb746758d60c8",
       "source_revision": 380,
-      "authority_scope": ["walls","openings","storey_height_m"],
+      "authority_scope": [
+        "walls",
+        "openings",
+        "storey_height_m"
+      ],
       "revision_381_423_wall_or_opening_edits": 0,
       "wall_count": 50,
       "opening_count": 26,
       "total_wall_length_m": 678.4,
-      "footprint_m": [74,44.2],
-      "room_registry_authority": {"task_id":"AI3D-006","artifact_id":"floorplan-8deef39ab59ba414","room_count":14,"preserved":true},
-      "historical_room_snapshot": {"revision":380,"room_count":15,"authoritative_for_current_rooms":false},
+      "footprint_m": [
+        74,
+        44.2
+      ],
+      "room_registry_authority": {
+        "task_id": "AI3D-006",
+        "artifact_id": "floorplan-8deef39ab59ba414",
+        "room_count": 14,
+        "preserved": true
+      },
+      "historical_room_snapshot": {
+        "revision": 380,
+        "room_count": 15,
+        "authoritative_for_current_rooms": false
+      },
       "structure_source_gate": "READY",
       "structure_compiler": "PASS",
       "compiler_qa": "PASS",
@@ -115,6 +191,27 @@
       "physical_execution_claimed": false,
       "canary_promoted": false,
       "promotion_allowed": false
+    },
+    "AI3D-002": {
+      "status": "COMPLETE",
+      "physical_windows_canary": "PASS",
+      "durable_readback": "PASS",
+      "visual_qa": "PASS",
+      "linear": "RIO-44_DONE"
+    },
+    "AI3D-004": {
+      "status": "COMPLETE",
+      "physical_qa_gate": "PASS_PROMOTE",
+      "physical_execution_claimed": true,
+      "linear": "RIO-46_DONE"
+    },
+    "AI3D-012": {
+      "status": "COMPLETE",
+      "completion_scope": "SURFACE_MATERIAL_PREFLIGHT_ONLY",
+      "evidence_class": "PREFLIGHT_READY_NOT_PHYSICAL",
+      "artifact_path": "ai3d_engine/data/central_corridor_surface_assignment_v1.json",
+      "linear": "RIO-57_DONE",
+      "physical_execution_claimed": false
     }
   },
   "ready_tasks": {
@@ -122,27 +219,113 @@
       "status": "READY",
       "stage": "PLAN",
       "title": "Mars Central Corridor + Blast Junction first production modules",
-      "dependencies": ["AI3D-009","AI3D-002","AI3D-004"],
-      "central_corridor": {"wall_count":13,"opening_count":13,"compiler_command_subset_count":65,"wall_ids":[10009,10020,10022,10023,10024,10025,10026,10027,10028,10029,10030,10031,10032],"opening_ids":[10205,10043,10044,10045,10046,10047,10048,10049,10050,10051,10052,10053,10054]},
-      "blast_junction": {"mode":"existing_damage_overlay_reuse","primary_source_wall_ids":[10027,10032,10009],"critical_opening_ids":[10049,10054,10205],"asset_prefixes":["DMG024_","HERO_BLAST_"]},
+      "dependencies": [
+        "AI3D-009",
+        "AI3D-013"
+      ],
+      "central_corridor": {
+        "wall_count": 13,
+        "opening_count": 13,
+        "compiler_command_subset_count": 65,
+        "wall_ids": [
+          10009,
+          10020,
+          10022,
+          10023,
+          10024,
+          10025,
+          10026,
+          10027,
+          10028,
+          10029,
+          10030,
+          10031,
+          10032
+        ],
+        "opening_ids": [
+          10205,
+          10043,
+          10044,
+          10045,
+          10046,
+          10047,
+          10048,
+          10049,
+          10050,
+          10051,
+          10052,
+          10053,
+          10054
+        ]
+      },
+      "blast_junction": {
+        "mode": "existing_damage_overlay_reuse",
+        "primary_source_wall_ids": [
+          10027,
+          10032,
+          10009
+        ],
+        "critical_opening_ids": [
+          10049,
+          10054,
+          10205
+        ],
+        "asset_prefixes": [
+          "DMG024_",
+          "HERO_BLAST_"
+        ]
+      },
       "existing_assets_reused": true,
       "geometry_mutated_in_preflight": false,
       "physical_execution_claimed": false,
-      "staged_structure_adapter": {"task_id":"AI3D-011","status":"COMPLETE","runtime_qa":"PASS","allowlisted":false,"promotion_allowed":false},
+      "staged_structure_adapter": {
+        "task_id": "AI3D-011",
+        "status": "COMPLETE",
+        "runtime_qa": "PASS",
+        "allowlisted": false,
+        "promotion_allowed": false
+      },
       "github_manifest_commit": "4f517808d302932b1a01cf887d725ef32c46ef5f",
       "base44_full_build": "src/lib/3d/neverTearMarsFullBuild.js",
       "base44_lineage_checkpoint": "6aa71de5e5617d9d930db82c",
       "base44_lineage_commit": "a6ca40b909e9cdb39bcb24140153bf53dca18450",
       "base44_build_after_lineage_update": "BLOCKED_WORKSPACE_NO_PACKAGE_JSON",
-      "linear": "RIO-53_TODO"
+      "linear": "RIO-53_TODO",
+      "current_blocker": "AI3D-013_CANARY_005_PHYSICAL_PROMOTION",
+      "next_action": "After AI3D-013 CANARY-005 geometry QA, durable SHA readback and visual QA all PASS, execute module-plan-7d0ef550473d76e6 for Central Corridor Structure; Module QA must pass before Blast Junction overlay and Surface."
     }
   },
   "source_boundaries": {
-    "walkmyplan_structure_geometry": {"role":"STRUCTURE_GEOMETRY_AUTHORITY","plan_id":"aacb32598eb746758d60c8","source_revision":380,"current_aggregate_match":"PASS","research_closed":true},
-    "room_registry": {"role":"CURRENT_ROOM_REGISTRY_AUTHORITY","task_id":"AI3D-006","room_count":14},
-    "historical_revision_room_snapshot": {"revision":380,"room_count":15,"current_authority":false},
-    "adobe": {"role":"NON_CANONICAL_VISUAL_REFERENCE","geometry_truth_eligible":false,"inventory_count":6,"rechecked":"2026-09-14T12:24:00+09:00"},
-    "to3d": {"job_id":"8b16ab22-ef00-487a-b47f-ee01c947e991","status":"FAILED","retry_same_route":false,"geometry_truth_eligible":false,"rechecked":"2026-09-14T12:24:23+09:00"}
+    "walkmyplan_structure_geometry": {
+      "role": "STRUCTURE_GEOMETRY_AUTHORITY",
+      "plan_id": "aacb32598eb746758d60c8",
+      "source_revision": 380,
+      "current_aggregate_match": "PASS",
+      "research_closed": true
+    },
+    "room_registry": {
+      "role": "CURRENT_ROOM_REGISTRY_AUTHORITY",
+      "task_id": "AI3D-006",
+      "room_count": 14
+    },
+    "historical_revision_room_snapshot": {
+      "revision": 380,
+      "room_count": 15,
+      "current_authority": false
+    },
+    "adobe": {
+      "role": "NON_CANONICAL_VISUAL_REFERENCE",
+      "geometry_truth_eligible": false,
+      "inventory_count": 6,
+      "rechecked": "2026-09-19T00:45:00+09:00"
+    },
+    "to3d": {
+      "job_id": "8b16ab22-ef00-487a-b47f-ee01c947e991",
+      "status": "FAILED",
+      "retry_same_route": false,
+      "geometry_truth_eligible": false,
+      "rechecked": "2026-09-19T00:45:00+09:00"
+    }
   },
   "external_sync": {
     "drive_folder_id": "1nywvK1BcLozJg18CdxadKdgZuDO3TRjb",
@@ -173,5 +356,33 @@
     "copy_private_or_purchased_csmc_data": false,
     "infer_missing_floorplan_geometry": false,
     "reopen_walkmyplan_geometry_research": false
+  },
+  "current_control_plane": {
+    "canonical_write_path": [
+      "GITHUB",
+      "SUPABASE",
+      "GOOGLE_DRIVE"
+    ],
+    "base44_mode": "EXCLUDED_FROM_CURRENT_RUN",
+    "linear_role": "TASK_STATUS_AND_DECISION_LOG",
+    "walkmyplan_role": "READ_ONLY_STRUCTURE_AUTHORITY",
+    "adobe_role": "NON_CANONICAL_VISUAL_REFERENCE_ONLY",
+    "to3d_role": "FAILED_HISTORICAL_NO_SAME_ROUTE_RETRY",
+    "synced_at": "2026-09-19T00:45:00+09:00"
+  },
+  "active_tasks": {
+    "AI3D-013": {
+      "status": "ACTIVE",
+      "stage": "PHYSICAL_CANARY_READY",
+      "title": "Physical Structure Module Capability Canary + Promotion",
+      "canary005_status": "QUEUED",
+      "canary005_attempt_count": 0,
+      "required_worker_version": "0.2.4-ai3d-structure-visualfix",
+      "required_capability": "ai3d_structure_module_v1",
+      "structure_module_capability_promoted": false,
+      "blocker_for": [
+        "AI3D-010"
+      ]
+    }
   }
 }
