@@ -1,0 +1,82 @@
+{
+  "schema": "never-tear-ai3d-canary005-static-preflight-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "date_jst": "2026-09-19",
+  "base44_used": false,
+  "canonical_read_path": [
+    "GITHUB",
+    "SUPABASE",
+    "GOOGLE_DRIVE"
+  ],
+  "canary005": {
+    "job_id": "597c99dc-132d-4f42-ad85-a46b814e0990",
+    "job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-005",
+    "status": "QUEUED",
+    "attempt_count": 0,
+    "max_attempts": 1,
+    "device_key": null,
+    "started_at": null,
+    "completed_at": null,
+    "error_code": null
+  },
+  "worker_telemetry": {
+    "device_key": "5373e5251e0b41cd935a16dc8ff514a4",
+    "last_seen": "2026-09-15T14:33:27.495Z",
+    "advertised_ai3d_worker_version": "0.2.3-ai3d-structure-loaderfix",
+    "advertised_capabilities": [
+      "ai3d_structure_module_v1"
+    ],
+    "required_for_canary005": "0.2.4-ai3d-structure-visualfix",
+    "eligible_for_canary005": false,
+    "reason": "Required v0.2.4 heartbeat not observed."
+  },
+  "release_channel": {
+    "tag": "ai3d-structure-worker-canary-channel",
+    "release_updated_at": "2026-09-14T14:32:55Z",
+    "worker_asset": "NEVER_TEAR_AI3D_STRUCTURE_WORKER.exe",
+    "worker_size_bytes": 8770802,
+    "worker_sha256": "bb71dbbdf863b61d54b9ce6654a6819dd794e4c0805227dc770338781c258af2",
+    "channel_manifest_asset": "AI3D_STRUCTURE_WORKER_CHANNEL_V1.json",
+    "stable_launcher_bootstrap_sha256": "aee6cb953d63486b882e58a9f6837df7b158dd2f75c73a954db9e76fddc211de"
+  },
+  "ci": {
+    "source_commit": "b864c6b45d6417222311bf5b54585070d0be4a7c",
+    "workflow_run": 34856246552,
+    "workflow_job": 104016443088,
+    "conclusion": "success",
+    "verified_steps": [
+      "syntax_and_fail_closed_self_test",
+      "build_v0_2_4_stable_channel_worker",
+      "verify_packaged_worker_before_channel_publication",
+      "build_fixed_channel_manifest",
+      "publish_fixed_release_channel",
+      "upload_ci_evidence_artifact"
+    ]
+  },
+  "geometry_gate": {
+    "geometry_probe_version": "CANARY005_OPENING_RAY_V1",
+    "required_checks": [
+      "opening_void_probe",
+      "solid_control_probe",
+      "opening_boolean_exact",
+      "cutter_removed",
+      "mesh_nonempty",
+      "floor_contact",
+      "render_evidence"
+    ],
+    "automated_pass_alone_can_promote": false,
+    "real_visual_qa_required": true,
+    "structure_module_capability_promoted": false
+  },
+  "central_corridor": {
+    "task_id": "AI3D-010",
+    "module_plan_id": "module-plan-7d0ef550473d76e6",
+    "execution_command_count": 66,
+    "physical_execution_claimed": false,
+    "blocked": true,
+    "blocker": "AI3D-013_CANARY_005_PHYSICAL_PROMOTION"
+  },
+  "result": "HOLD_WAITING_FOR_PHYSICAL_V024_HEARTBEAT",
+  "next_action": "Launch the already-installed NEVER TEAR AI3D Structure Worker Stable Launcher once on the paired Windows machine. Do not requeue CANARY-005. After verified v0.2.4 heartbeat, follow the existing single job through claim, Blender, geometry probes, durable SHA readback, and real visual QA."
+}
