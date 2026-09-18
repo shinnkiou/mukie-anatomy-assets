@@ -98,11 +98,27 @@ $hits|Export-Csv (Join-Path $Out "SIGNATURE_HITS.tsv") -Delimiter ([char]9) -NoT
 
 $cats=@("ENGINE_ASSET_PACKAGE","FBX_SCENE_MODEL","GLTF_GLB","COLLADA","PMX_MMD","GENERIC_RIG")
 $sim=foreach($c in $cats){
-  $all=@($hits|Where-Object category -eq $c)
-  $hit=@($all|Where-Object total_count -gt 0)
-  $s=($hit|Measure-Object evidence_score -Sum).Sum
-  $mx=($all|Measure-Object evidence_weight -Sum).Sum
-  if($null -eq $s){$s=0};if(-not $mx){$mx=1}
+  $all=@($hits|Where-Object { $_.category -eq $c })
+  $hit=@($all|Where-Object { $_.total_count -gt 0 })
+
+  # PowerShell 5.1 + StrictMode can return no object for Measure-Object on
+  # an empty pipeline, so summing via .Sum is unsafe. Use explicit loops.
+  [double]$s=0
+  foreach($item in $hit){
+    if($null -ne $item.evidence_score){
+      $s += [double]$item.evidence_score
+    }
+  }
+
+  [double]$mx=0
+  foreach($item in $all){
+    if($null -ne $item.evidence_weight){
+      $mx += [double]$item.evidence_weight
+    }
+  }
+
+  if($mx -le 0){$mx=1}
+
   [pscustomobject]@{
     category=$c;raw_score=$s;possible_score=$mx;
     evidence_percent=[Math]::Round(100.0*$s/$mx,2);
