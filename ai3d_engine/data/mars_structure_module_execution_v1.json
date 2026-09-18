@@ -1,8 +1,8 @@
 {
   "schema": "never-tear-ai3d-mars-structure-module-execution-v1",
   "project_key": "never_tear_ai3d_engine",
-  "status": "READY_WAITING_PHYSICAL_GATE",
-  "updated_at": "2026-09-14T07:04:00+09:00",
+  "status": "READY_WAITING_STRUCTURE_HANDLER_PROMOTION",
+  "updated_at": "2026-09-19T00:45:00+09:00",
   "source_authority": {
     "provider": "WALKMYPLAN",
     "plan_id": "aacb32598eb746758d60c8",
@@ -21,12 +21,31 @@
     "historical_room_snapshot_is_current_authority": false
   },
   "physical_gate": {
-    "required_task": "AI3D-002",
-    "required_capability": "ai3d_blender_physical_mvp_v1",
-    "legacy_worker_ineligible": "0.18.2-p0.18.2 / ukie_worker_v1",
-    "canary_policy": "exactly one CANARY after capability advertisement",
-    "current_state": "BLOCKED_CAPABILITY_NOT_ADVERTISED",
-    "queued_jobs": 0
+    "required_task": "AI3D-013",
+    "prerequisite_tasks": {
+      "AI3D-002": "COMPLETE",
+      "AI3D-004": "COMPLETE_PASS_PROMOTE",
+      "AI3D-011": "COMPLETE_STAGED"
+    },
+    "required_capability": "ai3d_structure_module_v1",
+    "required_worker_version": "0.2.4-ai3d-structure-visualfix",
+    "stable_launcher_installed": true,
+    "canary004": {
+      "status": "PHYSICAL_AUTOMATED_PASS_VISUAL_FAIL",
+      "artifact_id": "structure-canary-v4-render-d97260a5ac3902a7",
+      "failure_class": "BOOLEAN_COMMAND_COUNT_FALSE_POSITIVE_NO_VISIBLE_OPENING",
+      "promoted": false
+    },
+    "canary005": {
+      "job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-005",
+      "job_id": "597c99dc-132d-4f42-ad85-a46b814e0990",
+      "status": "QUEUED",
+      "attempt_count": 0,
+      "max_attempts": 1,
+      "required_geometry_probe": "CANARY005_OPENING_RAY_V1"
+    },
+    "current_state": "WAITING_FOR_V024_STABLE_LAUNCHER_HEARTBEAT",
+    "production_execution_allowed": false
   },
   "production_order": [
     "central_corridor_structure_base",
@@ -42,31 +61,163 @@
     {
       "module_id": "central_corridor_structure_base",
       "priority": 1,
-      "stage": "READY_WAITING_PHYSICAL_GATE",
+      "stage": "READY_BLOCKED_BY_AI3D_013",
       "source_room_id": 3,
-      "plan_bbox_xy_m": {"x": [28,72], "y": [18,22]},
-      "wall_ids": [10009,10020,10022,10023,10024,10025,10026,10027,10028,10029,10030,10031,10032],
-      "opening_ids": [10205,10043,10044,10045,10046,10047,10048,10049,10050,10051,10052,10053,10054],
+      "plan_bbox_xy_m": {
+        "x": [
+          28,
+          72
+        ],
+        "y": [
+          18,
+          22
+        ]
+      },
+      "wall_ids": [
+        10009,
+        10020,
+        10022,
+        10023,
+        10024,
+        10025,
+        10026,
+        10027,
+        10028,
+        10029,
+        10030,
+        10031,
+        10032
+      ],
+      "opening_ids": [
+        10205,
+        10043,
+        10044,
+        10045,
+        10046,
+        10047,
+        10048,
+        10049,
+        10050,
+        10051,
+        10052,
+        10053,
+        10054
+      ],
       "compiler_command_subset_count": 65,
       "compiler_command_rule": "2 commands per wall + 3 commands per opening; global structure QA command remains outside this subset",
       "connection_sockets": [
-        {"socket_id":"hangar_west","opening_id":10043,"plan_xy_m":[28,20]},
-        {"socket_id":"east_service","opening_id":10205,"plan_xy_m":[72,20]},
-        {"socket_id":"south_33","opening_id":10044,"plan_xy_m":[33,18]},
-        {"socket_id":"south_40_5","opening_id":10045,"plan_xy_m":[40.5,18]},
-        {"socket_id":"south_45_5","opening_id":10046,"plan_xy_m":[45.5,18]},
-        {"socket_id":"south_53","opening_id":10047,"plan_xy_m":[53,18]},
-        {"socket_id":"south_62","opening_id":10048,"plan_xy_m":[62,18]},
-        {"socket_id":"south_69","opening_id":10049,"plan_xy_m":[69,18]},
-        {"socket_id":"north_33","opening_id":10050,"plan_xy_m":[33,22]},
-        {"socket_id":"north_43","opening_id":10051,"plan_xy_m":[43,22]},
-        {"socket_id":"north_53","opening_id":10052,"plan_xy_m":[53,22]},
-        {"socket_id":"north_62","opening_id":10053,"plan_xy_m":[62,22]},
-        {"socket_id":"north_69","opening_id":10054,"plan_xy_m":[69,22]}
+        {
+          "socket_id": "hangar_west",
+          "opening_id": 10043,
+          "plan_xy_m": [
+            28,
+            20
+          ]
+        },
+        {
+          "socket_id": "east_service",
+          "opening_id": 10205,
+          "plan_xy_m": [
+            72,
+            20
+          ]
+        },
+        {
+          "socket_id": "south_33",
+          "opening_id": 10044,
+          "plan_xy_m": [
+            33,
+            18
+          ]
+        },
+        {
+          "socket_id": "south_40_5",
+          "opening_id": 10045,
+          "plan_xy_m": [
+            40.5,
+            18
+          ]
+        },
+        {
+          "socket_id": "south_45_5",
+          "opening_id": 10046,
+          "plan_xy_m": [
+            45.5,
+            18
+          ]
+        },
+        {
+          "socket_id": "south_53",
+          "opening_id": 10047,
+          "plan_xy_m": [
+            53,
+            18
+          ]
+        },
+        {
+          "socket_id": "south_62",
+          "opening_id": 10048,
+          "plan_xy_m": [
+            62,
+            18
+          ]
+        },
+        {
+          "socket_id": "south_69",
+          "opening_id": 10049,
+          "plan_xy_m": [
+            69,
+            18
+          ]
+        },
+        {
+          "socket_id": "north_33",
+          "opening_id": 10050,
+          "plan_xy_m": [
+            33,
+            22
+          ]
+        },
+        {
+          "socket_id": "north_43",
+          "opening_id": 10051,
+          "plan_xy_m": [
+            43,
+            22
+          ]
+        },
+        {
+          "socket_id": "north_53",
+          "opening_id": 10052,
+          "plan_xy_m": [
+            53,
+            22
+          ]
+        },
+        {
+          "socket_id": "north_62",
+          "opening_id": 10053,
+          "plan_xy_m": [
+            62,
+            22
+          ]
+        },
+        {
+          "socket_id": "north_69",
+          "opening_id": 10054,
+          "plan_xy_m": [
+            69,
+            22
+          ]
+        }
       ],
       "existing_asset_carryover": {
         "base44_full_build": "src/lib/3d/neverTearMarsFullBuild.js",
-        "known_prefixes": ["HERO_CORRIDOR_","HERO_POINT_LIGHT_","HERO_EMERGENCY_POINT_LIGHT_"],
+        "known_prefixes": [
+          "HERO_CORRIDOR_",
+          "HERO_POINT_LIGHT_",
+          "HERO_EMERGENCY_POINT_LIGHT_"
+        ],
         "existing_structure_status": "reuse_and_align_not_discard",
         "existing_surface_status": "preserve prior PBR work"
       },
@@ -78,19 +229,42 @@
         "existing hero corridor assets remain reusable",
         "no inferred dimensions",
         "physical evidence required before COMPLETE"
-      ]
+      ],
+      "current_room_registry_id": 3,
+      "revision380_historical_room_id": 4,
+      "room_id_note": "Geometry authority is revision 380 walls/openings; current 14-room registry identifies Central Corridor as room 3. Historical revision-380 room id 4 is not promoted as current room authority."
     },
     {
       "module_id": "blast_junction_damage_overlay",
       "priority": 2,
       "stage": "READY_AFTER_CENTRAL_CORRIDOR_STRUCTURE_QA",
       "base_module": "central_corridor_structure_base",
-      "plan_bbox_xy_m": {"x": [66,72], "y": [18,22]},
-      "primary_source_wall_ids": [10027,10032,10009],
-      "critical_opening_ids": [10049,10054,10205],
+      "plan_bbox_xy_m": {
+        "x": [
+          66,
+          72
+        ],
+        "y": [
+          18,
+          22
+        ]
+      },
+      "primary_source_wall_ids": [
+        10027,
+        10032,
+        10009
+      ],
+      "critical_opening_ids": [
+        10049,
+        10054,
+        10205
+      ],
       "existing_asset_carryover": {
         "base44_full_build": "src/lib/3d/neverTearMarsFullBuild.js",
-        "known_prefixes": ["DMG024_","HERO_BLAST_"],
+        "known_prefixes": [
+          "DMG024_",
+          "HERO_BLAST_"
+        ],
         "verified_existing_features": [
           "spalled concrete and exposed reinforcement on wall 10027",
           "warped/bent blast panel",
@@ -104,7 +278,14 @@
         "existing_surface_status": "preserve existing PBR/damage assets"
       },
       "damage_policy": {
-        "causal_order": ["blast_pressure","heat","fire","structural_failure","electrical_failure","secondary_fire"],
+        "causal_order": [
+          "blast_pressure",
+          "heat",
+          "fire",
+          "structural_failure",
+          "electrical_failure",
+          "secondary_fire"
+        ],
         "uniform_random_damage": false,
         "whole_base_blackening": false,
         "zone_gradient": "A strongest -> B -> C -> D intact/control"
@@ -119,5 +300,5 @@
       ]
     }
   ],
-  "next_action": "Recheck AI3D companion telemetry. If ai3d_blender_physical_mvp_v1 appears, queue exactly one AI3D-002 physical CANARY. If absent, keep this module package READY and do not send jobs to the legacy worker."
+  "next_action": "Do not execute the 66-command Central Corridor production plan yet. Launch the installed Stable Launcher, run the pre-armed CANARY-005 once through v0.2.4, and require opening-void/solid-control geometry probes, durable SHA readback and real visual QA. On all PASS, promote ai3d_structure_module_v1 and execute Central Corridor before Blast Junction overlay."
 }
