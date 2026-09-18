@@ -1,0 +1,61 @@
+{
+  "schema": "never-tear-ai3d-base44-free-readiness-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "generated_at": "2026-09-19T00:45:00+09:00",
+  "canonical_write_path": [
+    "GITHUB",
+    "SUPABASE",
+    "GOOGLE_DRIVE"
+  ],
+  "base44_used": false,
+  "active_gate": {
+    "task_id": "AI3D-013",
+    "linear_issue": "RIO-60",
+    "capability": "ai3d_structure_module_v1",
+    "promoted": false,
+    "canary005": {
+      "job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-005",
+      "job_id": "597c99dc-132d-4f42-ad85-a46b814e0990",
+      "status": "QUEUED",
+      "attempt_count": 0,
+      "max_attempts": 1,
+      "worker_version": "0.2.4-ai3d-structure-visualfix",
+      "worker_sha256": "bb71dbbdf863b61d54b9ce6654a6819dd794e4c0805227dc770338781c258af2",
+      "geometry_probe_version": "CANARY005_OPENING_RAY_V1"
+    },
+    "last_device_telemetry": {
+      "ai3d_worker_version": "0.2.3-ai3d-structure-loaderfix",
+      "last_seen": "2026-09-15T14:33:27.495Z",
+      "state": "STALE_NOT_ELIGIBLE_FOR_CANARY005"
+    }
+  },
+  "central_corridor": {
+    "task_id": "AI3D-010",
+    "linear_issue": "RIO-53",
+    "status": "READY_BLOCKED_BY_AI3D_013",
+    "module_plan_id": "module-plan-7d0ef550473d76e6",
+    "module_plan_sha256": "7d0ef550473d76e6cbacf5e285f81cb0152787e29034d524bd8b946f2ad9707a",
+    "geometry_authority_revision": 380,
+    "geometry_sha256": "0efa7547c1e065304d93eb5fb0cc858e668c41c3bc6516d0b7ab84302f6f52fb",
+    "wall_count": 13,
+    "opening_count": 13,
+    "compiler_command_subset_count": 65,
+    "execution_command_count": 66,
+    "physical_execution_claimed": false,
+    "preflight_drive_file_id": "1hSSh1JrpzFxoIX58Au6AJKlapbjMxbKr",
+    "preflight_drive_size_bytes": 4294
+  },
+  "external_boundaries": {
+    "walkmyplan": "READ_ONLY_STRUCTURE_AUTHORITY",
+    "adobe": "6_NON_CANONICAL_VISUAL_REFERENCE_ASSETS",
+    "to3d": "HISTORICAL_JOB_FAILED_NO_SAME_ROUTE_RETRY"
+  },
+  "stop_conditions": [
+    "Do not run Central Corridor production before AI3D-013 promotion.",
+    "Do not promote from automated QA alone.",
+    "Do not consume CANARY-005 with v0.2.3 or legacy UKIE worker.",
+    "Do not reopen WalkMyPlan Geometry research.",
+    "Do not use Base44 in this run."
+  ],
+  "next_action": "Launch installed NEVER TEAR AI3D Structure Worker Stable Launcher once. After v0.2.4 heartbeat claims CANARY-005, inspect Supabase job/artifact/checkpoint and the real PNG. Promote only if geometry probes, provider SHA readback and visual QA all PASS."
+}
