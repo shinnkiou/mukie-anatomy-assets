@@ -365,7 +365,8 @@ def main():
     (out / "SUMMARY.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     (out / "TO_SEND_TO_CHATGPT.txt").write_text(
-        "Send these files to ChatGPT:\n"
+        "Preferred: upload CHATGPT_PACKET.md\n"
+        "\nFallback individual files:\n"
         "  SUMMARY.md\n"
         "  consumer_candidates.tsv\n"
         "  novel_evidence.tsv\n"
@@ -377,7 +378,36 @@ def main():
         encoding="utf-8"
     )
 
+    # One plain-text handoff file so ChatGPT does not need to unpack a ZIP.
+    packet_parts = []
+    packet_parts.append("# CSMC FULL SNAPSHOT REVIEWER P0 — CHATGPT PACKET\n")
+    packet_parts.append("Generated from the local Windows reviewer. Original snapshot ZIPs are not included.\n")
+
+    for title, filename in [
+        ("SUMMARY", "SUMMARY.md"),
+        ("GHIDRA TARGETS", "ghidra_targets.txt"),
+        ("TOP CONSUMER CANDIDATES", "consumer_candidates.tsv"),
+        ("NOVEL EVIDENCE", "novel_evidence.tsv"),
+        ("EVIDENCE JSON", "evidence.json"),
+    ]:
+        p = out / filename
+        packet_parts.append("\n\n--- " + title + " ---\n")
+        if p.exists():
+            text = p.read_text(encoding="utf-8", errors="replace")
+            # Keep the handoff bounded even if a table becomes unexpectedly large.
+            if len(text) > 350000:
+                text = text[:350000] + "\n[TRUNCATED BY REVIEWER P0 PACKET LIMIT]\n"
+            packet_parts.append(text)
+        else:
+            packet_parts.append("[MISSING] " + filename + "\n")
+
+    (out / "CHATGPT_PACKET.md").write_text(
+        "".join(packet_parts),
+        encoding="utf-8"
+    )
+
     print("SUMMARY=" + str(out / "SUMMARY.md"))
+    print("CHATGPT_PACKET=" + str(out / "CHATGPT_PACKET.md"))
     print("NEW_RVA_CANDIDATES=" + str(len(candidate_rows)))
     print("GHIDRA_TARGETS=" + str(len(ghidra_targets)))
 
