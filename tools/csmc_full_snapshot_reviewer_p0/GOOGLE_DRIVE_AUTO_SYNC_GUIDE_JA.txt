@@ -1,0 +1,49 @@
+CSMC P0.8 Google Drive 自動保存ガイド
+====================================
+
+目的:
+  Reviewer完了後、REPORTSをGoogle Driveへ自動保存します。
+  毎回ChatGPTへ多数のファイルを手動アップロードする必要を減らします。
+
+基本動作:
+  00_START_HERE.cmd
+    ↓
+  Reviewer解析
+    ↓
+  04_AUTO_SYNC_GOOGLE_DRIVE.ps1
+    ↓
+  Google Drive for desktop の同期フォルダへ自動コピー
+    ↓
+  Google Driveがオンライン時にクラウドへ同期
+
+Drive側:
+  CSMC_RESEARCH/
+    00_CURRENT/
+      CHATGPT_PACKET_CURRENT.md
+      SUMMARY_CURRENT.md
+      CURRENT_POINTER.json
+    REPORTS/
+      REVIEWER_P0_YYYYMMDD_HHMMSS/
+    ARCHIVE/
+
+重要:
+  Snapshot本体やMODELERバイナリはDriveへ自動コピーしません。
+  REPORTSだけを保存します。
+
+必要条件:
+  Google Drive for desktop がPCにインストール済みで、
+  Googleアカウントへログイン済みであること。
+
+初回だけ:
+  Google Drive Desktopが無い場合は status=DRIVE_NOT_DETECTED になります。
+  その場合でもローカルREPORTSは消えません。
+  Google Driveへ一度ログインした後、Reviewerを再実行すれば自動保存されます。
+
+通常運用:
+  ユーザーは 00_START_HERE.cmd を実行するだけです。
+  Driveの細かいフォルダ整理はスクリプトが行います。
+
+ChatGPTへ結果を渡すとき:
+  基本はDrive側の 00_CURRENT/CHATGPT_PACKET_CURRENT.md を参照します。
+
+semantic_promotion=false
