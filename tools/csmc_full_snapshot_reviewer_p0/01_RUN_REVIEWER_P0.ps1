@@ -191,7 +191,7 @@ $MaxExtractTotal = 350MB
 
 foreach ($Snap in $Snapshots) {
     Write-Status ("=== " + $Snap.Label + " ===")
-    Write-Host "Reviewer build: P0.7 (direct-evidence anti-noise pass)"
+    Write-Host "Reviewer build: P0.8 (decompile-manifest dedupe + indirect-dispatch lane)"
 
     if (-not (Test-Path -LiteralPath $Snap.Path)) {
         Write-Host ("[MISSING] " + $Snap.Path) -ForegroundColor Red
@@ -301,6 +301,14 @@ $PyArgs += $InputArgs
 
 Invoke-Python -Python $Python -Args $PyArgs
 
+Write-Status "Running P0.8 decompile-manifest dedupe..."
+$P08Args = @(
+    (Join-Path $ScriptDir "03_P08_DECOMPILE_DEDUPE.py"),
+    "--out", $Reports
+)
+$P08Args += $InputArgs
+Invoke-Python -Python $Python -Args $P08Args
+
 $Targets = Join-Path $Reports "ghidra_targets.txt"
 
 Write-Host ""
@@ -310,12 +318,13 @@ Write-Host "==============================================" -ForegroundColor Gre
 Write-Host ("Reports: " + $Reports)
 Write-Host ""
 Write-Host "Send to ChatGPT:"
-Write-Host "  CHATGPT_PACKET.md   <-- preferred single file"
+Write-Host "  CHATGPT_PACKET_P08.md   <-- preferred single file"
 Write-Host ""
 Write-Host "Fallback individual files:"
-Write-Host "  SUMMARY.md"
-Write-Host "  consumer_candidates.tsv"
-Write-Host "  novel_evidence.tsv"
+Write-Host "  SUMMARY_P08.md"
+Write-Host "  consumer_candidates_p08.tsv"
+Write-Host "  existing_decompile_review.tsv"
+Write-Host "  decompile_manifest.tsv"
 Write-Host "  ghidra_targets.txt"
 Write-Host "  evidence.json"
 
@@ -327,9 +336,9 @@ if (Test-Path -LiteralPath $Targets) {
     Write-Host ""
     Write-Host ("Ghidra target lines: " + $TargetLines.Count)
     if ($TargetLines.Count -gt 0) {
-        Write-Host "New RVA candidates found. Next step: targeted Ghidra pass." -ForegroundColor Yellow
+        Write-Host "NEW_DIRECT_TARGET candidates found after decompile dedupe. Only these may go to Ghidra." -ForegroundColor Yellow
     } else {
-        Write-Host "No new Ghidra targets. Review novel_evidence.tsv before changing strategy." -ForegroundColor Yellow
+        Write-Host "No NEW_DIRECT_TARGET Ghidra targets. Re-read old C and use the vtable/indirect-dispatch lane." -ForegroundColor Yellow
     }
 }
 
