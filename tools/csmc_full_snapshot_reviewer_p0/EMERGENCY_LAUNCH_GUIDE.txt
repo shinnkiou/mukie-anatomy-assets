@@ -1,0 +1,36 @@
+CSMC P0 EMERGENCY LAUNCH GUIDE
+===============================
+
+If every BAT closes immediately, use:
+
+  00_START_HERE.cmd
+
+This launcher is intentionally ASCII-only.
+It does not run the reviewer in the same temporary console.
+
+Instead it opens a separate:
+
+  cmd.exe /K
+
+window and calls:
+
+  01_P0_INNER_DIAGNOSTIC.cmd
+
+The child window is designed to stay open even after PowerShell fails.
+
+Steps
+-----
+1. Download the latest branch ZIP.
+2. Extract ALL files first.
+3. Open:
+     tools\csmc_full_snapshot_reviewer_p0
+4. Double-click:
+     00_START_HERE.cmd
+5. A second window named "CSMC P0 DIAGNOSTIC" should open.
+6. Follow the messages in that second window.
+7. If it fails, send either:
+     - a screenshot of the second window, or
+     - C:\Users\nurun\CSMC_ANALYSIS\PRIVATE_FULL_SNAPSHOT\REVIEWER_P0_DIAGNOSTIC.log
+
+This launcher contains no Japanese text on purpose, to eliminate encoding
+and cmd.exe parsing as variables.
