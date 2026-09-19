@@ -100,3 +100,28 @@ semantic_promotion=false
   Python = 証拠分類/重複排除
   Ghidra = 指定RVAだけ静的解析
   Frida/TTD/DynamoRIO = runtime側
+
+
+================================================
+P0.3 追加: ZIP不要のChatGPT受け渡し
+================================================
+
+P0.3から REPORTS に
+
+  CHATGPT_PACKET.md
+
+を自動作成します。
+
+今後はFull SnapshotやREVIEWER_P0フォルダをZIP化して送る必要はありません。
+基本的に、この CHATGPT_PACKET.md 1ファイルだけをChatGPTへ送ってください。
+
+内容:
+  SUMMARY.md
+  ghidra_targets.txt
+  consumer_candidates.tsv
+  novel_evidence.tsv
+  evidence.json
+
+を1つのMarkdownへまとめたものです。
+
+これによりChatGPT側のZIP展開エラーや巨大ファイルtimeoutを避けます。
