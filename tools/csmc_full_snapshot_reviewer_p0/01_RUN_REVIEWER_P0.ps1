@@ -191,7 +191,7 @@ $MaxExtractTotal = 350MB
 
 foreach ($Snap in $Snapshots) {
     Write-Status ("=== " + $Snap.Label + " ===")
-    Write-Host "Reviewer build: P0.2 (array-count StrictMode fix)"
+    Write-Host "Reviewer build: P0.3 (single-file ChatGPT packet)"
 
     if (-not (Test-Path -LiteralPath $Snap.Path)) {
         Write-Host ("[MISSING] " + $Snap.Path) -ForegroundColor Red
@@ -296,7 +296,10 @@ Write-Host "CSMC FULL SNAPSHOT REVIEWER P0 COMPLETE" -ForegroundColor Green
 Write-Host "==============================================" -ForegroundColor Green
 Write-Host ("Reports: " + $Reports)
 Write-Host ""
-Write-Host "ChatGPTへ基本的に送るもの:"
+Write-Host "ChatGPTへ送るもの:"
+Write-Host "  CHATGPT_PACKET.md   <-- 推奨（これ1個でOK）"
+Write-Host ""
+Write-Host "個別送信する場合:"
 Write-Host "  SUMMARY.md"
 Write-Host "  consumer_candidates.tsv"
 Write-Host "  novel_evidence.tsv"
