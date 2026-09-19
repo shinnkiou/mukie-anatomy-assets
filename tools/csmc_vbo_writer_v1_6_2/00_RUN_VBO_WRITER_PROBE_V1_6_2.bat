@@ -9,6 +9,7 @@ echo  CSMC VBO WRITER PROBE V1.6.2 VALIDATED PLATEAU
 echo ============================================================
 echo.
 echo Close MODELER before starting.
+echo Before operating, read GUIDE_JA.txt for the Japanese step-by-step guide.
 echo This BAT only runs the Frida probe.
 echo No cleanup / admin / save operation is included.
 echo.
