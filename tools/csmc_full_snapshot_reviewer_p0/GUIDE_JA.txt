@@ -158,3 +158,21 @@ EXTRACTED_TARGETED/<FULL|FOCUSED> へ展開し、
   Scanned text files
 
 が0より大きくなる必要があります。
+
+
+================================================
+P0.5 修正: Windows PowerShell 5.1 文字コード対策
+================================================
+
+P0.4で、01_RUN_REVIEWER_P0.ps1 内の日本語文字列が
+Windows PowerShell 5.1 にUTF-8 BOMなしとして読み込まれ、
+文字化けの結果、終端の " を正しく解釈できず ParserError になる
+ケースを確認しました。
+
+P0.5では、実行対象の .ps1 をASCII文字だけに変更しました。
+日本語の説明は GUIDE_JA.txt 側へ残しています。
+
+成功時:
+  Reviewer build: P0.5 (ASCII PowerShell compatibility fix)
+
+と表示されます。
