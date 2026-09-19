@@ -105,6 +105,39 @@ def classify_file_name(name: str) -> str:
         return "consumer-lane"
     return "other"
 
+WEAK_CANDIDATE_SOURCES = {
+    "call_edges.tsv",
+    "functions.tsv",
+    "namespaces.tsv",
+    "strings.tsv",
+    "targeted_decompile_index.tsv",
+    "focused_decompile_index.tsv",
+}
+
+def candidate_functions_for_hit(rel: str, text: str, start: int, end: int):
+    """
+    P0.7 anti-noise rule:
+    - decompile files: promote only the function owned by the filename
+    - broad graph/index files: never originate a candidate
+    - other structured evidence: promote only FUN_ tokens very near the hit
+    This prevents one call_edges context from promoting dozens of unrelated helpers.
+    """
+    name = Path(rel).name.lower()
+    path_funcs = sorted(set(FUNC_RE.findall(rel)))
+    if path_funcs and ("decompile" in rel.lower() or rel.lower().endswith(".c.txt")):
+        return path_funcs, "direct_decompile"
+
+    if name in WEAK_CANDIDATE_SOURCES:
+        return [], "context_only"
+
+    a = max(0, start - 140)
+    b = min(len(text), end + 140)
+    near = text[a:b]
+    near_funcs = sorted(set(FUNC_RE.findall(near)))
+    if near_funcs:
+        return near_funcs, "direct_near"
+    return [], "context_only"
+
 def write_tsv(path: Path, rows: list[dict], fields: list[str]):
     with path.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields, delimiter="\t", extrasaction="ignore")
@@ -176,23 +209,25 @@ def main():
                     ctx, groups, known_rvas
                 )
 
-                # P0.6: promote only code-bearing Ghidra FUN_ tokens, including
-                # the current decompile filename.  Do NOT promote arbitrary bare
-                # hex values from strings.tsv; those are often RTTI/data addresses.
-                path_funcs = FUNC_RE.findall(rel)
-                all_funcs = sorted(set(funcs + path_funcs))
-                func_addrs = sorted(set(
-                    func_token_to_addr(x) for x in all_funcs
+                # P0.7: literal 0x... values remain context only.
+                # Candidate promotion is restricted to a decompile owner or a
+                # FUN_ token close to the exact keyword hit.
+                literal_new_rvas = list(new_rvas)
+                promoted_funcs, candidate_source = candidate_functions_for_hit(
+                    rel, text, start, end
+                )
+                promoted_addrs = sorted(set(
+                    func_token_to_addr(x) for x in promoted_funcs
                     if func_token_to_addr(x)
                 ))
-                func_new = [x for x in func_addrs if x not in known_rvas]
-                func_known = [x for x in func_addrs if x in known_rvas]
+                candidate_new = [x for x in promoted_addrs if x not in known_rvas]
+                candidate_known = [x for x in promoted_addrs if x in known_rvas]
 
-                if func_new:
-                    total += min(8, 3 * len(func_new))
-                    new_rvas = sorted(set(new_rvas + func_new))
-                if func_known:
-                    known_hits = sorted(set(known_hits + func_known))
+                all_funcs = sorted(set(funcs + promoted_funcs))
+                if candidate_new:
+                    total += min(8, 4 * len(candidate_new))
+                known_hits = sorted(set(known_hits + candidate_known))
+                new_rvas = candidate_new
                 funcs = all_funcs
 
                 if total < 4:
@@ -215,7 +250,8 @@ def main():
                     "new_rvas": ",".join(new_rvas),
                     "known_rvas": ",".join(known_hits),
                     "functions": ",".join(funcs),
-                    "code_source": "decompile" if path_funcs else ("context_fun" if funcs else "noncode_context"),
+                    "code_source": candidate_source,
+                    "context_literal_rvas": ",".join(literal_new_rvas),
                     "excerpt": ctx,
                 }
                 hits.append(row)
@@ -241,7 +277,16 @@ def main():
     )
 
     candidate_rows = []
-    for rva, evs in evidence_by_rva.items():
+    for rva, raw_evs in evidence_by_rva.items():
+        # Repeated keyword windows in the same file must not dominate ranking.
+        best_by_file = {}
+        for e in raw_evs:
+            k = (e["snapshot"], e["file"])
+            old = best_by_file.get(k)
+            if old is None or int(e["score"]) > int(old["score"]):
+                best_by_file[k] = e
+        evs = list(best_by_file.values())
+
         snapshots = sorted(set(e["snapshot"] for e in evs))
         files = sorted(set(e["file"] for e in evs))
         cats = Counter()
@@ -249,14 +294,20 @@ def main():
         max_score = 0
         consumer = bridge = transform = 0
         code_evidence_count = 0
+        direct_decompile_count = 0
+        direct_near_count = 0
         for e in evs:
             total_score += int(e["score"])
             max_score = max(max_score, int(e["score"]))
             consumer += int(e["consumer_score"])
             bridge += int(e["bridge_score"])
             transform += int(e["transform_score"])
-            if e.get("code_source") in ("decompile", "context_fun"):
+            if e.get("code_source") in ("direct_decompile", "direct_near"):
                 code_evidence_count += 1
+            if e.get("code_source") == "direct_decompile":
+                direct_decompile_count += 1
+            if e.get("code_source") == "direct_near":
+                direct_near_count += 1
             for cat in e["categories"].split(","):
                 if cat:
                     cats[cat] += 1
@@ -279,6 +330,8 @@ def main():
             "bridge_score": bridge,
             "transform_score": transform,
             "code_evidence_count": code_evidence_count,
+            "direct_decompile_count": direct_decompile_count,
+            "direct_near_count": direct_near_count,
             "categories": ",".join(k for k, _ in cats.most_common()),
             "files": " | ".join(files[:12]),
             "best_excerpt": max(evs, key=lambda e: int(e["score"]))["excerpt"],
@@ -302,7 +355,7 @@ def main():
         out / "targeted_hits.tsv", hits,
         ["snapshot", "file", "file_class", "seed_term", "score", "categories",
          "consumer_score", "bridge_score", "transform_score", "new_rvas",
-         "known_rvas", "functions", "code_source", "excerpt"]
+         "known_rvas", "functions", "code_source", "context_literal_rvas", "excerpt"]
     )
     write_tsv(
         out / "candidate_files.tsv", files_summary,
@@ -312,7 +365,7 @@ def main():
         out / "consumer_candidates.tsv", candidate_rows,
         ["rva", "aggregate_score", "max_context_score", "evidence_count",
          "snapshot_count", "snapshots", "file_count", "consumer_score",
-         "bridge_score", "transform_score", "code_evidence_count", "categories", "files", "best_excerpt"]
+         "bridge_score", "transform_score", "code_evidence_count", "direct_decompile_count", "direct_near_count", "categories", "files", "best_excerpt"]
     )
     write_tsv(
         out / "novel_evidence.tsv", novel_rows,
@@ -323,11 +376,17 @@ def main():
 
     ghidra_targets = [
         r for r in candidate_rows
-        if int(r["aggregate_score"]) >= 16
+        if int(r["aggregate_score"]) >= 12
         and int(r.get("code_evidence_count", 0)) >= 1
-    ][:12]
+        and (
+            int(r["consumer_score"]) >= 1
+            or int(r["bridge_score"]) >= 1
+            or int(r["transform_score"]) >= 2
+        )
+    ][:8]
     with (out / "ghidra_targets.txt").open("w", encoding="utf-8") as f:
-        f.write("# CSMC FULL SNAPSHOT REVIEWER P0\n")
+        f.write("# CSMC FULL SNAPSHOT REVIEWER P0.7\n")
+        f.write("# reviewer_build=P0.7_direct_evidence\n")
         f.write("# New RVA candidates only. Known/closed RVAs are excluded.\n")
         f.write("# Do not broad-scan around these targets.\n\n")
         for i, r in enumerate(ghidra_targets, 1):
@@ -340,7 +399,7 @@ def main():
             )
 
     evidence = {
-        "schema": "csmc_full_snapshot_reviewer_p0_evidence_v2_codeaware",
+        "schema": "csmc_full_snapshot_reviewer_p0_evidence_v3_direct_evidence",
         "inputs": [{"label": label, "path": str(path)} for label, path in inputs],
         "scanned_text_files": scanned_files,
         "skipped_large_files": skipped_large,
@@ -367,7 +426,7 @@ def main():
         "",
         "Targeted review of existing snapshot evidence; broad rediscovery is excluded.",
         "",
-        "P0.6 code-aware extraction: FUN_140... symbols and decompile filenames are treated as executable-code candidates; bare RTTI/data hex is not.",
+        "P0.7 direct-evidence extraction: only decompile owners or FUN_ tokens near the exact keyword hit can originate candidates; call_edges/functions/strings are corroboration only.",
         "",
         f"- Scanned text files: **{scanned_files}**",
         f"- Targeted evidence contexts: **{len(hits)}**",
@@ -384,7 +443,8 @@ def main():
                 f"- {r['rva']} — aggregate={r['aggregate_score']}, "
                 f"evidence={r['evidence_count']}, snapshots={r['snapshot_count']}, "
                 f"consumer={r['consumer_score']}, bridge={r['bridge_score']}, "
-                f"transform={r['transform_score']}"
+                f"transform={r['transform_score']}, direct_decompile={r['direct_decompile_count']}, "
+                f"direct_near={r['direct_near_count']}"
             )
     else:
         lines.append("- No new RVA passed the current evidence threshold.")
