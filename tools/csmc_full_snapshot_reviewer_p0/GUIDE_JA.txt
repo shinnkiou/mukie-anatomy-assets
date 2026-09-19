@@ -125,3 +125,36 @@ P0.3から REPORTS に
 を1つのMarkdownへまとめたものです。
 
 これによりChatGPT側のZIP展開エラーや巨大ファイルtimeoutを避けます。
+
+
+================================================
+P0.4 修正: scanned_text_files=0 対策
+================================================
+
+P0.3までのrunで、ZIP内容一覧とextract listは正常に作れた一方、
+REPORTS/evidence.json が
+
+  scanned_text_files = 0
+
+になるケースを確認しました。
+
+これは「新規証拠が0件」という意味ではありません。
+Snapshot内には多数の .txt / .tsv / .json 等が存在しています。
+
+P0.4では、約10〜12MBのSnapshot ZIPを一度すべて
+EXTRACTED_TARGETED/<FULL|FOCUSED> へ展開し、
+その後Python側で対象拡張子だけをbounded scanします。
+
+研究範囲は広げません。
+変更したのは7-Zipの受け渡し方法だけです。
+
+成功時はコンソールに:
+
+  Reviewer build: P0.4 (full extract, targeted scan fix)
+  Extracted files: 1以上
+
+と表示され、SUMMARY.mdの
+
+  Scanned text files
+
+が0より大きくなる必要があります。
