@@ -237,3 +237,49 @@ P0.7では:
 重要:
   P0.6で生成されたghidra_targets.txtは実行しないでください。
   P0.7を一度実行し、そのCHATGPT_PACKET.mdを確認してからGhidraへ進みます。
+
+
+================================================
+P0.8 修正: 既存decompile重複排除 + indirect-dispatch
+================================================
+
+P0.7のcandidateは、Snapshot内ですでにdecompile済みでも
+KNOWN_FACTSに無いだけでnew扱いになる場合がありました。
+
+P0.8ではP0.7 classifierの後に
+  03_P08_DECOMPILE_DEDUPE.py
+を実行し、Snapshot内の既存decompile owner RVAをmanifest化します。
+
+分類:
+  ALREADY_DECOMPILED
+    既存decompileあり。Ghidra再実行しない。
+    EXISTING_DECOMPILE_REVIEW.md / .tsvで現在知識から再読。
+
+  NEW_DIRECT_TARGET
+    既存decompileなし。
+    これだけghidra_targets.txtへ入る資格あり。
+
+新規出力:
+  decompile_manifest.tsv
+  consumer_candidates_p08.tsv
+  existing_decompile_review.tsv
+  EXISTING_DECOMPILE_REVIEW.md
+  SUMMARY_P08.md
+  CHATGPT_PACKET_P08.md
+
+10_RUN_GHIDRA_TARGETS.bat はP0.8 target listだけ受理します。
+
+consumer本線の次レーンはgeneric string XREFではなく
+既知loader vtableのindirect dispatchです。
+
+  PW3DModelDataLoader     0x14195fad0  9 slots
+  PWCanvas3DModelLoader  0x1417f6d30  9 slots
+
+実行:
+  20_RUN_VTABLE_DISPATCH.bat
+
+詳細:
+  VTABLE_DISPATCH_GUIDE_JA.txt
+
+0x140a98310周辺のFBX skin/cluster風APIは別レーンです。
+CSMC側call pathが接続されるまではsemantic_promotionしません。
