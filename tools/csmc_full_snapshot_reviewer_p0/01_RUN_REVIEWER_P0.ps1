@@ -95,7 +95,10 @@ function Invoke-Python {
 
 function Parse-7ZipSlt {
     param(
-        [Parameter(Mandatory=$true)][string[]]$Lines,
+        [Parameter(Mandatory=$true)]
+        [AllowEmptyString()]
+        [AllowEmptyCollection()]
+        [string[]]$Lines,
         [Parameter(Mandatory=$true)][string]$ArchivePath
     )
 
@@ -188,6 +191,7 @@ $MaxExtractTotal = 350MB
 
 foreach ($Snap in $Snapshots) {
     Write-Status ("=== " + $Snap.Label + " ===")
+    Write-Host "Reviewer build: P0.1 (7-Zip blank-line parser fix)"
 
     if (-not (Test-Path -LiteralPath $Snap.Path)) {
         Write-Host ("[MISSING] " + $Snap.Path) -ForegroundColor Red
@@ -205,11 +209,15 @@ foreach ($Snap in $Snapshots) {
     Write-Host ("Bytes : " + $ArchiveInfo.Length)
 
     $ListRawPath = Join-Path $Reports ($Snap.Label + "_7zip_slt.txt")
-    $ListLines = & $SevenZip l -slt -- $Snap.Path
+    $ListLines = @(& $SevenZip l -slt -- $Snap.Path | ForEach-Object { [string]$_ })
     if ($LASTEXITCODE -ne 0) {
         throw "7-Zip listing failed for $($Snap.Path)"
     }
     $ListLines | Set-Content -LiteralPath $ListRawPath -Encoding UTF8
+
+    if ($null -eq $ListLines -or $ListLines.Count -eq 0) {
+        throw "7-Zip returned an empty listing for $($Snap.Path)"
+    }
 
     $Entries = Parse-7ZipSlt -Lines $ListLines -ArchivePath $Snap.Path
     $Selected = @()
