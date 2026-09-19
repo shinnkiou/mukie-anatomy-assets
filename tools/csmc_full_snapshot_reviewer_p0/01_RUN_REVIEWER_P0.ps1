@@ -191,7 +191,7 @@ $MaxExtractTotal = 350MB
 
 foreach ($Snap in $Snapshots) {
     Write-Status ("=== " + $Snap.Label + " ===")
-    Write-Host "Reviewer build: P0.1 (7-Zip blank-line parser fix)"
+    Write-Host "Reviewer build: P0.2 (array-count StrictMode fix)"
 
     if (-not (Test-Path -LiteralPath $Snap.Path)) {
         Write-Host ("[MISSING] " + $Snap.Path) -ForegroundColor Red
@@ -304,8 +304,10 @@ Write-Host "  ghidra_targets.txt"
 Write-Host "  evidence.json"
 
 if (Test-Path -LiteralPath $Targets) {
-    $TargetLines = Get-Content -LiteralPath $Targets |
-        Where-Object { $_ -and (-not $_.StartsWith("#")) }
+    $TargetLines = @(
+        Get-Content -LiteralPath $Targets |
+            Where-Object { $_ -and (-not $_.StartsWith("#")) }
+    )
     Write-Host ""
     Write-Host ("Ghidra target lines: " + $TargetLines.Count)
     if ($TargetLines.Count -gt 0) {
