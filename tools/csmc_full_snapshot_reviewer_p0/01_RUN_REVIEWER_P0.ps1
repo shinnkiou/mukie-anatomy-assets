@@ -191,7 +191,7 @@ $MaxExtractTotal = 350MB
 
 foreach ($Snap in $Snapshots) {
     Write-Status ("=== " + $Snap.Label + " ===")
-    Write-Host "Reviewer build: P0.4 (full extract, targeted scan fix)"
+    Write-Host "Reviewer build: P0.5 (ASCII PowerShell compatibility fix)"
 
     if (-not (Test-Path -LiteralPath $Snap.Path)) {
         Write-Host ("[MISSING] " + $Snap.Path) -ForegroundColor Red
@@ -309,10 +309,10 @@ Write-Host "CSMC FULL SNAPSHOT REVIEWER P0 COMPLETE" -ForegroundColor Green
 Write-Host "==============================================" -ForegroundColor Green
 Write-Host ("Reports: " + $Reports)
 Write-Host ""
-Write-Host "ChatGPTへ送るもの:"
-Write-Host "  CHATGPT_PACKET.md   <-- 推奨（これ1個でOK）"
+Write-Host "Send to ChatGPT:"
+Write-Host "  CHATGPT_PACKET.md   <-- preferred single file"
 Write-Host ""
-Write-Host "個別送信する場合:"
+Write-Host "Fallback individual files:"
 Write-Host "  SUMMARY.md"
 Write-Host "  consumer_candidates.tsv"
 Write-Host "  novel_evidence.tsv"
@@ -327,9 +327,9 @@ if (Test-Path -LiteralPath $Targets) {
     Write-Host ""
     Write-Host ("Ghidra target lines: " + $TargetLines.Count)
     if ($TargetLines.Count -gt 0) {
-        Write-Host "新規RVA候補があります。次はtargeted Ghidra passです。" -ForegroundColor Yellow
+        Write-Host "New RVA candidates found. Next step: targeted Ghidra pass." -ForegroundColor Yellow
     } else {
-        Write-Host "新規Ghidra targetは出ませんでした。novel_evidence.tsvを先に確認します。" -ForegroundColor Yellow
+        Write-Host "No new Ghidra targets. Review novel_evidence.tsv before changing strategy." -ForegroundColor Yellow
     }
 }
 
