@@ -1,0 +1,32 @@
+CSMC FULL SNAPSHOT REVIEWER P0 — 起動トラブル用ガイド
+=====================================================
+
+症状:
+  00_RUN_REVIEWER_P0.bat を開くとすぐ閉じる。
+
+対策:
+  00_RUN_REVIEWER_P0_SAFE.bat を使用してください。
+
+このSAFE版は:
+  ・必要ファイルの存在を先に確認
+  ・PowerShellのstdout/stderrをログ保存
+  ・PowerShellを -NoExit で起動
+  ・失敗してもウィンドウを閉じない
+  ・最後に cmd /k で画面を保持
+
+ログ保存先:
+  C:\Users\nurun\CSMC_ANALYSIS\PRIVATE_FULL_SNAPSHOT\REVIEWER_P0_LAUNCH.log
+
+重要:
+  GitHub ZIPをダウンロードした場合は、
+  ZIPの中から直接BATを実行せず、
+  まず普通のフォルダへ「すべて展開」してください。
+
+実行順:
+  1. ZIPを右クリック
+  2. 「すべて展開」
+  3. 展開後の
+     tools\csmc_full_snapshot_reviewer_p0\
+     を開く
+  4. 00_RUN_REVIEWER_P0_SAFE.bat を実行
+  5. 失敗した場合、画面か REVIEWER_P0_LAUNCH.log をChatGPTへ送る
