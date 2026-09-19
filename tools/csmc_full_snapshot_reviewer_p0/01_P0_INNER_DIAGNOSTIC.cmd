@@ -36,6 +36,13 @@ if not exist "%~dp002_ANALYZE_TARGETED_SNAPSHOT.py" (
 )
 echo [PASS] 02_ANALYZE_TARGETED_SNAPSHOT.py
 
+if not exist "%~dp003_P08_DECOMPILE_DEDUPE.py" (
+  echo [FAIL] Missing 03_P08_DECOMPILE_DEDUPE.py
+  echo [FAIL] Missing 03_P08_DECOMPILE_DEDUPE.py >> "%LOG%"
+  goto HOLD
+)
+echo [PASS] 03_P08_DECOMPILE_DEDUPE.py
+
 if not exist "%~dp0KNOWN_FACTS.json" (
   echo [FAIL] Missing KNOWN_FACTS.json
   echo [FAIL] Missing KNOWN_FACTS.json >> "%LOG%"
