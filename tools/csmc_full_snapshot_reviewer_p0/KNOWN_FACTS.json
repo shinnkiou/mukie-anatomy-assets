@@ -1,5 +1,5 @@
 {
-  "schema": "csmc_snapshot_reviewer_known_facts_v2",
+  "schema": "csmc_snapshot_reviewer_known_facts_v3",
   "do_not_count_as_new": [
     "CSMC outer container is SQLite",
     "character table has one approximately 77 MB BLOB",
@@ -16,7 +16,11 @@
     "general ReadFile/winRead discovery",
     "0x140f62d20 neighborhood already explored",
     "0x140d45d30 registration function already reviewed",
-    "0x141657140 registration call path already reviewed"
+    "0x141657140 registration call path already reviewed",
+    "PW3DModelDataLoader vtable at 0x14195fad0 with 9 slots",
+    "PWCanvas3DModelLoader vtable at 0x1417f6d30 with 9 slots",
+    "direct-call bridge from registration to concrete reader remains unresolved",
+    "factory/vtable/callback/indirect dispatch remains in scope"
   ],
   "known_rvas": [
     "0x140f62d20",
@@ -88,5 +92,17 @@
       "skeleton",
       "quaternion"
     ]
-  }
+  },
+  "known_vtables": [
+    {
+      "name": "PW3DModelDataLoader",
+      "address": "0x14195fad0",
+      "slots": 9
+    },
+    {
+      "name": "PWCanvas3DModelLoader",
+      "address": "0x1417f6d30",
+      "slots": 9
+    }
+  ]
 }
