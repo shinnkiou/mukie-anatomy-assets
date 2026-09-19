@@ -176,3 +176,41 @@ P0.5では、実行対象の .ps1 をASCII文字だけに変更しました。
   Reviewer build: P0.5 (ASCII PowerShell compatibility fix)
 
 と表示されます。
+
+
+================================================
+P0.6 修正: NEW_RVA_CANDIDATES=0 の誤判定対策
+================================================
+
+P0.5は解析自体には成功しました。
+
+  scanned_text_files = 438
+  targeted_hit_count = 12046
+  novel_evidence_count = 194
+
+しかし new_rva_candidate_count = 0 でした。
+
+原因:
+旧analyzerは主に "0x140..." 形式だけをRVA候補として認識していました。
+Full SnapshotのGhidra成果では、多くの関数が
+
+  FUN_140xxxxxxxx
+
+およびdecompileファイル名中の
+
+  ..._140xxxxxxxx_FUN_140xxxxxxxx.c.txt
+
+として記録されています。
+
+一方 strings.tsv の 141e... のような裸hexはRTTI/データアドレスの場合があるため、
+無差別にGhidra targetへ昇格させません。
+
+P0.6では:
+  ・FUN_... を実行コード候補として認識
+  ・decompileファイル名のFUN_...も認識
+  ・既知RVAは除外
+  ・strings.tsv等の裸hexだけではcode targetにしない
+  ・Ghidra targetはcode evidence >= 1を必須化
+
+成功時:
+  Reviewer build: P0.6 (code-aware RVA extraction fix)
