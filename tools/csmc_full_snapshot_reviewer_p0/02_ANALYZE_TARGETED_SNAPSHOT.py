@@ -19,6 +19,14 @@ CONTEXT_RADIUS = 420
 RVA_RE = re.compile(r"0x1[0-9a-fA-F]{7,15}")
 FUNC_RE = re.compile(r"\bFUN_1[0-9a-fA-F]{7,15}\b")
 
+def func_token_to_addr(token: str) -> str:
+    # Ghidra function tokens are executable-code evidence.  The earlier P0
+    # only promoted literal 0x... strings, which caused a false zero-candidate
+    # result because snapshot exports mostly use FUN_140... and bare hex.
+    if token.startswith("FUN_"):
+        return "0x" + token[4:].lower()
+    return ""
+
 def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--known", required=True)
@@ -167,6 +175,26 @@ def main():
                 total, scores, rvas, new_rvas, known_hits, funcs = score_context(
                     ctx, groups, known_rvas
                 )
+
+                # P0.6: promote only code-bearing Ghidra FUN_ tokens, including
+                # the current decompile filename.  Do NOT promote arbitrary bare
+                # hex values from strings.tsv; those are often RTTI/data addresses.
+                path_funcs = FUNC_RE.findall(rel)
+                all_funcs = sorted(set(funcs + path_funcs))
+                func_addrs = sorted(set(
+                    func_token_to_addr(x) for x in all_funcs
+                    if func_token_to_addr(x)
+                ))
+                func_new = [x for x in func_addrs if x not in known_rvas]
+                func_known = [x for x in func_addrs if x in known_rvas]
+
+                if func_new:
+                    total += min(8, 3 * len(func_new))
+                    new_rvas = sorted(set(new_rvas + func_new))
+                if func_known:
+                    known_hits = sorted(set(known_hits + func_known))
+                funcs = all_funcs
+
                 if total < 4:
                     continue
                 key = (rel, ctx[:240])
@@ -187,6 +215,7 @@ def main():
                     "new_rvas": ",".join(new_rvas),
                     "known_rvas": ",".join(known_hits),
                     "functions": ",".join(funcs),
+                    "code_source": "decompile" if path_funcs else ("context_fun" if funcs else "noncode_context"),
                     "excerpt": ctx,
                 }
                 hits.append(row)
@@ -219,12 +248,15 @@ def main():
         total_score = 0
         max_score = 0
         consumer = bridge = transform = 0
+        code_evidence_count = 0
         for e in evs:
             total_score += int(e["score"])
             max_score = max(max_score, int(e["score"]))
             consumer += int(e["consumer_score"])
             bridge += int(e["bridge_score"])
             transform += int(e["transform_score"])
+            if e.get("code_source") in ("decompile", "context_fun"):
+                code_evidence_count += 1
             for cat in e["categories"].split(","):
                 if cat:
                     cats[cat] += 1
@@ -246,6 +278,7 @@ def main():
             "consumer_score": consumer,
             "bridge_score": bridge,
             "transform_score": transform,
+            "code_evidence_count": code_evidence_count,
             "categories": ",".join(k for k, _ in cats.most_common()),
             "files": " | ".join(files[:12]),
             "best_excerpt": max(evs, key=lambda e: int(e["score"]))["excerpt"],
@@ -269,7 +302,7 @@ def main():
         out / "targeted_hits.tsv", hits,
         ["snapshot", "file", "file_class", "seed_term", "score", "categories",
          "consumer_score", "bridge_score", "transform_score", "new_rvas",
-         "known_rvas", "functions", "excerpt"]
+         "known_rvas", "functions", "code_source", "excerpt"]
     )
     write_tsv(
         out / "candidate_files.tsv", files_summary,
@@ -279,16 +312,20 @@ def main():
         out / "consumer_candidates.tsv", candidate_rows,
         ["rva", "aggregate_score", "max_context_score", "evidence_count",
          "snapshot_count", "snapshots", "file_count", "consumer_score",
-         "bridge_score", "transform_score", "categories", "files", "best_excerpt"]
+         "bridge_score", "transform_score", "code_evidence_count", "categories", "files", "best_excerpt"]
     )
     write_tsv(
         out / "novel_evidence.tsv", novel_rows,
         ["snapshot", "file", "score", "categories", "consumer_score",
          "bridge_score", "transform_score", "new_rvas", "known_rvas",
-         "functions", "excerpt"]
+         "functions", "code_source", "excerpt"]
     )
 
-    ghidra_targets = [r for r in candidate_rows if int(r["aggregate_score"]) >= 16][:12]
+    ghidra_targets = [
+        r for r in candidate_rows
+        if int(r["aggregate_score"]) >= 16
+        and int(r.get("code_evidence_count", 0)) >= 1
+    ][:12]
     with (out / "ghidra_targets.txt").open("w", encoding="utf-8") as f:
         f.write("# CSMC FULL SNAPSHOT REVIEWER P0\n")
         f.write("# New RVA candidates only. Known/closed RVAs are excluded.\n")
@@ -303,7 +340,7 @@ def main():
             )
 
     evidence = {
-        "schema": "csmc_full_snapshot_reviewer_p0_evidence_v1",
+        "schema": "csmc_full_snapshot_reviewer_p0_evidence_v2_codeaware",
         "inputs": [{"label": label, "path": str(path)} for label, path in inputs],
         "scanned_text_files": scanned_files,
         "skipped_large_files": skipped_large,
@@ -329,6 +366,8 @@ def main():
         "# CSMC FULL SNAPSHOT REVIEWER P0 — SUMMARY",
         "",
         "Targeted review of existing snapshot evidence; broad rediscovery is excluded.",
+        "",
+        "P0.6 code-aware extraction: FUN_140... symbols and decompile filenames are treated as executable-code candidates; bare RTTI/data hex is not.",
         "",
         f"- Scanned text files: **{scanned_files}**",
         f"- Targeted evidence contexts: **{len(hits)}**",
