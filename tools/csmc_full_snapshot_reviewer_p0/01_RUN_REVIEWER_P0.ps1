@@ -191,7 +191,7 @@ $MaxExtractTotal = 350MB
 
 foreach ($Snap in $Snapshots) {
     Write-Status ("=== " + $Snap.Label + " ===")
-    Write-Host "Reviewer build: P0.3 (single-file ChatGPT packet)"
+    Write-Host "Reviewer build: P0.4 (full extract, targeted scan fix)"
 
     if (-not (Test-Path -LiteralPath $Snap.Path)) {
         Write-Host ("[MISSING] " + $Snap.Path) -ForegroundColor Red
@@ -255,12 +255,25 @@ foreach ($Snap in $Snapshots) {
 
     Write-Host ("Selected text artifacts: " + $Selected.Count)
     Write-Host ("Selected bytes         : " + $SelectedTotal)
+    Write-Host "P0.4 extraction mode    : FULL ARCHIVE EXTRACT / TARGETED TEXT SCAN"
 
-    if ($Selected.Count -gt 0) {
-        & $SevenZip x -y -aoa -scsUTF-8 ("-o" + $SnapExtract) -- $Snap.Path ("@" + $ListFile)
-        if ($LASTEXITCODE -ne 0) {
-            throw "7-Zip selective extraction failed for $($Snap.Path)"
-        }
+    # P0.4: the snapshot archives are only ~10-12 MB. Previous list-file
+    # selective extraction could succeed with exit code 0 while leaving the
+    # target folder empty. Extract the whole snapshot read-only, then let the
+    # Python analyzer scan only bounded text extensions. This changes transport
+    # reliability, not research scope.
+    & $SevenZip x -y -aoa ("-o" + $SnapExtract) -- $Snap.Path
+    if ($LASTEXITCODE -ne 0) {
+        throw "7-Zip full extraction failed for $($Snap.Path)"
+    }
+
+    $ExtractedFiles = @(
+        Get-ChildItem -LiteralPath $SnapExtract -Recurse -File -ErrorAction SilentlyContinue
+    )
+    Write-Host ("Extracted files         : " + $ExtractedFiles.Count)
+
+    if ($ExtractedFiles.Count -eq 0) {
+        throw "Extraction produced zero files for $($Snap.Path)"
     }
 
     $InputArgs += @("--input", ($Snap.Label + "=" + $SnapExtract))
