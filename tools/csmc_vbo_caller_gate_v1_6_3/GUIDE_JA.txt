@@ -1,0 +1,176 @@
+CSMC VBO CALLER GATE V1.6.3 日本語操作ガイド
+================================================
+
+【目的】
+V1.6.3は新しい広域探索ではありません。
+V1.6.1から未完了だった
+
+  validated posed VBO
+  → glBufferSubData upload
+  → return address / backtrace
+  → 安定した MODELER RVA
+
+の「caller gate」を1回だけ閉じる completion pass です。
+
+V1.6.2で確定したBODY validatorを再利用します。
+MemoryAccessMonitorのpage-watchは使いません。
+旧ModelData/XREF探索、SQLite、DATA2、CHNKの再探索もしません。
+
+【出力したいもの】
+VALID BODY uploadごとに以下を記録します。
+
+  timestamp
+  thread id
+  data pointer
+  VBO hash
+  phase = BASELINE / ELBOW_FLEX / RETURN
+  API
+  return address
+  MODELER module base
+  MODELER RVA
+  backtrace上位フレーム
+  stack signature
+
+最後に
+  ・各phaseの最頻出stack
+  ・3 phase共通のstack signature
+  ・3 phase共通のMODELER RVA
+を集計します。
+
+================================================
+0. 実行前
+================================================
+
+1. CLIP STUDIO MODELERを完全に閉じます。
+2. このフォルダの
+   00_RUN_VBO_CALLER_GATE_V1_6_3.bat
+   をダブルクリックします。
+3. MODELERが自動起動します。
+
+注意:
+- CSMCは保存しません。
+- Ctrl+Sは押しません。
+- Base44は使いません。
+- opengl32.dll cleanupは行いません。
+- 途中で別のMODELERを起動しません。
+
+================================================
+1. BASELINE
+================================================
+
+1. MODELERで
+   POSE_00_BASE_TPOSE.csmc
+   を開きます。
+2. Tポーズが完全表示されたら約3秒待ちます。
+3. コンソールへ戻りEnterを押します。
+4. BODY validatorがBASELINE候補を検証します。
+5. 成功すると
+   BASELINE VALID
+   と表示されます。
+
+ここでは腕を動かしません。
+
+================================================
+2. ELBOW_FLEX
+================================================
+
+1. プログラムが内部candidate cacheをクリアします。
+2. MODELERへ戻ります。
+3. 左肘だけを大きく曲げます。
+4. そのまま約3秒待ちます。
+5. コンソールへ戻りEnterを押します。
+6. 成功すると
+   ELBOW_FLEX VALID
+   と表示されます。
+
+V1.6.2と同様に、
+UV SHAがBASELINEと一致し、
+変化頂点数と最大変位が妥当な候補だけ採用します。
+
+================================================
+3. RETURN
+================================================
+
+1. 再びcandidate cacheがクリアされます。
+2. MODELERへ戻ります。
+3. 左肘をTポーズ方向へ戻します。
+4. 約3秒待ちます。
+5. コンソールへ戻りEnterを押します。
+6. RETURN BODY候補を検証します。
+
+完全に元と同じ角度でなくても構いません。
+BODY fingerprintが正しく、UVが一致することを優先します。
+
+================================================
+4. 集計
+================================================
+
+操作はここで終了です。
+プログラムが以下を自動集計します。
+
+  VALIDATED_UPLOADS.tsv
+  STACK_FRAMES.tsv
+  STACK_SIGNATURES.tsv
+  MODELER_FRAME_FREQUENCY.tsv
+  TARGET_RVAS.txt
+  SUMMARY.txt
+  EVENTS.jsonl
+
+最後にSEND ZIPが作られます。
+
+================================================
+5. 成功判定
+================================================
+
+最重要はSUMMARY.txtの
+
+  common_stack_signature_count
+  common_modeler_rva_count
+
+です。
+
+理想:
+  common_stack_signature_count >= 1
+
+次善:
+  common_stack_signature_count = 0
+  common_modeler_rva_count >= 1
+
+この場合でも、共通RVAがcaller gate候補になります。
+
+TARGET_RVAS.txtには
+次のGhidra targeted passで見るべきRVAだけを出します。
+
+【重要】
+V1.6.3の結果が取れたら、
+次に同種probeを増築しません。
+stable MODELER RVAが取れた場合は
+そのRVAだけGhidraでdecompileします。
+
+================================================
+6. ChatGPTへ送るもの
+================================================
+
+通常:
+  CSMC_VBO_CALLER_GATE_*_SEND.zip
+
+ZIPが不調なら以下を個別送信してください。
+
+  SUMMARY.txt
+  TARGET_RVAS.txt
+  VALIDATED_UPLOADS.tsv
+  STACK_FRAMES.tsv
+  STACK_SIGNATURES.tsv
+  MODELER_FRAME_FREQUENCY.tsv
+  EVENTS.jsonl
+
+================================================
+やってはいけないこと
+================================================
+
+- VBOサイズ/stride探索をやり直す
+- MemoryAccessMonitorのpageをさらに増やす
+- source pointer候補を数百へ拡張する
+- 旧ModelData文字列/XREF探索へ戻る
+- SQLite / DATA2 / CHNKを再探索する
+- CSMCを保存する
