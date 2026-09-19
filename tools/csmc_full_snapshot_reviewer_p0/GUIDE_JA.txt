@@ -214,3 +214,26 @@ P0.6では:
 
 成功時:
   Reviewer build: P0.6 (code-aware RVA extraction fix)
+
+
+================================================
+P0.7 修正: P0.6の8954候補をcall graphノイズから分離
+================================================
+
+P0.6はFUN_アドレスを拾えるようになりましたが、
+call_edges.tsvの広いcontext内に存在する多数のFUN_まで候補化したため、
+8954候補・上位に共通helperが集中しました。
+
+P0.7では:
+  ・decompileファイルは「そのファイル自身の関数」だけ候補化
+  ・string/xref/ranking系は「keyword直近140文字」のFUN_だけ候補化
+  ・call_edges.tsv / functions.tsv / namespaces.tsv / strings.tsv /
+    decompile index は候補の発生源にしない
+  ・同一snapshot+file内の重複contextは最高点1件だけ集計
+  ・既知の0x140d45d30 / 0x141657140を除外
+  ・Ghidra target最大8件
+  ・10_RUN_GHIDRA_TARGETSはP0.7 target list以外を拒否
+
+重要:
+  P0.6で生成されたghidra_targets.txtは実行しないでください。
+  P0.7を一度実行し、そのCHATGPT_PACKET.mdを確認してからGhidraへ進みます。
