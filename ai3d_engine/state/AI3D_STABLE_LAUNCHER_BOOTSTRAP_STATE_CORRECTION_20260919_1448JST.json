@@ -1,0 +1,43 @@
+{
+  "schema": "never-tear-ai3d-stable-launcher-bootstrap-state-correction-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "corrected_at_jst": "2026-09-19T14:48:00+09:00",
+  "base44_used": false,
+  "previous_assumption": "Stable Launcher was already installed and merely needed launching.",
+  "correction": "Current canonical evidence does not prove that the one-time Stable Launcher bootstrap install was completed. The strongest supported state is BOOTSTRAP_VERIFIED_READY_FOR_ONE_TIME_INSTALL.",
+  "evidence": {
+    "canary005_status": "QUEUED_0_OF_1",
+    "required_v024_heartbeat_observed": false,
+    "last_ai3d_worker_version": "0.2.3-ai3d-structure-loaderfix",
+    "last_ai3d_worker_seen": "2026-09-15T14:33:27.495Z",
+    "supabase_stable_launcher_status": "BOOTSTRAP_VERIFIED_READY_FOR_ONE_TIME_INSTALL",
+    "github_channel_doc": "ai3d_engine/AI3D-013_STRUCTURE_WORKER_STABLE_UPDATE_CHANNEL.md",
+    "github_workflow": ".github/workflows/ai3d-structure-worker-updatable-windows.yml",
+    "drive_bootstrap_zip": {
+      "file_id": "1ArgO3zPnMhsGSACcksE7QNM0UOTSkCzx",
+      "name": "NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip",
+      "size_bytes": 17059050,
+      "sha256": "aee6cb953d63486b882e58a9f6837df7b158dd2f75c73a954db9e76fddc211de"
+    },
+    "drive_bootstrap_sha_file_id": "1S2KtTo4L2sQN4fQQOOte4exfioRIDlnw"
+  },
+  "exact_one_time_bootstrap_steps": [
+    "Close the currently running version-specific Structure Worker console, if one is running.",
+    "Use the verified NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip package.",
+    "Run VERIFY_BOOTSTRAP_SHA256.bat.",
+    "Only if verification passes, run INSTALL_NEVER_TEAR_AI3D_STRUCTURE_WORKER_ONCE.bat.",
+    "Then start the Start Menu shortcut: NEVER TEAR AI3D Structure Worker CANARY.",
+    "Do not create or requeue a CANARY; continue the existing CANARY-005 only."
+  ],
+  "safety_boundaries": [
+    "No worker code change.",
+    "No Edge Function change.",
+    "No queue-row rewrite.",
+    "No CANARY-006 instantiation.",
+    "No Mars geometry mutation.",
+    "No Central Corridor production execution before physical promotion."
+  ],
+  "decision": "HOLD_BOOTSTRAP_INSTALL_NOT_CONFIRMED",
+  "next_action": "Complete or verify the one-time Stable Launcher bootstrap install using the verified bootstrap package, then launch the stable Start Menu shortcut once. After that, re-read Supabase telemetry and existing CANARY-005; proceed only on verified v0.2.4 heartbeat."
+}
