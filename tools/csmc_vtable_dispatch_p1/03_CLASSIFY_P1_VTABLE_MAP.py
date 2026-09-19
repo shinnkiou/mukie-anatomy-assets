@@ -85,7 +85,8 @@ def classify(body: str):
     string_init = ("pwstring::vftable" in low or "fun_1408b3b20" in low) and "atexit" in low
     string_dtor = "pwstring::vftable" in low and "lock()" in low and "unlock()" in low and "atexit" not in low
 
-    has_read_words = any(x in low for x in ("read(", "stream", "buffer", "cursor", "input", "fread", "readfile"))
+    has_read_words = any(x in low for x in ("read(", "stream", "cursor", "input", "fread", "readfile"))
+    has_buffer_word = "buffer" in low
     has_copy = any(x in low for x in ("memcpy", "memmove", "copy", "fun_1408c27c0"))
     has_alloc = any(x in low for x in ("operator new", "malloc", "calloc", "realloc", "fun_140a98310"))
     has_decode = any(x in low for x in ("decode", "decompress", "inflate", "uncompress", "zlib", "codec"))
@@ -100,7 +101,7 @@ def classify(body: str):
         or re.search(r"param_1\s*\[[^\]]+\]\s*=", body)
         or re.search(r"\*param_1\s*=", body)
     )
-    reads_buffer = has_read_words or has_copy
+    reads_buffer = has_read_words or has_buffer_word or has_copy
 
     line_count = max(1, body.count("\n") + 1)
     direct_calls = count_calls(body)
@@ -126,9 +127,15 @@ def classify(body: str):
     elif has_read_words:
         cls = "STREAM"
         score += 5
+    elif has_buffer_word and writes_this:
+        cls = "BUFFER"
+        score += 5
     elif has_copy:
         cls = "COPY"
         score += 4
+    elif has_buffer_word:
+        cls = "BUFFER"
+        score += 3
     elif has_alloc:
         cls = "ALLOCATOR"
         score += 3
