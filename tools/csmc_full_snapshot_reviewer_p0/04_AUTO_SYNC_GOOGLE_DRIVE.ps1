@@ -90,10 +90,7 @@ robocopy $Reports $DestRun /E /R:2 /W:2 /COPY:DAT /DCOPY:DAT /NFL /NDL /NP | Out
 $RoboRC = $LASTEXITCODE
 if ($RoboRC -ge 8) { throw "robocopy failed with exit code $RoboRC" }
 
-$Packet = Join-Path $Reports "CHATGPT_PACKET_P08.md"
-if (-not (Test-Path -LiteralPath $Packet)) { $Packet = Join-Path $Reports "CHATGPT_PACKET.md" }
-$Summary = Join-Path $Reports "SUMMARY_P08.md"
-if (-not (Test-Path -LiteralPath $Summary)) { $Summary = Join-Path $Reports "SUMMARY.md" }
+$Packet = Join-Path $Reports "P1_CHATGPT_PACKET_CURRENT.md"\r\nif (-not (Test-Path -LiteralPath $Packet)) { $Packet = Join-Path $Reports "CHATGPT_PACKET_P08.md" }\r\nif (-not (Test-Path -LiteralPath $Packet)) { $Packet = Join-Path $Reports "CHATGPT_PACKET.md" }\r\n$Summary = Join-Path $Reports "P1_SUMMARY_CURRENT.md"\r\nif (-not (Test-Path -LiteralPath $Summary)) { $Summary = Join-Path $Reports "SUMMARY_P08.md" }\r\nif (-not (Test-Path -LiteralPath $Summary)) { $Summary = Join-Path $Reports "SUMMARY.md" }
 
 if (Test-Path -LiteralPath $Packet) {
     Copy-Item -LiteralPath $Packet -Destination (Join-Path $CurrentRoot "CHATGPT_PACKET_CURRENT.md") -Force
