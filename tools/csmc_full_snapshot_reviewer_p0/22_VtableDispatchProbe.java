@@ -53,7 +53,7 @@ public class VtableDispatchProbe extends GhidraScript {
         File report = new File(outDir, "VTABLE_DISPATCH_REPORT.txt");
         Memory mem = currentProgram.getMemory();
         FunctionManager fm = currentProgram.getFunctionManager();
-        int ptrSize = currentProgram.getDefaultPointerSize();
+        int ptrSize = currentProgram.getCompilerSpec().getDataOrganization().getPointerSize();
 
         try (PrintWriter sw = writer(tsv); PrintWriter rw = writer(report)) {
             sw.println("vtable\tvtable_address\tslot\tslot_address\tfunction_pointer\tfunction_name\tfunction_entry\trefs_to_slot\tcallers\tcallees\tkeyword_hits");
