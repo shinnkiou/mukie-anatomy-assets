@@ -1,0 +1,57 @@
+{
+  "schema": "never-tear-ai3d-bootstrap-install-hold-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "checked_at_jst": "2026-09-19T15:06:00+09:00",
+  "base44_used": false,
+  "canonical_sources": [
+    "GITHUB",
+    "SUPABASE",
+    "GOOGLE_DRIVE"
+  ],
+  "canary005": {
+    "job_id": "597c99dc-132d-4f42-ad85-a46b814e0990",
+    "status": "QUEUED",
+    "attempt_count": 0,
+    "max_attempts": 1,
+    "claimed": false,
+    "started": false,
+    "completed": false,
+    "error_code": null,
+    "requeue": false
+  },
+  "paired_windows": {
+    "latest_ai3d_worker_version": "0.2.3-ai3d-structure-loaderfix",
+    "latest_ai3d_last_seen": "2026-09-15T14:33:27.495Z",
+    "capabilities": [
+      "ai3d_structure_module_v1"
+    ],
+    "required_worker_version": "0.2.4-ai3d-structure-visualfix",
+    "required_heartbeat_observed": false
+  },
+  "stable_launcher_bootstrap": {
+    "install_confirmed": false,
+    "status": "BOOTSTRAP_VERIFIED_READY_FOR_ONE_TIME_INSTALL",
+    "drive_zip_id": "1ArgO3zPnMhsGSACcksE7QNM0UOTSkCzx",
+    "drive_sha_file_id": "1S2KtTo4L2sQN4fQQOOte4exfioRIDlnw",
+    "zip_name": "NEVER_TEAR_AI3D_STRUCTURE_WORKER_BOOTSTRAP_V1.zip",
+    "zip_sha256": "aee6cb953d63486b882e58a9f6837df7b158dd2f75c73a954db9e76fddc211de",
+    "required_steps": [
+      "Run VERIFY_BOOTSTRAP_SHA256.bat",
+      "If PASS, run INSTALL_NEVER_TEAR_AI3D_STRUCTURE_WORKER_ONCE.bat",
+      "Launch Start Menu shortcut NEVER TEAR AI3D Structure Worker CANARY"
+    ]
+  },
+  "canary006": {
+    "status": "DESIGN_ONLY_NOT_ARMED_NOT_QUEUED",
+    "instantiate_now": false
+  },
+  "central_corridor": {
+    "module_plan_id": "module-plan-7d0ef550473d76e6",
+    "execution_command_count": 66,
+    "production_execution_allowed": false,
+    "physical_execution_claimed": false
+  },
+  "decision": "HOLD_WAITING_FOR_ONE_TIME_BOOTSTRAP_INSTALL",
+  "next_action": "User performs one-time bootstrap verify/install and launches stable shortcut. Then re-read paired Windows telemetry and existing CANARY-005; continue only if verified v0.2.4 heartbeat appears."
+}
