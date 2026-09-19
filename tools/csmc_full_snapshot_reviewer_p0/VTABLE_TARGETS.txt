@@ -1,0 +1,4 @@
+# P0.8 known loader vtables only
+# name<TAB>address<TAB>slot_count
+PW3DModelDataLoader	0x14195fad0	9
+PWCanvas3DModelLoader	0x1417f6d30	9
