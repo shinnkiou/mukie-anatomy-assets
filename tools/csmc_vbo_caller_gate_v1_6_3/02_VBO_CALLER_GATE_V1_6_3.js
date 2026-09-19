@@ -3,7 +3,7 @@
 const BODY_SIZE = 1160128;
 const GL_ARRAY_BUFFER = 0x8892;
 const GL_ELEMENT_ARRAY_BUFFER = 0x8893;
-const MAX_CACHE = 96;
+const MAX_CACHE = 32;
 const MAX_BACKTRACE = 24;
 
 const bindings = {};
