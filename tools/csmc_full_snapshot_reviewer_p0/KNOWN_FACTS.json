@@ -1,5 +1,5 @@
 {
-  "schema": "csmc_snapshot_reviewer_known_facts_v1",
+  "schema": "csmc_snapshot_reviewer_known_facts_v2",
   "do_not_count_as_new": [
     "CSMC outer container is SQLite",
     "character table has one approximately 77 MB BLOB",
@@ -14,7 +14,9 @@
     "posed VBO -> Blender proven",
     "general ModelData string presence",
     "general ReadFile/winRead discovery",
-    "0x140f62d20 neighborhood already explored"
+    "0x140f62d20 neighborhood already explored",
+    "0x140d45d30 registration function already reviewed",
+    "0x141657140 registration call path already reviewed"
   ],
   "known_rvas": [
     "0x140f62d20",
@@ -29,7 +31,9 @@
     "0x140e7c270",
     "0x140e78810",
     "0x141658300",
-    "0x1416586f0"
+    "0x1416586f0",
+    "0x140d45d30",
+    "0x141657140"
   ],
   "active_questions": [
     "first real consumer of character DATA2 payload",
@@ -41,20 +45,48 @@
   ],
   "positive_terms": {
     "consumer": [
-      "consumer", "deserialize", "deserializ", "decode", "parse",
-      "reader", "loader", "read payload", "character payload",
-      "internal object", "construct", "factory", "instantiate",
-      "PW3DModelDataLoader", "PWCanvas3DModelLoader",
-      "PW3DLayerUtility", "Canvas3DModelLoader", "ModelData3D"
+      "consumer",
+      "deserialize",
+      "deserializ",
+      "decode",
+      "parse",
+      "reader",
+      "loader",
+      "read payload",
+      "character payload",
+      "internal object",
+      "construct",
+      "factory",
+      "instantiate",
+      "PW3DModelDataLoader",
+      "PWCanvas3DModelLoader",
+      "PW3DLayerUtility",
+      "Canvas3DModelLoader",
+      "ModelData3D"
     ],
     "bridge": [
-      "glBufferSubData", "glBufferData", "OpenGL", "VBO",
-      "upload", "render", "vertex buffer", "posed",
-      "PW3DLayerUtility", "PW3DModelDataLoader"
+      "glBufferSubData",
+      "glBufferData",
+      "OpenGL",
+      "VBO",
+      "upload",
+      "render",
+      "vertex buffer",
+      "posed",
+      "PW3DLayerUtility",
+      "PW3DModelDataLoader"
     ],
     "transform": [
-      "matrix", "transform", "bone", "weight", "joint",
-      "skin", "deform", "palette", "skeleton", "quaternion"
+      "matrix",
+      "transform",
+      "bone",
+      "weight",
+      "joint",
+      "skin",
+      "deform",
+      "palette",
+      "skeleton",
+      "quaternion"
     ]
   }
 }
