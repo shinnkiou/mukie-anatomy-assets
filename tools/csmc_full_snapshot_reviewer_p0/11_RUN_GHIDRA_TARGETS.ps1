@@ -38,7 +38,7 @@ if (-not (Test-Path -LiteralPath $Targets)) {
 
 $AllTargetText = Get-Content -LiteralPath $Targets
 if (-not ($AllTargetText -match "reviewer_build=P0.8_decompile_dedupe")) {
-    throw "Safety gate: ghidra_targets.txt is not from P0.8 decompile-dedupe reviewer. Run 00_START_HERE.cmd with P0.7 first."
+    throw "Safety gate: ghidra_targets.txt is not from P0.8 decompile-dedupe reviewer. Run 00_START_HERE.cmd with P0.8 first."
 }
 
 $TargetLines = @(
