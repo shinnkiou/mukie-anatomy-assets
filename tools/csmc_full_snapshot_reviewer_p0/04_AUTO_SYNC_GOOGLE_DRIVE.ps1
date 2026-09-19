@@ -1,9 +1,9 @@
-$ErrorActionPreference = "Stop"
-Set-StrictMode -Version 2.0
-
 param(
     [Parameter(Mandatory=$true)][string]$RunRoot
 )
+
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version 2.0
 
 $Reports = Join-Path $RunRoot "REPORTS"
 if (-not (Test-Path -LiteralPath $Reports)) {
@@ -34,7 +34,8 @@ function Find-DriveRoot {
         $Root = $Drive.Root
         Add-Candidate $Candidates (Join-Path $Root "My Drive")
         Add-Candidate $Candidates (Join-Path $Root ([string][char]0x30DE + [char]0x30A4 + [char]0x30C9 + [char]0x30E9 + [char]0x30A4 + [char]0x30D6))
-        Add-Candidate $Candidates $Root
+        $RootResearch = Join-Path $Root "CSMC_RESEARCH"
+        if (Test-Path -LiteralPath $RootResearch) { return $Root }
     }
 
     Add-Candidate $Candidates (Join-Path $env:USERPROFILE "My Drive")
