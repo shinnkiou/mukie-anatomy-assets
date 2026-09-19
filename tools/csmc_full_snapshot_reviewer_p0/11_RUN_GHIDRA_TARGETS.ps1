@@ -36,8 +36,13 @@ if (-not (Test-Path -LiteralPath $Targets)) {
     throw "ghidra_targets.txt not found: $Targets"
 }
 
+$AllTargetText = Get-Content -LiteralPath $Targets
+if (-not ($AllTargetText -match "reviewer_build=P0.7_direct_evidence")) {
+    throw "Safety gate: ghidra_targets.txt is not from P0.7 direct-evidence reviewer. Run 00_START_HERE.cmd with P0.7 first."
+}
+
 $TargetLines = @(
-    Get-Content -LiteralPath $Targets |
+    $AllTargetText |
         Where-Object { $_ -and (-not $_.StartsWith("#")) }
 )
 
@@ -45,8 +50,8 @@ if ($TargetLines.Count -eq 0) {
     Write-Host "No new Ghidra targets. Exiting without broad analysis." -ForegroundColor Yellow
     exit 0
 }
-if ($TargetLines.Count -gt 12) {
-    throw "Safety gate: target count > 12. Refusing broad analysis."
+if ($TargetLines.Count -gt 8) {
+    throw "Safety gate: target count > 8. Refusing broad analysis."
 }
 
 $OutDir = Join-Path $Reports "GHIDRA_TARGETED"
