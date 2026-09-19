@@ -42,7 +42,7 @@ $TargetLines = @(
 )
 
 if ($TargetLines.Count -eq 0) {
-    Write-Host "新規Ghidra targetは0件です。広域解析へ戻らず終了します。" -ForegroundColor Yellow
+    Write-Host "No new Ghidra targets. Exiting without broad analysis." -ForegroundColor Yellow
     exit 0
 }
 if ($TargetLines.Count -gt 12) {
