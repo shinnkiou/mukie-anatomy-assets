@@ -342,4 +342,19 @@ if (Test-Path -LiteralPath $Targets) {
     }
 }
 
+$DriveSync = Join-Path $ScriptDir "04_AUTO_SYNC_GOOGLE_DRIVE.ps1"
+if (Test-Path -LiteralPath $DriveSync) {
+    Write-Host ""
+    Write-Status "Copying REPORTS to Google Drive desktop sync folder..."
+    try {
+        & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $DriveSync -RunRoot $RunRoot
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host ("Google Drive sync returned exit code " + $LASTEXITCODE + ". Local reports are safe.") -ForegroundColor Yellow
+        }
+    } catch {
+        Write-Host ("Google Drive sync failed: " + $_.Exception.Message) -ForegroundColor Yellow
+        Write-Host "Local reports are safe; reviewer result remains valid." -ForegroundColor Yellow
+    }
+}
+
 Start-Process explorer.exe $Reports
