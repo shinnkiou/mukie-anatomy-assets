@@ -1,7 +1,7 @@
 {
   "schema": "never-tear-ai3d-task-queue-v1",
   "project_key": "never_tear_ai3d_engine",
-  "updated_at": "2026-09-19T09:07:00+09:00",
+  "updated_at": "2026-09-19T14:48:00+09:00",
   "priority_order": [
     "BLOCKED_FIX",
     "QA_FAIL_FIX",
@@ -270,10 +270,10 @@
         "base44_lineage_readback": "PASS",
         "base44_build": "BLOCKED_WORKSPACE_NO_PACKAGE_JSON",
         "staged_structure_adapter": "AI3D-011_COMPLETE_NOT_PROMOTED",
-        "current_blocker": "AI3D-013_WAITING_FOR_V024_HEARTBEAT",
+        "current_blocker": "AI3D-013_STABLE_LAUNCHER_BOOTSTRAP_INSTALL_NOT_CONFIRMED",
         "production_execution_allowed": false
       },
-      "next_action": "Remain blocked. Do not execute the 66-command Central Corridor plan until AI3D-013 physically passes geometry probes, durable SHA readback and real visual QA."
+      "next_action": "Remain blocked. Do not execute the 66-command Central Corridor plan until AI3D-013 Stable Launcher bootstrap is confirmed and existing CANARY-005 passes physical geometry probes, durable SHA readback and real visual QA."
     },
     {
       "task_id": "AI3D-011",
@@ -352,7 +352,7 @@
       "title": "Physical Structure Module Capability Canary + Promotion",
       "priority": "URGENT",
       "status": "ACTIVE",
-      "stage": "PHYSICAL_CANARY_HOLD",
+      "stage": "PHYSICAL_CANARY_HOLD_BOOTSTRAP_INSTALL_PENDING",
       "dependencies": [
         "AI3D-002",
         "AI3D-004",
@@ -377,9 +377,13 @@
         "required_v024_heartbeat_observed": false,
         "requeue": false,
         "recovery_canary006_status": "DESIGN_ONLY_NOT_ARMED_NOT_QUEUED",
-        "recovery_canary006_commit": "523e5068c3d682040a7c36073e868dada68597d0"
+        "recovery_canary006_commit": "523e5068c3d682040a7c36073e868dada68597d0",
+        "stable_launcher_install_confirmed": false,
+        "stable_launcher_bootstrap_status": "BOOTSTRAP_VERIFIED_READY_FOR_ONE_TIME_INSTALL",
+        "bootstrap_state_correction_commit": "1fb11e094463d45f545a86f6d35ba09c6d17c682",
+        "canary006_instantiate_now": false
       },
-      "next_action": "Launch installed Stable Launcher once. If v0.2.4 heartbeat appears, continue the existing CANARY-005 only. If a concrete terminal failure appears, preserve evidence and apply the smallest repair before instantiating design-only CANARY-006."
+      "next_action": "One-time Windows bootstrap install is not confirmed. From the verified bootstrap package, run VERIFY_BOOTSTRAP_SHA256.bat, then INSTALL_NEVER_TEAR_AI3D_STRUCTURE_WORKER_ONCE.bat, then launch 'NEVER TEAR AI3D Structure Worker CANARY'. After that re-read telemetry; continue existing CANARY-005 only if v0.2.4 heartbeat appears."
     }
   ]
 }
