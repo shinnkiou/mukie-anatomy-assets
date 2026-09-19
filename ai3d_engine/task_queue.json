@@ -1,7 +1,7 @@
 {
   "schema": "never-tear-ai3d-task-queue-v1",
   "project_key": "never_tear_ai3d_engine",
-  "updated_at": "2026-09-19T00:45:00+09:00",
+  "updated_at": "2026-09-19T09:07:00+09:00",
   "priority_order": [
     "BLOCKED_FIX",
     "QA_FAIL_FIX",
@@ -270,9 +270,10 @@
         "base44_lineage_readback": "PASS",
         "base44_build": "BLOCKED_WORKSPACE_NO_PACKAGE_JSON",
         "staged_structure_adapter": "AI3D-011_COMPLETE_NOT_PROMOTED",
-        "current_blocker": "AI3D-013_CANARY_005_PHYSICAL_PROMOTION"
+        "current_blocker": "AI3D-013_WAITING_FOR_V024_HEARTBEAT",
+        "production_execution_allowed": false
       },
-      "next_action": "Keep production commands unexecuted. After AI3D-013 CANARY-005 geometry-probe QA + provider SHA readback + real visual QA PASS and explicit handler promotion, execute module-plan-7d0ef550473d76e6 for Central Corridor Structure, run Module QA, then integrate Blast Junction overlay."
+      "next_action": "Remain blocked. Do not execute the 66-command Central Corridor plan until AI3D-013 physically passes geometry probes, durable SHA readback and real visual QA."
     },
     {
       "task_id": "AI3D-011",
@@ -351,7 +352,7 @@
       "title": "Physical Structure Module Capability Canary + Promotion",
       "priority": "URGENT",
       "status": "ACTIVE",
-      "stage": "PHYSICAL_CANARY_READY",
+      "stage": "PHYSICAL_CANARY_HOLD",
       "dependencies": [
         "AI3D-002",
         "AI3D-004",
@@ -372,9 +373,13 @@
         "required_worker_version": "0.2.4-ai3d-structure-visualfix",
         "required_geometry_probe": "CANARY005_OPENING_RAY_V1",
         "structure_module_capability_promoted": false,
-        "physical_concurrency": 1
+        "physical_concurrency": 1,
+        "required_v024_heartbeat_observed": false,
+        "requeue": false,
+        "recovery_canary006_status": "DESIGN_ONLY_NOT_ARMED_NOT_QUEUED",
+        "recovery_canary006_commit": "523e5068c3d682040a7c36073e868dada68597d0"
       },
-      "next_action": "Launch the already-installed Stable Launcher once. Require v0.2.4 exact identity and ai3d_structure_module_v1 sole capability; allow queued CANARY-005 to execute once. Require geometry-probe automated QA, durable provider SHA readback and real visual QA before promotion."
+      "next_action": "Launch installed Stable Launcher once. If v0.2.4 heartbeat appears, continue the existing CANARY-005 only. If a concrete terminal failure appears, preserve evidence and apply the smallest repair before instantiating design-only CANARY-006."
     }
   ]
 }
