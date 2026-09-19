@@ -1,0 +1,36 @@
+CSMC P0.8 VTABLE / INDIRECT DISPATCH 日本語ガイド
+================================================
+
+目的:
+  既知のloader vtableをexact addressで読み、9 slotずつ実関数へ解決します。
+  文字列XREFの再検索ではありません。
+
+対象:
+  PW3DModelDataLoader     0x14195fad0  9 slots
+  PWCanvas3DModelLoader  0x1417f6d30  9 slots
+
+実行条件:
+  先にP0.8の 00_START_HERE.cmd を1回実行してください。
+
+実行:
+  20_RUN_VTABLE_DISPATCH.bat
+
+出力:
+  最新 REVIEWER_P0_*/REPORTS/VTABLE_DISPATCH/
+    VTABLE_DISPATCH_SUMMARY.tsv
+    VTABLE_DISPATCH_REPORT.txt
+
+見るもの:
+  slot番号
+  slotが指す関数
+  slotへのxref数
+  関数のcaller/callee
+  decompile本文
+  read/stream/buffer/ModelData/bone/weight等の限定keyword hit
+
+重要:
+  これはconsumer本線のindirect-dispatch確認用です。
+  0x140a98310周辺のFBX skin/cluster風APIは別レーンです。
+  CSMC側call pathが接続されるまではsemantic promotionしません。
+  semantic_promotion=false
+  CSMC/MODELER runtimeへのwrite/hookは行いません。
