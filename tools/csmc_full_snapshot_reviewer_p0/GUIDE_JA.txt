@@ -1,0 +1,102 @@
+CSMC FULL SNAPSHOT REVIEWER P0 日本語ガイド
+===========================================
+
+目的
+----
+巨大なFull Snapshot ZIPをChatGPTへ毎回渡さず、
+Windows側で解析ソフトを動かし、
+小さいレポートだけをChatGPTへ返すための司令塔です。
+
+今回の対象:
+  C:\Users\nurun\CSMC_ANALYSIS\PRIVATE_FULL_SNAPSHOT\CSMC_FULL_SNAPSHOT_20260914_214659.zip
+  C:\Users\nurun\CSMC_ANALYSIS\PRIVATE_FULL_SNAPSHOT\CSMC_FULL_SNAPSHOT_FOCUSED_20260914_232435.zip
+
+今回の主目的:
+  character BLOBを最初に解釈し、
+  MODELER内部objectへ変換するconsumer候補を
+  2つのFull Snapshotから特定すること。
+
+二次目的:
+  そのconsumer側の経路と
+  posed VBO upload側の内部関数を接続できる候補を探すこと。
+
+再調査しない:
+  SQLite外層の再発見
+  CLIP_STUDIO_3D_DATA2ヘッダの再発見
+  一般的なModelData文字列探索
+  VBO 1,160,128 bytes / stride 32 / 36,254 verticesの再確認
+  UV固定の再確認
+  0x140f62d20周辺の無目的な反復探索
+  一般strings総当たり
+  広域XREF総当たり
+
+================================================
+使い方
+================================================
+
+1. MODELERは起動していてもP0自体はruntime操作をしません。
+   ただし解析を単純にするため、できれば閉じておいてください。
+
+2. 00_RUN_REVIEWER_P0.bat をダブルクリックします。
+
+3. PowerShellが以下を自動実行します。
+
+   - 2つのSnapshotの存在確認
+   - SHA-256 / サイズ記録
+   - 7-ZipでZIP内容一覧
+   - 必要なテキスト系成果だけ選択展開
+   - rgがあれば限定キーワード検索
+   - Pythonで既知事項と新規候補を分類
+   - consumer候補 / bridge候補 / transform候補を順位付け
+   - Ghidraで見るべきRVAだけ ghidra_targets.txt に出力
+
+4. 完了すると REPORTS フォルダがExplorerで開きます。
+
+================================================
+ChatGPTへ送るもの
+================================================
+
+基本は以下だけで十分です。
+
+  SUMMARY.md
+  consumer_candidates.tsv
+  novel_evidence.tsv
+  ghidra_targets.txt
+  evidence.json
+
+必要になった場合だけ追加で:
+
+  targeted_hits.tsv
+  candidate_files.tsv
+  manifest.tsv
+
+巨大ZIP自体は再送不要です。
+
+================================================
+Ghidra targeted pass
+================================================
+
+P0で ghidra_targets.txt に新規候補RVAが出た場合だけ、
+次段階でGhidra Headlessへ渡します。
+
+P0では「候補選定」までを担当し、
+過去の0x140f...静的corridorを無目的に再解析しません。
+
+================================================
+重要
+================================================
+
+このツールはSnapshot ZIPを変更しません。
+元ZIPへ書込みません。
+CSMCへ書込みません。
+MODELER runtimeへhookしません。
+semantic_promotion=false
+
+今後の基本方針:
+  ChatGPT = 何を見るか決める
+  PowerShell = 司令塔
+  7-Zip = archive
+  rg = 限定テキスト検索
+  Python = 証拠分類/重複排除
+  Ghidra = 指定RVAだけ静的解析
+  Frida/TTD/DynamoRIO = runtime側
