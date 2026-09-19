@@ -191,7 +191,7 @@ $MaxExtractTotal = 350MB
 
 foreach ($Snap in $Snapshots) {
     Write-Status ("=== " + $Snap.Label + " ===")
-    Write-Host "Reviewer build: P0.5 (ASCII PowerShell compatibility fix)"
+    Write-Host "Reviewer build: P0.6 (code-aware RVA extraction fix)"
 
     if (-not (Test-Path -LiteralPath $Snap.Path)) {
         Write-Host ("[MISSING] " + $Snap.Path) -ForegroundColor Red
