@@ -1,0 +1,47 @@
+{
+  "schema": "never-tear-ai3d-canary005-hold-recheck-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "checked_at_jst": "2026-09-19T14:00:00+09:00",
+  "base44_used": false,
+  "canonical_sources": [
+    "GITHUB",
+    "SUPABASE",
+    "GOOGLE_DRIVE"
+  ],
+  "canary005": {
+    "job_id": "597c99dc-132d-4f42-ad85-a46b814e0990",
+    "job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-005",
+    "status": "QUEUED",
+    "attempt_count": 0,
+    "max_attempts": 1,
+    "device_key": null,
+    "started_at": null,
+    "completed_at": null,
+    "error_code": null,
+    "requeue": false
+  },
+  "paired_windows": {
+    "latest_ai3d_worker_version": "0.2.3-ai3d-structure-loaderfix",
+    "capabilities": [
+      "ai3d_structure_module_v1"
+    ],
+    "last_seen": "2026-09-15T14:33:27.495Z",
+    "required_worker_version": "0.2.4-ai3d-structure-visualfix",
+    "required_heartbeat_observed": false
+  },
+  "canary006": {
+    "status": "DESIGN_ONLY_NOT_ARMED_NOT_QUEUED",
+    "design_commit": "523e5068c3d682040a7c36073e868dada68597d0",
+    "instantiate_now": false
+  },
+  "central_corridor": {
+    "module_plan_id": "module-plan-7d0ef550473d76e6",
+    "execution_command_count": 66,
+    "production_execution_allowed": false,
+    "physical_execution_claimed": false
+  },
+  "decision": "HOLD_NO_CHANGE",
+  "reason": "No verified v0.2.4 heartbeat; CANARY-005 remains valid, queued, and unconsumed. No terminal failure exists, so CANARY-006 must remain design-only.",
+  "next_action": "Launch the installed NEVER TEAR AI3D Structure Worker Stable Launcher once on the paired Windows machine. Re-read Supabase telemetry and CANARY-005 after launch. Continue existing CANARY-005 only if verified v0.2.4 heartbeat appears."
+}
