@@ -1,0 +1,60 @@
+{
+  "schema": "csmc_snapshot_reviewer_known_facts_v1",
+  "do_not_count_as_new": [
+    "CSMC outer container is SQLite",
+    "character table has one approximately 77 MB BLOB",
+    "CLIP_STUDIO_3D_DATA2 -> character -> payload envelope",
+    "body VBO size 1160128 bytes",
+    "vertex count 36254",
+    "stride 32",
+    "Position float3 @0",
+    "Normal float3 @12",
+    "UV float2 @24",
+    "pose changes Position/Normal while UV stays fixed",
+    "posed VBO -> Blender proven",
+    "general ModelData string presence",
+    "general ReadFile/winRead discovery",
+    "0x140f62d20 neighborhood already explored"
+  ],
+  "known_rvas": [
+    "0x140f62d20",
+    "0x140f64600",
+    "0x140f650c0",
+    "0x140f622f0",
+    "0x140f63200",
+    "0x140f635d0",
+    "0x141656a80",
+    "0x140f5ac20",
+    "0x140f5e510",
+    "0x140e7c270",
+    "0x140e78810",
+    "0x141658300",
+    "0x1416586f0"
+  ],
+  "active_questions": [
+    "first real consumer of character DATA2 payload",
+    "function that converts payload into internal MODELER object",
+    "owner/constructor relationship around the real consumer",
+    "bridge from consumer/internal object to posed VBO upload path",
+    "transform/matrix/deformation candidate reachable from that bridge",
+    "bone index / weight storage candidate only after deformation routine is identified"
+  ],
+  "positive_terms": {
+    "consumer": [
+      "consumer", "deserialize", "deserializ", "decode", "parse",
+      "reader", "loader", "read payload", "character payload",
+      "internal object", "construct", "factory", "instantiate",
+      "PW3DModelDataLoader", "PWCanvas3DModelLoader",
+      "PW3DLayerUtility", "Canvas3DModelLoader", "ModelData3D"
+    ],
+    "bridge": [
+      "glBufferSubData", "glBufferData", "OpenGL", "VBO",
+      "upload", "render", "vertex buffer", "posed",
+      "PW3DLayerUtility", "PW3DModelDataLoader"
+    ],
+    "transform": [
+      "matrix", "transform", "bone", "weight", "joint",
+      "skin", "deform", "palette", "skeleton", "quaternion"
+    ]
+  }
+}
