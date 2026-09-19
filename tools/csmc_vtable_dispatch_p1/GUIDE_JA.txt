@@ -1,0 +1,162 @@
+CSMC P1 - VTABLE DISPATCH MAP 日本語ガイド
+===========================================
+
+目的
+----
+P0.8までの文字列XREF / registration探索を終了し、
+次の経路だけを限定的に調べます。
+
+  factory registration
+    -> generated loader object
+    -> vptr
+    -> vtable slot
+    -> virtual call
+    -> stream / buffer consumer
+
+対象
+----
+1. 一度だけ確認する未decompile候補
+   0x1400452b0
+
+2. 既知vtable
+   PW3DModelDataLoader
+   0x14195fad0
+   9 slots
+
+   PWCanvas3DModelLoader
+   0x1417f6d30
+   9 slots
+
+合計18 slotです。
+
+重要ルール
+----------
+・文字列XREFの広域探索は再開しません。
+・P0.8 decompile_manifest.tsvに既存Cがある関数は再decompileしません。
+・新規関数だけGhidra decompile対象です。
+・call chainは最大depth 3。
+・depth 1以降は小さいwrapperを優先して掘ります。
+・1 slotあたりの探索数を制限しています。
+・semantic_promotion=falseです。
+・CSMC / MODELER runtimeへのwriteやhookは行いません。
+
+実行
+----
+基本はこれだけです。
+
+  00_RUN_P1_VTABLE_DISPATCH.bat
+
+前提
+----
+P0.8 Reviewerを一度正常実行していること。
+
+最新の
+  REVIEWER_P0_*/
+    REPORTS/decompile_manifest.tsv
+    EXTRACTED_TARGETED/FULL
+    EXTRACTED_TARGETED/FOCUSED
+
+を自動で使用します。
+
+主な出力
+--------
+最新 REVIEWER_P0_*/REPORTS/P1_VTABLE_DISPATCH/ に、
+
+  VTABLE_DISPATCH_MAP.tsv
+  P1_INTERESTING_CHAIN.tsv
+  P1_SLOT_RAW.tsv
+  P1_CALL_CHAIN_RAW.tsv
+  P1_PRECHECK_1400452b0.txt
+  P1_SUMMARY.md
+  P1_CHATGPT_PACKET.md
+  NEW_DECOMPILE/
+
+を作成します。
+
+VTABLE_DISPATCH_MAP.tsv
+-----------------------
+主な列:
+
+  class
+  vtable
+  slot
+  target
+  has_existing_decompile
+  classification
+  calls
+  reads_buffer
+  writes_this
+  interesting_score
+  notes
+
+classification:
+  CTOR / DTOR
+  GETTER / SETTER
+  UI / NAME
+  STREAM
+  BUFFER
+  ALLOCATOR
+  DESERIALIZER
+  COPY
+  DECODE
+  UNKNOWN
+
+成功条件
+--------
+単に18 slotの中にreadという文字があることではありません。
+
+成功は、
+
+  factory-created loader object
+    -> vtable slot
+    -> bounded call chain
+    -> concrete stream/buffer consumer
+    -> internal object state write
+
+を一本つなげられた時です。
+
+slotがthin wrapperの場合もあるため、
+最大3段までcall chainを確認します。
+
+0x1400452b0
+------------
+P0.8で唯一上位に残ったCanvas3DModelLoader近傍の未decompile候補です。
+
+これが単なる
+  PWString + "Canvas3DModelLoader" + atexit
+型なら、その場で終了扱いです。
+
+FBX skin / cluster系
+--------------------
+0x140a98310周辺の
+  GetTransformLinkMatrix
+  GetControlPointIndices
+  GetControlPointWeights
+などは別レーンです。
+
+MODELERのFBX能力を示すだけの可能性があるため、
+CSMC側のcall pathと接続されるまでconsumer証拠には昇格しません。
+
+Google Drive
+------------
+P1完了後、
+P1_CHATGPT_PACKET_CURRENT.md
+P1_SUMMARY_CURRENT.md
+をREPORTS直下にもコピーします。
+
+Google Drive for desktopが自動検出できる環境では、
+CSMC_RESEARCHへ同期を試みます。
+
+自動検出できない場合でもローカル成果は失われません。
+その場合は、現在のように最新REVIEWER_P0フォルダをGoogle Driveへ
+手動アップロードすれば、ChatGPT側から直接参照できます。
+
+ChatGPTへ伝える時
+-----------------
+P1完了後は、
+
+  「P1終わりました。Driveにあります」
+
+だけで構いません。
+
+ChatGPT側はP1_CHATGPT_PACKET.mdを優先して読みます。
