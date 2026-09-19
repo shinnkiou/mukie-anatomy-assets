@@ -1,0 +1,93 @@
+{
+  "schema": "never-tear-ai3d-structure-canary-recovery-design-v1",
+  "project_key": "never_tear_ai3d_engine",
+  "task_id": "AI3D-013",
+  "designed_at_jst": "2026-09-19T09:07:00+09:00",
+  "base44_used": false,
+  "design_status": "DESIGN_ONLY_NOT_ARMED_NOT_QUEUED",
+  "predecessor": {
+    "job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-005",
+    "job_id": "597c99dc-132d-4f42-ad85-a46b814e0990",
+    "status_at_design_time": "QUEUED",
+    "attempt_count": 0,
+    "max_attempts": 1,
+    "required_worker_version": "0.2.4-ai3d-structure-visualfix",
+    "required_heartbeat_observed": false
+  },
+  "failure_classification": {
+    "class": "PHYSICAL_ACTIVATION_NOT_OBSERVED",
+    "evidence": [
+      "No CANARY-005 claim/lease/start/completion event exists.",
+      "Last paired-device AI3D heartbeat is 0.2.3-ai3d-structure-loaderfix at 2026-09-15T14:33:27.495Z.",
+      "CANARY-005 remains QUEUED at attempt_count=0.",
+      "No evidence currently proves a v0.2.4 code defect."
+    ],
+    "minimal_repair": "Operational only: start the already-installed stable launcher once. Do not modify worker code, Edge Function, queue row, or Mars production state without a new concrete failure."
+  },
+  "reserved_identity": {
+    "proposed_job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-006",
+    "proposed_command_prefix": "AI3D-013-STRUCTURE-CANARY-006-NEVER-TEAR",
+    "proposed_evidence_class": "PHYSICAL_WINDOWS_BLENDER_STRUCTURE_CAPABILITY_CANARY_V6",
+    "action": "ai3d_structure_module_v1",
+    "physical_concurrency": 1,
+    "max_attempts": 1
+  },
+  "arm_conditions_all_required": [
+    "CANARY-005 has reached a terminal FAIL/CLOSED state OR is explicitly invalidated after concrete launcher/transport evidence.",
+    "A concrete minimal cause has been identified and repaired.",
+    "A new worker/source hash or transport contract change exists that justifies a new identity.",
+    "Current Mars Structure Geometry Authority remains unchanged.",
+    "Central Corridor production has not started.",
+    "No other active Structure capability CANARY job exists."
+  ],
+  "forbidden_before_arm": [
+    "Do not create a Supabase CANARY-006 job while CANARY-005 is still QUEUED and valid.",
+    "Do not increment CANARY-005 attempt_count manually.",
+    "Do not broaden arbitrary shell, arbitrary Python, arbitrary path, or arbitrary URL capability.",
+    "Do not mutate WalkMyPlan geometry or the Central Corridor 66-command production plan.",
+    "Do not promote ai3d_structure_module_v1 based on CI or automated QA alone."
+  ],
+  "candidate_plan_contract": {
+    "source": "synthetic_structure_capability_canary",
+    "max_commands": 6,
+    "operations": [
+      "CREATE_PRIMITIVE wall",
+      "TRANSFORM_SET wall",
+      "CREATE_PRIMITIVE opening cutter",
+      "TRANSFORM_SET opening cutter",
+      "BOOLEAN subtract keep_tool=false",
+      "QA_RUN"
+    ],
+    "required_geometry_checks": [
+      "wall_count_exact",
+      "opening_boolean_command_count_exact",
+      "opening_void_probe",
+      "solid_control_probe",
+      "opening_boolean_exact",
+      "cutter_removed",
+      "mesh_nonempty",
+      "floor_contact",
+      "render_evidence",
+      "production_plan_not_executed"
+    ],
+    "required_physical_evidence": [
+      "verified worker identity",
+      "claim and bounded lease",
+      "real Blender invocation",
+      "durable PNG artifact",
+      "provider readback exact SHA-256",
+      "real visual QA"
+    ]
+  },
+  "visual_qa_acceptance": [
+    "central opening visibly passes through the wall",
+    "solid wall remains where expected",
+    "opening cutter is absent",
+    "render is nonblank and noncorrupt",
+    "wall/floor contact is credible",
+    "no accidental production geometry is present"
+  ],
+  "promotion_rule": "Only after every physical, geometry, storage-readback and visual gate PASSes may ai3d_structure_module_v1 be promoted.",
+  "current_decision": "KEEP_CANARY005_HOLD_NO_REQUEUE",
+  "next_action": "Launch the installed stable launcher once. Re-read telemetry and CANARY-005. If v0.2.4 heartbeat appears, continue CANARY-005 and ignore this contingency design. If a concrete terminal failure appears, apply only the smallest proven repair, then instantiate CANARY-006 from this design."
+}
