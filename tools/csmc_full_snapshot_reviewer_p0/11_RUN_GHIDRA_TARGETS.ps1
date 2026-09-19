@@ -36,8 +36,10 @@ if (-not (Test-Path -LiteralPath $Targets)) {
     throw "ghidra_targets.txt not found: $Targets"
 }
 
-$TargetLines = Get-Content -LiteralPath $Targets |
-    Where-Object { $_ -and (-not $_.StartsWith("#")) }
+$TargetLines = @(
+    Get-Content -LiteralPath $Targets |
+        Where-Object { $_ -and (-not $_.StartsWith("#")) }
+)
 
 if ($TargetLines.Count -eq 0) {
     Write-Host "新規Ghidra targetは0件です。広域解析へ戻らず終了します。" -ForegroundColor Yellow
