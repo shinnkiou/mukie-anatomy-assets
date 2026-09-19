@@ -3,11 +3,11 @@
   "project_key": "never_tear_ai3d_engine",
   "canonical_name": "NEVER TEAR AI 3D Production Engine",
   "status": "ACTIVE",
-  "stage": "QA",
+  "stage": "QA_HOLD",
   "active_task": "AI3D-013",
   "secondary_ready_task": "AI3D-010",
-  "updated_at": "2026-09-19T00:45:00+09:00",
-  "next_action": "Launch the already-installed NEVER TEAR AI3D Structure Worker Stable Launcher once. Require verified worker 0.2.4-ai3d-structure-visualfix, exact sole capability ai3d_structure_module_v1, then let the already-queued CANARY-005 run once. Require geometry-probe automated QA + durable provider SHA readback + real visual QA. Promote only on all PASS; only then start Central Corridor module-plan-7d0ef550473d76e6.",
+  "updated_at": "2026-09-19T09:07:00+09:00",
+  "next_action": "Base44-free HOLD: CANARY-005 is still QUEUED 0/1 and no v0.2.4 heartbeat is observed. Do not requeue or run Central Corridor. Launch the installed Stable Launcher once; if v0.2.4 appears, continue existing CANARY-005. If a concrete terminal failure appears, preserve evidence, apply only the smallest proven repair, then instantiate the design-only bounded CANARY-006 recovery identity.",
   "implementation": {
     "production_protocol": "ai3d_engine/src/productionProtocol.js",
     "module_assembly": "ai3d_engine/src/moduleAssembly.js",
@@ -61,7 +61,11 @@
     "canary005_required_geometry_probe": "CANARY005_OPENING_RAY_V1",
     "last_observed_structure_companion_version": "0.2.3-ai3d-structure-loaderfix",
     "last_observed_structure_companion_seen": "2026-09-15T14:33:27.495Z",
-    "current_gate": "WAITING_FOR_V024_STABLE_LAUNCHER_HEARTBEAT"
+    "current_gate": "HOLD_WAITING_FOR_V024_STABLE_LAUNCHER_HEARTBEAT",
+    "requeue_allowed": false,
+    "central_corridor_execution_allowed": false,
+    "recovery_canary006_design_only": true,
+    "recovery_canary006_design_commit": "523e5068c3d682040a7c36073e868dada68597d0"
   },
   "completed_tasks": {
     "AI3D-001": {
@@ -384,5 +388,11 @@
         "AI3D-010"
       ]
     }
+  },
+  "recovery_design": {
+    "status": "DESIGN_ONLY_NOT_ARMED_NOT_QUEUED",
+    "proposed_job_key": "AI3D-013-PHYSICAL-STRUCTURE-CANARY-006",
+    "arm_condition": "Only after CANARY-005 reaches terminal failure or is invalidated by concrete evidence and a minimal repair exists.",
+    "github_commit": "523e5068c3d682040a7c36073e868dada68597d0"
   }
 }
