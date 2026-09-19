@@ -1,0 +1,38 @@
+CSMC FULL SNAPSHOT REVIEWER P0 — Ghidra Targeted Pass 日本語ガイド
+===============================================================
+
+この段階は、Reviewer P0が新しい ghidra_targets.txt を出した場合だけ実行します。
+
+目的:
+  新しいRVA候補についてのみ、
+  関数本体 + caller + callee をGhidra Headlessで出力する。
+
+禁止:
+  広域文字列探索
+  全関数dump
+  0x140f62d20周辺の再探索
+  既知RVAだけしかない場合の再解析
+
+実行:
+  10_RUN_GHIDRA_TARGETS.bat
+
+自動処理:
+  1. 最新 REVIEWER_P0_* を探す
+  2. REPORTS\ghidra_targets.txt を確認
+  3. targetが0件なら何もせず終了
+  4. 最大12 targetだけ許可
+  5. MODELER_COPYのSHA-256確認
+  6. 専用Ghidra projectを作成/再利用
+  7. 指定RVAだけdecompile
+  8. caller/callee参照だけTXT化
+
+出力:
+  最新 REVIEWER_P0_*\REPORTS\GHIDRA_TARGETED\
+
+ChatGPTへ送るもの:
+  GHIDRA_TARGETED_SUMMARY.txt
+  target_*.txt
+
+注意:
+  初回だけMODELER_COPYのGhidra analysisで時間がかかる場合があります。
+  元Snapshot ZIPとCSMCは変更しません。
