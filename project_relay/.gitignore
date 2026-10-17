@@ -1,0 +1,15 @@
+runtime/
+config/runners.json
+config/*.local.json
+.env
+.env.*
+*.key
+*.pem
+credentials*.json
+token*.json
+secrets/
+private/
+artifacts/
+*.blend
+*.psd
+*.zip

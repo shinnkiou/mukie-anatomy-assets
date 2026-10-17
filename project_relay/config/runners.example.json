@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "runners": {
+    "selftest": {
+      "argv": [
+        "python",
+        "-c",
+        "import os,pathlib,time; p=pathlib.Path(os.environ['PROJECT_RELAY_JOB_DIR']); print('PROJECT RELAY SELFTEST'); time.sleep(1); (p/'SUCCESS').write_text('ok', encoding='utf-8')"
+      ],
+      "cwd": null,
+      "env": {},
+      "success_markers": ["{job_dir}/SUCCESS"],
+      "failure_markers": ["{job_dir}/FAILED"],
+      "required_outputs": ["{job_dir}/SUCCESS"],
+      "stop_grace_seconds": 10,
+      "allow_hard_after_soft": true
+    }
+  }
+}

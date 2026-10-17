@@ -1,0 +1,6 @@
+{
+  "guild_id": null,
+  "channel_id": null,
+  "user_id": null,
+  "notes": "Copy/configure locally as config/discord.local.json. Never commit user-specific Discord IDs or secrets to the public staging repo."
+}

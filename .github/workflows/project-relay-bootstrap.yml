@@ -1,0 +1,63 @@
+name: Project Relay Bootstrap CI
+
+on:
+  pull_request:
+    paths:
+      - 'project_relay/**'
+      - '.github/workflows/project-relay-bootstrap.yml'
+  workflow_dispatch:
+
+jobs:
+  windows-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax check
+        run: python -m py_compile project_relay/agent.py project_relay/relay_utils.py project_relay/discord_bot.py
+      - name: Utility regression tests
+        run: python -m unittest discover -s project_relay/tests -p 'test_*.py' -v
+      - name: Public staging safety check
+        shell: pwsh
+        run: |
+          if (Test-Path project_relay/config/discord.local.json) { throw 'discord.local.json must not be committed' }
+          if (Test-Path project_relay/private) { throw 'private/ must not be committed' }
+          $tracked = git ls-files project_relay
+          $bad = $tracked | Where-Object {
+            $_ -match '(^|/)private/' -or
+            $_ -match 'config/discord\.local\.json$' -or
+            $_ -match '(^|/)\.env(\..*)?$' -or
+            $_ -match '(^|/)credentials[^/]*\.json$' -or
+            $_ -match '(^|/)token[^/]*\.json$'
+          }
+          if ($bad) {
+            $bad | ForEach-Object { Write-Host "Unsafe tracked path: $_" }
+            throw 'secret runtime file is tracked'
+          }
+      - name: Prepare config
+        shell: pwsh
+        run: Copy-Item project_relay/config/runners.example.json project_relay/config/runners.json -Force
+      - name: Start agent and run selftest
+        shell: pwsh
+        run: |
+          $p = Start-Process python -ArgumentList @('project_relay/agent.py','--poll','0.2') -PassThru -NoNewWindow
+          Start-Sleep -Seconds 1
+          python project_relay/agent.py --selftest
+          $deadline = (Get-Date).AddSeconds(20)
+          $found = $false
+          while ((Get-Date) -lt $deadline) {
+            $success = Get-ChildItem project_relay/runtime/jobs -Recurse -Filter SUCCESS -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($success) { $found = $true; break }
+            Start-Sleep -Milliseconds 500
+          }
+          New-Item project_relay/runtime/STOP_AGENT -ItemType File -Force | Out-Null
+          try { Wait-Process -Id $p.Id -Timeout 10 -ErrorAction Stop } catch { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+          if (-not $found) {
+            Get-ChildItem project_relay/runtime -Recurse -ErrorAction SilentlyContinue | Format-Table FullName,Length,LastWriteTime
+            if (Test-Path project_relay/runtime/agent_state.json) { Get-Content project_relay/runtime/agent_state.json }
+            Get-ChildItem project_relay/runtime/jobs -Recurse -Filter '*.json' -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "--- $($_.FullName)"; Get-Content $_.FullName }
+            exit 1
+          }
