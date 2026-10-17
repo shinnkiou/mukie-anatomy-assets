@@ -1,0 +1,14 @@
+{
+  "schema":"bp3d.graduation_deadline_build.v0.2",
+  "status":"DURABLE_INTEGRATED_DEADLINE_BUILD_V02_READBACK_PASS",
+  "semantic_authority":"Final-v3 + V45",
+  "neutral_base_faces":13378,
+  "specialized_layers":{"arm_faces":2004,"foot_lowerleg_faces":2378,"integrated_body_faces":1928,"integrated_display_face_sum":6310},
+  "display_offset_m":0.0008,
+  "camera_helpers":8,
+  "isolated_modes":["ARM_ISOLATED","LEG_ISOLATED","TORSO_ISOLATED"],
+  "artifact":{"drive_folder_id":"1MdsFTvK2sC-vF7TzunJxEAonjVHyjYoz","drive_zip_id":"1Pcku8LxgJ2qXhCryl8FTKH1XCt1B0wH1","drive_sha_id":"1A0zmEa_Kmgfj_6DMw77WjhfwuqJX-7tn","drive_validation_id":"1gTQSaB5p8tWojF0mM_AHO3G3Ac1pos7N","drive_readme_id":"1Nyvw26pr79-katdwHULLPiNWKR-Vlb6D","drive_script_id":"13VlAagraJ5hRAZEQpxZnz9RmtEkbtqNy","zip_size_bytes":4412444,"sha256":"b1ab8a59bb56ff1ed07f04ca2add5f5330b2d917d968147f42153ae3d0afaa29","drive_exact_byte_readback":true,"zip_crc_pass":true},
+  "qa":{"blender_script_python_syntax":"PASS","real_blender_integrated_visual_qa":"PENDING"},
+  "guards":{"canonical_face_change":0,"source_mesh_mutation":0,"external_author_pixels_used":0,"MASTER_write":0,"R7_write":0,"Production14":"HOLD","Production13":"FORBIDDEN","pre_V45_rollback":"FORBIDDEN"},
+  "decision":"Promote V0.2 over V0.1 as current integrated Deadline Build candidate because it fixes full-body holes and expected z-fighting without semantic changes. Keep V0.1 for audit/rollback."
+}

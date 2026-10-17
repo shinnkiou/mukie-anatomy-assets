@@ -1,0 +1,22 @@
+{
+  "schema": "bp3d.deadline.capture.contract.v01",
+  "source": "legacy project 26-view pattern recovered from Base44 StudyItem records and prior capture-tool geometry",
+  "anatomical_front": "NEGATIVE_Y",
+  "camera_projection": "ORTHOGRAPHIC",
+  "view_count": 26,
+  "height_levels": {
+    "H1": {"role": "真下 / low-angle pole", "geometry": "lower_pole", "azimuths_deg": [0], "numeric_elevation_deg": null},
+    "H2": {"role": "やや下", "geometry": "lower_ring", "azimuths_deg": [0,45,90,135,180,225,270,315], "numeric_elevation_deg": null},
+    "H3": {"role": "水平", "geometry": "middle_ring", "azimuths_deg": [0,45,90,135,180,225,270,315], "numeric_elevation_deg": 0},
+    "H4": {"role": "やや上", "geometry": "upper_ring", "azimuths_deg": [0,45,90,135,180,225,270,315], "numeric_elevation_deg": null},
+    "H5": {"role": "俯瞰 / upper pole", "geometry": "upper_pole", "azimuths_deg": [0], "numeric_elevation_deg": null}
+  },
+  "geometry_definition": {
+    "lower_pole": "center + (0,0,-R)",
+    "lower_ring": "horizontal radius R/sqrt(2), z=-R/sqrt(2)",
+    "middle_ring": "horizontal radius R, z=0",
+    "upper_ring": "horizontal radius R/sqrt(2), z=+R/sqrt(2)",
+    "upper_pole": "center + (0,0,+R)"
+  },
+  "note": "No guessed numeric H1/H2/H4/H5 tilt angles are introduced. The historical camera geometry itself is reproduced."
+}

@@ -1,0 +1,9 @@
+{
+  "schema":"bp3d.deadline_build.qa_runner.v0.2",
+  "status":"DURABLE_QA_RUNNER_READY",
+  "artifact":{"drive_zip_id":"1ZjBW4fo2oAAmOLWwo7GaUqAp_RmpGmdQ","drive_sha_id":"1q05RJy_2NcZ4bV41xqgesP5HOEbP-OP_","drive_bat_id":"1SpwBvZ9c3A9REZEKkq9WbBtKZkTe25Fx","drive_python_id":"1IfzdKJoelWr9EH8ZlgneCGCBzm98eCin","sha256":"9a28f2f12a00909182f3619d14dcd020d9a36a4d6079d2a48eab8282fd7e566f","size_bytes":4472},
+  "checks":{"neutral_base_faces":13378,"arm_faces":2004,"foot_lowerleg_faces":2378,"body_faces":1928,"cameras":8,"display_offset_m":0.0008,"texture_images_loaded":true},
+  "outputs":["8 orthographic PNG renders","BP3D_GRADUATION_DEADLINE_BUILD_V02_QA.blend","BP3D_DEADLINE_BUILD_QA_RESULT.json"],
+  "execution":"PENDING_WINDOWS_BLENDER",
+  "guards":{"semantic_mutation":0,"source_mutation":0,"MASTER_write":0,"R7_write":0,"Production14":"HOLD","Production13":"FORBIDDEN"}
+}
