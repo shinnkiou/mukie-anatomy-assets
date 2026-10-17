@@ -1,0 +1,7 @@
+{
+  "release_key": "BRIDGE_CI_SYNTHETIC_RELEASE",
+  "bridge_version": "0.8.0-p0.6",
+  "status": "DRIVE_VERIFIED",
+  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "rollback_release_key": "BRIDGE_CI_PREVIOUS"
+}

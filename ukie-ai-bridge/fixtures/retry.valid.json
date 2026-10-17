@@ -1,0 +1,8 @@
+{
+  "schema_version": "ukie_retry_v1",
+  "parent_job_id": "BRIDGE_TEST_000001",
+  "new_job_id": "BRIDGE_TEST_000001_RETRY_01",
+  "attempt_no": 1,
+  "reason": "FIXED_SCRIPT_RETRY",
+  "approved_by": "human_base44"
+}

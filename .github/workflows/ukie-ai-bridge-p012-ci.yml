@@ -1,0 +1,122 @@
+name: UKIE AI Bridge P0.12 Cloud Recovery CI
+
+on:
+  push:
+    branches:
+      - ukie-ai-bridge-foundation
+    paths:
+      - 'ukie-ai-bridge/bridge/cloud_recovery.py'
+      - 'ukie-ai-bridge/bridge/cli_p012.py'
+      - 'ukie-ai-bridge/tests/test_cloud_recovery.py'
+      - 'ukie-ai-bridge/fixtures/build_synthetic_cloud_triplet.py'
+      - '.github/workflows/ukie-ai-bridge-p012-ci.yml'
+  pull_request:
+    paths:
+      - 'ukie-ai-bridge/bridge/cloud_recovery.py'
+      - 'ukie-ai-bridge/bridge/cli_p012.py'
+      - 'ukie-ai-bridge/tests/test_cloud_recovery.py'
+      - 'ukie-ai-bridge/fixtures/build_synthetic_cloud_triplet.py'
+      - '.github/workflows/ukie-ai-bridge-p012-ci.yml'
+
+jobs:
+  windows-cloud-recovery-test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ukie-ai-bridge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile Python sources
+        run: python -m compileall -q bridge blender fixtures tests
+
+      - name: Run full historical and P0.12 regression suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Build direct-script synthetic cloud triplet
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force ci-p012 | Out-Null
+          python fixtures/build_synthetic_cloud_triplet.py --output-dir ci-p012\triplet
+
+      - name: Build discovery observation and exercise source reconciler
+        shell: pwsh
+        run: |
+          python -c "import json; from pathlib import Path; from bridge.cloud_intake import classify_discovery; root=Path(r'ci-p012\triplet'); rows=[{'id':'drive-'+str(i),'name':p.name,'size':p.stat().st_size} for i,p in enumerate(sorted(root.iterdir()))]; d=classify_discovery(rows); Path(r'ci-p012\discovery.json').write_text(json.dumps(d,indent=2),encoding='utf-8'); assert d['complete_count']==1"
+          $z = Get-ChildItem ci-p012\triplet\*.zip | Select-Object -First 1
+          python bridge/cli_p012.py self-test
+          python bridge/cli_p012.py reconcile-cloud-state --base-name $z.Name --discovery ci-p012\discovery.json --output ci-p012\state1.json
+          python bridge/cli_p012.py reconcile-cloud-state --base-name $z.Name --discovery ci-p012\discovery.json --previous ci-p012\state1.json --output ci-p012\state2.json
+          python -c "import json; a=json.load(open(r'ci-p012\state1.json',encoding='utf-8')); b=json.load(open(r'ci-p012\state2.json',encoding='utf-8')); assert a['status']=='COMPLETE'; assert b['status']=='COMPLETE'; assert b['idempotent_replay'] is True; assert b['revision']==a['revision']; assert b['ready_for_ai'] is False; assert b['promotion_performed'] is False; assert b['local_cli_provider_verified_intake_allowed'] is False; print('PASS P0.12 idempotent source reconciliation')"
+
+      - name: Prove local source CLI cannot inject provider-verified intake
+        shell: pwsh
+        run: |
+          $z = Get-ChildItem ci-p012\triplet\*.zip | Select-Object -First 1
+          python bridge/cli_p012.py reconcile-cloud-state --base-name $z.Name --discovery ci-p012\discovery.json --intake ci-p012\fake.json
+          $rc = $LASTEXITCODE
+          if ($rc -ne 2) { throw "local P0.12 source CLI unexpectedly accepted --intake; exit=$rc" }
+          Write-Host "EXPECTED_BLOCK local source CLI cannot accept provider intake"
+          $global:LASTEXITCODE = 0
+
+      - name: Build P0.12 one-file Windows executable
+        run: |
+          python -m pip install --disable-pip-version-check pyinstaller
+          pyinstaller --noconfirm --clean --onefile --name UKIE_AI_BRIDGE --paths . --hidden-import bridge.state_store --hidden-import bridge.job_controller --hidden-import bridge.retry_contract --hidden-import bridge.known_failures --hidden-import bridge.preflight --hidden-import bridge.artifact_validation --hidden-import bridge.auth_health --hidden-import bridge.experiment_manifest --hidden-import bridge.analyze_runner --hidden-import bridge.blender_canary --hidden-import bridge.canary_verifier --hidden-import bridge.gpu_probe --hidden-import bridge.physical_acceptance --hidden-import bridge.acceptance_verifier --hidden-import bridge.handoff --hidden-import bridge.cloud_intake --hidden-import bridge.cloud_recovery --hidden-import bridge.release_gate --hidden-import bridge.cli --add-data "blender/analyze_scene.py;blender" --add-data "blender/create_canary.py;blender" --add-data "blender/gpu_probe.py;blender" bridge/cli_p012.py
+
+      - name: Exercise packaged P0.12 reconciler and inherited safety surface
+        shell: pwsh
+        run: |
+          .\dist\UKIE_AI_BRIDGE.exe self-test
+          .\dist\UKIE_AI_BRIDGE.exe validate-job fixtures\job_analyze_blend.valid.json
+          .\dist\UKIE_AI_BRIDGE.exe device-status
+          $z = Get-ChildItem ci-p012\triplet\*.zip | Select-Object -First 1
+          .\dist\UKIE_AI_BRIDGE.exe reconcile-cloud-state --base-name $z.Name --discovery ci-p012\discovery.json --output ci-p012\exe-state1.json
+          .\dist\UKIE_AI_BRIDGE.exe reconcile-cloud-state --base-name $z.Name --discovery ci-p012\discovery.json --previous ci-p012\exe-state1.json --output ci-p012\exe-state2.json
+          python -c "import json; a=json.load(open(r'ci-p012\exe-state1.json',encoding='utf-8')); b=json.load(open(r'ci-p012\exe-state2.json',encoding='utf-8')); assert a['status']=='COMPLETE'; assert b['idempotent_replay'] is True; assert b['revision']==a['revision']; assert b['bridge_version']=='0.14.0-p0.12'; assert b['ready_for_ai'] is False; print('PASS packaged P0.12 idempotent reconciliation')"
+          .\dist\UKIE_AI_BRIDGE.exe reconcile-cloud-state --base-name $z.Name --discovery ci-p012\discovery.json --intake ci-p012\fake.json
+          $rc = $LASTEXITCODE
+          if ($rc -ne 2) { throw "packaged P0.12 CLI unexpectedly accepted --intake; exit=$rc" }
+          Write-Host "EXPECTED_BLOCK packaged P0.12 CLI cannot accept provider intake"
+          $global:LASTEXITCODE = 0
+
+      - name: Stage P0.12 release-bound one-click package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release-p012 | Out-Null
+          Copy-Item dist\UKIE_AI_BRIDGE.exe release-p012\UKIE_AI_BRIDGE.exe
+          Copy-Item windows\RUN_FIRST_ACCEPTANCE.cmd release-p012\RUN_FIRST_ACCEPTANCE.cmd
+          $releaseInfo = [ordered]@{
+            schema_version = "ukie_bridge_release_info_v1"
+            release_key = "BRIDGE_P012_RUN_${{ github.run_id }}"
+            bridge_version = "0.14.0-p0.12"
+            commit_sha = "${{ github.event.pull_request.head.sha || github.sha }}"
+            workflow_run_id = [int64]${{ github.run_id }}
+            bp3d_blender_pin = "4.2.23"
+            channel = "FOUNDATION"
+          } | ConvertTo-Json
+          Set-Content -Path release-p012\RELEASE_INFO.json -Encoding utf8NoBOM -Value $releaseInfo
+          Set-Content -Path release-p012\README_FIRST.txt -Encoding ascii -Value @(
+            "UKIE AI BRIDGE P0.12 idempotent cloud recovery foundation",
+            "1. Physical acceptance remains the same one-click flow: RUN_FIRST_ACCEPTANCE.cmd.",
+            "2. P0.12 adds deterministic cloud recovery state reconciliation.",
+            "3. Repeated identical discovery observations do not create a new revision.",
+            "4. Incomplete sync waits; ambiguous duplicate evidence blocks.",
+            "5. Previously verified evidence is sticky across temporary disappearance/incomplete sync.",
+            "6. Changed verified file IDs or content SHA require explicit human review.",
+            "7. Local EXE cannot inject provider-verified intake, promote a release, or set READY FOR AI.",
+            "8. Google Drive readback proof remains control-plane only.",
+            "9. User source .blend files are not required for first acceptance."
+          )
+          Get-ChildItem release-p012
+
+      - name: Upload P0.12 Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: UKIE_AI_BRIDGE-P0.12-windows
+          path: ukie-ai-bridge/release-p012/*
+          if-no-files-found: error
+          retention-days: 14

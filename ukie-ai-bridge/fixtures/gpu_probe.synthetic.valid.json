@@ -1,0 +1,33 @@
+{
+  "schema_version": "ukie_blender_gpu_probe_v1",
+  "status": "GPU_RENDER_ROUTE_PASS",
+  "blender_version": "4.2.23 LTS / SYNTHETIC_CI_ONLY",
+  "python_version": "3.11.0",
+  "platform": "Windows-SYNTHETIC-CI",
+  "backend_attempts": [
+    {
+      "backend": "CUDA",
+      "supported": true,
+      "devices": [
+        {"name": "Synthetic GPU", "type": "CUDA", "id": "CUDA_SYNTHETIC", "use": true},
+        {"name": "Synthetic CPU", "type": "CPU", "id": "CPU_SYNTHETIC", "use": false}
+      ],
+      "error": null
+    }
+  ],
+  "chosen_backend": "CUDA",
+  "selected_devices": [
+    {"name": "Synthetic GPU", "type": "CUDA", "id": "CUDA_SYNTHETIC", "use": true}
+  ],
+  "cpu_devices_disabled": true,
+  "scene_cycles_device": "GPU",
+  "render": {
+    "attempted": true,
+    "completed": true,
+    "path": "synthetic_gpu_probe.png",
+    "byte_size": 2056
+  },
+  "hardware_utilization_sampled": false,
+  "ready_for_gpu_render": true,
+  "synthetic_ci_only": true
+}
