@@ -1,0 +1,22 @@
+{
+  "schema_version": "relay-research-result-v1",
+  "run_id": "20261024T205613Z",
+  "mission_key": "toyohashi_drum_lesson_rental_20260830",
+  "started_at": "2026-10-24T20:56:13.349558Z",
+  "status": "STOPPED",
+  "enabled": false,
+  "worker": "github-actions",
+  "safety": {
+    "no_booking": true,
+    "no_purchase": true,
+    "no_contact_submission": true,
+    "no_credentials": true,
+    "public_information_only": true
+  },
+  "searches": [],
+  "monitors": [],
+  "errors": [],
+  "new_urls": [],
+  "top_candidates": [],
+  "finished_at": "2026-10-24T20:56:13.349569Z"
+}
