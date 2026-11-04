@@ -1,8 +1,8 @@
 {
   "schema_version": "relay-research-result-v1",
-  "run_id": "20261104T063554Z",
+  "run_id": "20261104T152933Z",
   "mission_key": "toyohashi_drum_lesson_rental_20260830",
-  "started_at": "2026-11-04T06:35:54.552684Z",
+  "started_at": "2026-11-04T15:29:33.463907Z",
   "status": "STOPPED",
   "enabled": false,
   "worker": "github-actions",
@@ -18,5 +18,5 @@
   "errors": [],
   "new_urls": [],
   "top_candidates": [],
-  "finished_at": "2026-11-04T06:35:54.552693Z"
+  "finished_at": "2026-11-04T15:29:33.463918Z"
 }
